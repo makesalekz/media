@@ -25,7 +25,7 @@ type Data struct {
 func NewData(c *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
-	client, err := ent.Open("postgres", c.Db.Address)
+	client, err := ent.Open("postgres", c.Db)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err

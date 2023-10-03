@@ -5,8 +5,7 @@ server:
   grpc:
     addr: 0.0.0.0:9000
     timeout: 30s
-db:
-  address: host=media_db port=5432 user=me dbname=api password=password sslmode=disable
+db: host=media_db port=5432 user=me dbname=api password=password sslmode=disable
 discovery:
   iam: discovery:///iam
   iam_timeout: 30s
