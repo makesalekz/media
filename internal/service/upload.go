@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
+	"media/ent"
 
-	v1 "media/api/upload/v1"
+	upload_v1 "media/api/upload/v1"
 	"media/internal/biz"
 	"media/internal/data"
 
@@ -11,7 +12,7 @@ import (
 )
 
 type UploadService struct {
-	v1.UnimplementedUploadServer
+	upload_v1.UnimplementedUploadServer
 
 	log *log.Helper
 	jwt *data.JwtProcessor
@@ -26,34 +27,50 @@ func NewUploadService(logger log.Logger, jwt *data.JwtProcessor, uc *biz.MediaUs
 	}
 }
 
-func (s *UploadService) UploadMedia(ctx context.Context, req *v1.UploadMediaRequest) (*v1.UploadMediaReply, error) {
-	userId, ok := s.jwt.GetUserIdFromContext(ctx)
-	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+func replyMedia(media *ent.Media) *upload_v1.Media {
+	trMedia := &upload_v1.Media{
+		Id:        media.ID,
+		FileName:  media.FileName,
+		Extension: media.Extension,
+		Size:      media.Size,
+	}
+	if media.Width != nil {
+		trMedia.Width = *media.Width
+	}
+	if media.Height != nil {
+		trMedia.Height = *media.Height
+	}
+	if media.Location != nil {
+		trMedia.Url = *media.Location
 	}
 
-	url, err := s.uc.UploadMedia(ctx, userId, req.Content)
-	if err != nil {
-		return nil, err
-	}
-
-	return &v1.UploadMediaReply{
-		Url: url,
-	}, nil
+	return trMedia
 }
 
-func (s *UploadService) UploadAvatar(ctx context.Context, req *v1.UploadMediaRequest) (*v1.UploadMediaReply, error) {
+func (s *UploadService) UploadMedia(ctx context.Context, req *upload_v1.UploadMediaRequest) (*upload_v1.UploadMediaReply, error) {
 	userId, ok := s.jwt.GetUserIdFromContext(ctx)
 	if !ok {
-		return nil, v1.ErrorUnauthorized("Unauthorized")
+		return nil, upload_v1.ErrorUnauthorized("Unauthorized")
 	}
 
-	url, err := s.uc.UploadAvatar(ctx, userId, req.Content)
+	media, err := s.uc.UploadMedia(ctx, userId, req.Content)
 	if err != nil {
 		return nil, err
 	}
 
-	return &v1.UploadMediaReply{
-		Url: url,
-	}, nil
+	return &upload_v1.UploadMediaReply{Media: replyMedia(media)}, nil
+}
+
+func (s *UploadService) UploadAvatar(ctx context.Context, req *upload_v1.UploadMediaRequest) (*upload_v1.UploadMediaReply, error) {
+	userId, ok := s.jwt.GetUserIdFromContext(ctx)
+	if !ok {
+		return nil, upload_v1.ErrorUnauthorized("Unauthorized")
+	}
+
+	media, err := s.uc.UploadAvatar(ctx, userId, req.Content)
+	if err != nil {
+		return nil, err
+	}
+
+	return &upload_v1.UploadMediaReply{Media: replyMedia(media)}, nil
 }

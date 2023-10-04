@@ -33,11 +33,18 @@ type MediaMutation struct {
 	op            Op
 	typ           string
 	id            *int64
+	file_name     *string
 	user_id       *int64
 	adduser_id    *int64
 	extension     *string
 	_path         *string
 	location      *string
+	size          *int64
+	addsize       *int64
+	width         *int64
+	addwidth      *int64
+	height        *int64
+	addheight     *int64
 	created_at    *time.Time
 	uploaded_at   *time.Time
 	clearedFields map[string]struct{}
@@ -142,6 +149,42 @@ func (m *MediaMutation) IDs(ctx context.Context) ([]int64, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetFileName sets the "file_name" field.
+func (m *MediaMutation) SetFileName(s string) {
+	m.file_name = &s
+}
+
+// FileName returns the value of the "file_name" field in the mutation.
+func (m *MediaMutation) FileName() (r string, exists bool) {
+	v := m.file_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileName returns the old "file_name" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldFileName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFileName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFileName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileName: %w", err)
+	}
+	return oldValue.FileName, nil
+}
+
+// ResetFileName resets all changes to the "file_name" field.
+func (m *MediaMutation) ResetFileName() {
+	m.file_name = nil
 }
 
 // SetUserID sets the "user_id" field.
@@ -321,6 +364,202 @@ func (m *MediaMutation) ResetLocation() {
 	delete(m.clearedFields, media.FieldLocation)
 }
 
+// SetSize sets the "size" field.
+func (m *MediaMutation) SetSize(i int64) {
+	m.size = &i
+	m.addsize = nil
+}
+
+// Size returns the value of the "size" field in the mutation.
+func (m *MediaMutation) Size() (r int64, exists bool) {
+	v := m.size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSize returns the old "size" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldSize(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSize: %w", err)
+	}
+	return oldValue.Size, nil
+}
+
+// AddSize adds i to the "size" field.
+func (m *MediaMutation) AddSize(i int64) {
+	if m.addsize != nil {
+		*m.addsize += i
+	} else {
+		m.addsize = &i
+	}
+}
+
+// AddedSize returns the value that was added to the "size" field in this mutation.
+func (m *MediaMutation) AddedSize() (r int64, exists bool) {
+	v := m.addsize
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetSize resets all changes to the "size" field.
+func (m *MediaMutation) ResetSize() {
+	m.size = nil
+	m.addsize = nil
+}
+
+// SetWidth sets the "width" field.
+func (m *MediaMutation) SetWidth(i int64) {
+	m.width = &i
+	m.addwidth = nil
+}
+
+// Width returns the value of the "width" field in the mutation.
+func (m *MediaMutation) Width() (r int64, exists bool) {
+	v := m.width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWidth returns the old "width" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldWidth(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWidth: %w", err)
+	}
+	return oldValue.Width, nil
+}
+
+// AddWidth adds i to the "width" field.
+func (m *MediaMutation) AddWidth(i int64) {
+	if m.addwidth != nil {
+		*m.addwidth += i
+	} else {
+		m.addwidth = &i
+	}
+}
+
+// AddedWidth returns the value that was added to the "width" field in this mutation.
+func (m *MediaMutation) AddedWidth() (r int64, exists bool) {
+	v := m.addwidth
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearWidth clears the value of the "width" field.
+func (m *MediaMutation) ClearWidth() {
+	m.width = nil
+	m.addwidth = nil
+	m.clearedFields[media.FieldWidth] = struct{}{}
+}
+
+// WidthCleared returns if the "width" field was cleared in this mutation.
+func (m *MediaMutation) WidthCleared() bool {
+	_, ok := m.clearedFields[media.FieldWidth]
+	return ok
+}
+
+// ResetWidth resets all changes to the "width" field.
+func (m *MediaMutation) ResetWidth() {
+	m.width = nil
+	m.addwidth = nil
+	delete(m.clearedFields, media.FieldWidth)
+}
+
+// SetHeight sets the "height" field.
+func (m *MediaMutation) SetHeight(i int64) {
+	m.height = &i
+	m.addheight = nil
+}
+
+// Height returns the value of the "height" field in the mutation.
+func (m *MediaMutation) Height() (r int64, exists bool) {
+	v := m.height
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHeight returns the old "height" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldHeight(ctx context.Context) (v *int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHeight is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHeight requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHeight: %w", err)
+	}
+	return oldValue.Height, nil
+}
+
+// AddHeight adds i to the "height" field.
+func (m *MediaMutation) AddHeight(i int64) {
+	if m.addheight != nil {
+		*m.addheight += i
+	} else {
+		m.addheight = &i
+	}
+}
+
+// AddedHeight returns the value that was added to the "height" field in this mutation.
+func (m *MediaMutation) AddedHeight() (r int64, exists bool) {
+	v := m.addheight
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearHeight clears the value of the "height" field.
+func (m *MediaMutation) ClearHeight() {
+	m.height = nil
+	m.addheight = nil
+	m.clearedFields[media.FieldHeight] = struct{}{}
+}
+
+// HeightCleared returns if the "height" field was cleared in this mutation.
+func (m *MediaMutation) HeightCleared() bool {
+	_, ok := m.clearedFields[media.FieldHeight]
+	return ok
+}
+
+// ResetHeight resets all changes to the "height" field.
+func (m *MediaMutation) ResetHeight() {
+	m.height = nil
+	m.addheight = nil
+	delete(m.clearedFields, media.FieldHeight)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *MediaMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -440,7 +679,10 @@ func (m *MediaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MediaMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 10)
+	if m.file_name != nil {
+		fields = append(fields, media.FieldFileName)
+	}
 	if m.user_id != nil {
 		fields = append(fields, media.FieldUserID)
 	}
@@ -452,6 +694,15 @@ func (m *MediaMutation) Fields() []string {
 	}
 	if m.location != nil {
 		fields = append(fields, media.FieldLocation)
+	}
+	if m.size != nil {
+		fields = append(fields, media.FieldSize)
+	}
+	if m.width != nil {
+		fields = append(fields, media.FieldWidth)
+	}
+	if m.height != nil {
+		fields = append(fields, media.FieldHeight)
 	}
 	if m.created_at != nil {
 		fields = append(fields, media.FieldCreatedAt)
@@ -467,6 +718,8 @@ func (m *MediaMutation) Fields() []string {
 // schema.
 func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case media.FieldFileName:
+		return m.FileName()
 	case media.FieldUserID:
 		return m.UserID()
 	case media.FieldExtension:
@@ -475,6 +728,12 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 		return m.Path()
 	case media.FieldLocation:
 		return m.Location()
+	case media.FieldSize:
+		return m.Size()
+	case media.FieldWidth:
+		return m.Width()
+	case media.FieldHeight:
+		return m.Height()
 	case media.FieldCreatedAt:
 		return m.CreatedAt()
 	case media.FieldUploadedAt:
@@ -488,6 +747,8 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case media.FieldFileName:
+		return m.OldFileName(ctx)
 	case media.FieldUserID:
 		return m.OldUserID(ctx)
 	case media.FieldExtension:
@@ -496,6 +757,12 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldPath(ctx)
 	case media.FieldLocation:
 		return m.OldLocation(ctx)
+	case media.FieldSize:
+		return m.OldSize(ctx)
+	case media.FieldWidth:
+		return m.OldWidth(ctx)
+	case media.FieldHeight:
+		return m.OldHeight(ctx)
 	case media.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case media.FieldUploadedAt:
@@ -509,6 +776,13 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *MediaMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case media.FieldFileName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileName(v)
+		return nil
 	case media.FieldUserID:
 		v, ok := value.(int64)
 		if !ok {
@@ -537,6 +811,27 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLocation(v)
 		return nil
+	case media.FieldSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSize(v)
+		return nil
+	case media.FieldWidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWidth(v)
+		return nil
+	case media.FieldHeight:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHeight(v)
+		return nil
 	case media.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -562,6 +857,15 @@ func (m *MediaMutation) AddedFields() []string {
 	if m.adduser_id != nil {
 		fields = append(fields, media.FieldUserID)
 	}
+	if m.addsize != nil {
+		fields = append(fields, media.FieldSize)
+	}
+	if m.addwidth != nil {
+		fields = append(fields, media.FieldWidth)
+	}
+	if m.addheight != nil {
+		fields = append(fields, media.FieldHeight)
+	}
 	return fields
 }
 
@@ -572,6 +876,12 @@ func (m *MediaMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case media.FieldUserID:
 		return m.AddedUserID()
+	case media.FieldSize:
+		return m.AddedSize()
+	case media.FieldWidth:
+		return m.AddedWidth()
+	case media.FieldHeight:
+		return m.AddedHeight()
 	}
 	return nil, false
 }
@@ -588,6 +898,27 @@ func (m *MediaMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddUserID(v)
 		return nil
+	case media.FieldSize:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSize(v)
+		return nil
+	case media.FieldWidth:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddWidth(v)
+		return nil
+	case media.FieldHeight:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHeight(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Media numeric field %s", name)
 }
@@ -598,6 +929,12 @@ func (m *MediaMutation) ClearedFields() []string {
 	var fields []string
 	if m.FieldCleared(media.FieldLocation) {
 		fields = append(fields, media.FieldLocation)
+	}
+	if m.FieldCleared(media.FieldWidth) {
+		fields = append(fields, media.FieldWidth)
+	}
+	if m.FieldCleared(media.FieldHeight) {
+		fields = append(fields, media.FieldHeight)
 	}
 	if m.FieldCleared(media.FieldUploadedAt) {
 		fields = append(fields, media.FieldUploadedAt)
@@ -619,6 +956,12 @@ func (m *MediaMutation) ClearField(name string) error {
 	case media.FieldLocation:
 		m.ClearLocation()
 		return nil
+	case media.FieldWidth:
+		m.ClearWidth()
+		return nil
+	case media.FieldHeight:
+		m.ClearHeight()
+		return nil
 	case media.FieldUploadedAt:
 		m.ClearUploadedAt()
 		return nil
@@ -630,6 +973,9 @@ func (m *MediaMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *MediaMutation) ResetField(name string) error {
 	switch name {
+	case media.FieldFileName:
+		m.ResetFileName()
+		return nil
 	case media.FieldUserID:
 		m.ResetUserID()
 		return nil
@@ -641,6 +987,15 @@ func (m *MediaMutation) ResetField(name string) error {
 		return nil
 	case media.FieldLocation:
 		m.ResetLocation()
+		return nil
+	case media.FieldSize:
+		m.ResetSize()
+		return nil
+	case media.FieldWidth:
+		m.ResetWidth()
+		return nil
+	case media.FieldHeight:
+		m.ResetHeight()
 		return nil
 	case media.FieldCreatedAt:
 		m.ResetCreatedAt()

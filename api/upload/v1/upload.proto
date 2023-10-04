@@ -6,30 +6,35 @@ import "google/api/annotations.proto";
 import "errors/errors.proto";
 import "google/api/httpbody.proto";
 
-option go_package = "media/api/upload/v1;v1";
+option go_package = "media/api/upload/v1;upload_v1";
 option java_multiple_files = true;
 option java_package = "api.upload.v1";
 
 service Upload {
-	rpc UploadMedia (UploadMediaRequest) returns (UploadMediaReply) {
-		option (google.api.http) = {
-			post: "/v1/media/upload"
-			body: "*"
-		};
-	};
-	rpc UploadAvatar (UploadMediaRequest) returns (UploadMediaReply) {
-		option (google.api.http) = {
-			post: "/v1/media/avatar"
-			body: "*"
-		};
-	};
+  rpc UploadMedia (UploadMediaRequest) returns (UploadMediaReply);
+  rpc UploadAvatar (UploadMediaRequest) returns (UploadMediaReply) {
+    option (google.api.http) = {
+      post: "/v1/media/avatar"
+      body: "*"
+    };
+  };
+}
+
+message Media {
+  int64 id = 1;
+  string url = 2;
+  string fileName = 3;
+  string extension = 4;
+  int64 size = 5; // in bytes
+  int64 width = 6; // in pixels
+  int64 height = 7; // in pixels
 }
 
 message UploadMediaRequest {
-	google.api.HttpBody content = 1;
+  google.api.HttpBody content = 1;
 }
 message UploadMediaReply {
-	string url = 1;
+  Media media = 1;
 }
 
 enum ErrorReason {
@@ -41,7 +46,7 @@ enum ErrorReason {
   GRPC_CONNECTION = 1;
   SERVICE_FAILED = 2;
   DATABASE_QUERY = 3;
-  
+
   UNAUTHORIZED = 10 [(errors.code) = 401];
   INVALID_CONTENT_TYPE = 11 [(errors.code) = 400];
 
