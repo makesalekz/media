@@ -41,6 +41,7 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 			}
 			defer r.Body.Close()
 
+			v.(*upload_v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
 			v.(*upload_v1.UploadMediaRequest).Content = &httpbody.HttpBody{
 				ContentType: http.DetectContentType(file),
 				Data:        file,

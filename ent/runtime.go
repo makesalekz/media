@@ -14,12 +14,8 @@ import (
 func init() {
 	mediaFields := schema.Media{}.Fields()
 	_ = mediaFields
-	// mediaDescFileName is the schema descriptor for file_name field.
-	mediaDescFileName := mediaFields[0].Descriptor()
-	// media.FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	media.FileNameValidator = mediaDescFileName.Validators[0].(func(string) error)
 	// mediaDescUserID is the schema descriptor for user_id field.
-	mediaDescUserID := mediaFields[1].Descriptor()
+	mediaDescUserID := mediaFields[0].Descriptor()
 	// media.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	media.UserIDValidator = mediaDescUserID.Validators[0].(func(int64) error)
 	// mediaDescExtension is the schema descriptor for extension field.

@@ -13,10 +13,10 @@ const (
 	Label = "media"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldFileName holds the string denoting the file_name field in the database.
-	FieldFileName = "file_name"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
+	// FieldFileName holds the string denoting the file_name field in the database.
+	FieldFileName = "file_name"
 	// FieldExtension holds the string denoting the extension field in the database.
 	FieldExtension = "extension"
 	// FieldPath holds the string denoting the path field in the database.
@@ -40,8 +40,8 @@ const (
 // Columns holds all SQL columns for media fields.
 var Columns = []string{
 	FieldID,
-	FieldFileName,
 	FieldUserID,
+	FieldFileName,
 	FieldExtension,
 	FieldPath,
 	FieldLocation,
@@ -63,8 +63,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
-	FileNameValidator func(string) error
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(int64) error
 	// ExtensionValidator is a validator for the "extension" field. It is called by the builders before save.
@@ -81,14 +79,14 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByFileName orders the results by the file_name field.
-func ByFileName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFileName, opts...).ToFunc()
-}
-
 // ByUserID orders the results by the user_id field.
 func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+}
+
+// ByFileName orders the results by the file_name field.
+func ByFileName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFileName, opts...).ToFunc()
 }
 
 // ByExtension orders the results by the extension field.

@@ -62,27 +62,27 @@ func (mu *MediaUpdate) ClearLocation() *MediaUpdate {
 }
 
 // SetSize sets the "size" field.
-func (mu *MediaUpdate) SetSize(i int64) *MediaUpdate {
+func (mu *MediaUpdate) SetSize(i int32) *MediaUpdate {
 	mu.mutation.ResetSize()
 	mu.mutation.SetSize(i)
 	return mu
 }
 
 // AddSize adds i to the "size" field.
-func (mu *MediaUpdate) AddSize(i int64) *MediaUpdate {
+func (mu *MediaUpdate) AddSize(i int32) *MediaUpdate {
 	mu.mutation.AddSize(i)
 	return mu
 }
 
 // SetWidth sets the "width" field.
-func (mu *MediaUpdate) SetWidth(i int64) *MediaUpdate {
+func (mu *MediaUpdate) SetWidth(i int32) *MediaUpdate {
 	mu.mutation.ResetWidth()
 	mu.mutation.SetWidth(i)
 	return mu
 }
 
 // SetNillableWidth sets the "width" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableWidth(i *int64) *MediaUpdate {
+func (mu *MediaUpdate) SetNillableWidth(i *int32) *MediaUpdate {
 	if i != nil {
 		mu.SetWidth(*i)
 	}
@@ -90,7 +90,7 @@ func (mu *MediaUpdate) SetNillableWidth(i *int64) *MediaUpdate {
 }
 
 // AddWidth adds i to the "width" field.
-func (mu *MediaUpdate) AddWidth(i int64) *MediaUpdate {
+func (mu *MediaUpdate) AddWidth(i int32) *MediaUpdate {
 	mu.mutation.AddWidth(i)
 	return mu
 }
@@ -102,14 +102,14 @@ func (mu *MediaUpdate) ClearWidth() *MediaUpdate {
 }
 
 // SetHeight sets the "height" field.
-func (mu *MediaUpdate) SetHeight(i int64) *MediaUpdate {
+func (mu *MediaUpdate) SetHeight(i int32) *MediaUpdate {
 	mu.mutation.ResetHeight()
 	mu.mutation.SetHeight(i)
 	return mu
 }
 
 // SetNillableHeight sets the "height" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableHeight(i *int64) *MediaUpdate {
+func (mu *MediaUpdate) SetNillableHeight(i *int32) *MediaUpdate {
 	if i != nil {
 		mu.SetHeight(*i)
 	}
@@ -117,7 +117,7 @@ func (mu *MediaUpdate) SetNillableHeight(i *int64) *MediaUpdate {
 }
 
 // AddHeight adds i to the "height" field.
-func (mu *MediaUpdate) AddHeight(i int64) *MediaUpdate {
+func (mu *MediaUpdate) AddHeight(i int32) *MediaUpdate {
 	mu.mutation.AddHeight(i)
 	return mu
 }
@@ -229,28 +229,28 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(media.FieldLocation, field.TypeString)
 	}
 	if value, ok := mu.mutation.Size(); ok {
-		_spec.SetField(media.FieldSize, field.TypeInt64, value)
+		_spec.SetField(media.FieldSize, field.TypeInt32, value)
 	}
 	if value, ok := mu.mutation.AddedSize(); ok {
-		_spec.AddField(media.FieldSize, field.TypeInt64, value)
+		_spec.AddField(media.FieldSize, field.TypeInt32, value)
 	}
 	if value, ok := mu.mutation.Width(); ok {
-		_spec.SetField(media.FieldWidth, field.TypeInt64, value)
+		_spec.SetField(media.FieldWidth, field.TypeInt32, value)
 	}
 	if value, ok := mu.mutation.AddedWidth(); ok {
-		_spec.AddField(media.FieldWidth, field.TypeInt64, value)
+		_spec.AddField(media.FieldWidth, field.TypeInt32, value)
 	}
 	if mu.mutation.WidthCleared() {
-		_spec.ClearField(media.FieldWidth, field.TypeInt64)
+		_spec.ClearField(media.FieldWidth, field.TypeInt32)
 	}
 	if value, ok := mu.mutation.Height(); ok {
-		_spec.SetField(media.FieldHeight, field.TypeInt64, value)
+		_spec.SetField(media.FieldHeight, field.TypeInt32, value)
 	}
 	if value, ok := mu.mutation.AddedHeight(); ok {
-		_spec.AddField(media.FieldHeight, field.TypeInt64, value)
+		_spec.AddField(media.FieldHeight, field.TypeInt32, value)
 	}
 	if mu.mutation.HeightCleared() {
-		_spec.ClearField(media.FieldHeight, field.TypeInt64)
+		_spec.ClearField(media.FieldHeight, field.TypeInt32)
 	}
 	if value, ok := mu.mutation.CreatedAt(); ok {
 		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)
@@ -315,27 +315,27 @@ func (muo *MediaUpdateOne) ClearLocation() *MediaUpdateOne {
 }
 
 // SetSize sets the "size" field.
-func (muo *MediaUpdateOne) SetSize(i int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetSize(i int32) *MediaUpdateOne {
 	muo.mutation.ResetSize()
 	muo.mutation.SetSize(i)
 	return muo
 }
 
 // AddSize adds i to the "size" field.
-func (muo *MediaUpdateOne) AddSize(i int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) AddSize(i int32) *MediaUpdateOne {
 	muo.mutation.AddSize(i)
 	return muo
 }
 
 // SetWidth sets the "width" field.
-func (muo *MediaUpdateOne) SetWidth(i int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetWidth(i int32) *MediaUpdateOne {
 	muo.mutation.ResetWidth()
 	muo.mutation.SetWidth(i)
 	return muo
 }
 
 // SetNillableWidth sets the "width" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableWidth(i *int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetNillableWidth(i *int32) *MediaUpdateOne {
 	if i != nil {
 		muo.SetWidth(*i)
 	}
@@ -343,7 +343,7 @@ func (muo *MediaUpdateOne) SetNillableWidth(i *int64) *MediaUpdateOne {
 }
 
 // AddWidth adds i to the "width" field.
-func (muo *MediaUpdateOne) AddWidth(i int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) AddWidth(i int32) *MediaUpdateOne {
 	muo.mutation.AddWidth(i)
 	return muo
 }
@@ -355,14 +355,14 @@ func (muo *MediaUpdateOne) ClearWidth() *MediaUpdateOne {
 }
 
 // SetHeight sets the "height" field.
-func (muo *MediaUpdateOne) SetHeight(i int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetHeight(i int32) *MediaUpdateOne {
 	muo.mutation.ResetHeight()
 	muo.mutation.SetHeight(i)
 	return muo
 }
 
 // SetNillableHeight sets the "height" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableHeight(i *int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetNillableHeight(i *int32) *MediaUpdateOne {
 	if i != nil {
 		muo.SetHeight(*i)
 	}
@@ -370,7 +370,7 @@ func (muo *MediaUpdateOne) SetNillableHeight(i *int64) *MediaUpdateOne {
 }
 
 // AddHeight adds i to the "height" field.
-func (muo *MediaUpdateOne) AddHeight(i int64) *MediaUpdateOne {
+func (muo *MediaUpdateOne) AddHeight(i int32) *MediaUpdateOne {
 	muo.mutation.AddHeight(i)
 	return muo
 }
@@ -512,28 +512,28 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 		_spec.ClearField(media.FieldLocation, field.TypeString)
 	}
 	if value, ok := muo.mutation.Size(); ok {
-		_spec.SetField(media.FieldSize, field.TypeInt64, value)
+		_spec.SetField(media.FieldSize, field.TypeInt32, value)
 	}
 	if value, ok := muo.mutation.AddedSize(); ok {
-		_spec.AddField(media.FieldSize, field.TypeInt64, value)
+		_spec.AddField(media.FieldSize, field.TypeInt32, value)
 	}
 	if value, ok := muo.mutation.Width(); ok {
-		_spec.SetField(media.FieldWidth, field.TypeInt64, value)
+		_spec.SetField(media.FieldWidth, field.TypeInt32, value)
 	}
 	if value, ok := muo.mutation.AddedWidth(); ok {
-		_spec.AddField(media.FieldWidth, field.TypeInt64, value)
+		_spec.AddField(media.FieldWidth, field.TypeInt32, value)
 	}
 	if muo.mutation.WidthCleared() {
-		_spec.ClearField(media.FieldWidth, field.TypeInt64)
+		_spec.ClearField(media.FieldWidth, field.TypeInt32)
 	}
 	if value, ok := muo.mutation.Height(); ok {
-		_spec.SetField(media.FieldHeight, field.TypeInt64, value)
+		_spec.SetField(media.FieldHeight, field.TypeInt32, value)
 	}
 	if value, ok := muo.mutation.AddedHeight(); ok {
-		_spec.AddField(media.FieldHeight, field.TypeInt64, value)
+		_spec.AddField(media.FieldHeight, field.TypeInt32, value)
 	}
 	if muo.mutation.HeightCleared() {
-		_spec.ClearField(media.FieldHeight, field.TypeInt64)
+		_spec.ClearField(media.FieldHeight, field.TypeInt32)
 	}
 	if value, ok := muo.mutation.CreatedAt(); ok {
 		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)

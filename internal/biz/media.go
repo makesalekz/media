@@ -78,14 +78,14 @@ func (uc *MediaUsecase) dialIam(ctx context.Context) (users.UsersClient, error) 
 	return users.NewUsersClient(conn), nil
 }
 
-func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, file *httpbody.HttpBody) (*ent.Media, error) {
+func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
 	contentType := file.GetContentType()
 	extension, ok := getExtension(contentType)
 	if !ok {
 		return nil, upload_v1.ErrorInvalidContentType("Invalid content type: %s", contentType)
 	}
 
-	media, err := uc.mediaRepo.CreateMedia(ctx, userId, extension)
+	media, err := uc.mediaRepo.CreateMedia(ctx, userId, fileName, extension, len(file.GetData()))
 	if err != nil {
 		return nil, upload_v1.ErrorDatabaseQuery("CreateMedia error: %s", err)
 	}
@@ -105,8 +105,8 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, file *htt
 	return media, nil
 }
 
-func (uc *MediaUsecase) UploadAvatar(ctx context.Context, userId int64, file *httpbody.HttpBody) (*ent.Media, error) {
-	media, err := uc.UploadMedia(ctx, userId, file)
+func (uc *MediaUsecase) UploadAvatar(ctx context.Context, userId int64, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
+	media, err := uc.UploadMedia(ctx, userId, fileName, file)
 	if err != nil {
 		return nil, err
 	}

@@ -13,7 +13,7 @@ import (
 
 // MediaRepo
 type MediaRepo interface {
-	CreateMedia(ctx context.Context, userId int64, extension string) (*ent.Media, error)
+	CreateMedia(ctx context.Context, userId int64, fileName, extension string, size int) (*ent.Media, error)
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 }
 
@@ -28,14 +28,16 @@ func NewMediaRepo(d *Data) MediaRepo {
 	}
 }
 
-func (r *mediaRepo) CreateMedia(ctx context.Context, userId int64, extension string) (*ent.Media, error) {
+func (r *mediaRepo) CreateMedia(ctx context.Context, userId int64, fileName, extension string, size int) (*ent.Media, error) {
 	uuid := uuid.NewString()
 	path := fmt.Sprintf("%s/%s.%s", time.Now().Format("2006/01/02"), uuid, extension)
 
 	return r.db.Media.Create().
 		SetUserID(userId).
+		SetFileName(fileName).
 		SetPath(path).
 		SetExtension(extension).
+		SetSize(int32(size)).
 		Save(ctx)
 }
 

@@ -33,12 +33,8 @@ func replyMedia(media *ent.Media) *upload_v1.Media {
 		FileName:  media.FileName,
 		Extension: media.Extension,
 		Size:      media.Size,
-	}
-	if media.Width != nil {
-		trMedia.Width = *media.Width
-	}
-	if media.Height != nil {
-		trMedia.Height = *media.Height
+		Width:     media.Width,
+		Height:    media.Height,
 	}
 	if media.Location != nil {
 		trMedia.Url = *media.Location
@@ -53,7 +49,7 @@ func (s *UploadService) UploadMedia(ctx context.Context, req *upload_v1.UploadMe
 		return nil, upload_v1.ErrorUnauthorized("Unauthorized")
 	}
 
-	media, err := s.uc.UploadMedia(ctx, userId, req.Content)
+	media, err := s.uc.UploadMedia(ctx, userId, req.FileName, req.Content)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +63,7 @@ func (s *UploadService) UploadAvatar(ctx context.Context, req *upload_v1.UploadM
 		return nil, upload_v1.ErrorUnauthorized("Unauthorized")
 	}
 
-	media, err := s.uc.UploadAvatar(ctx, userId, req.Content)
+	media, err := s.uc.UploadAvatar(ctx, userId, req.FileName, req.Content)
 	if err != nil {
 		return nil, err
 	}
