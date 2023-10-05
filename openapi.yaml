@@ -24,35 +24,39 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/api.upload.v1.UploadMediaReply'
-    /v1/media/upload:
-        post:
-            tags:
-                - Upload
-            operationId: Upload_UploadMedia
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/api.upload.v1.UploadMediaRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/api.upload.v1.UploadMediaReply'
 components:
     schemas:
+        api.upload.v1.Media:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: int64
+                url:
+                    type: string
+                fileName:
+                    type: string
+                extension:
+                    type: string
+                size:
+                    type: integer
+                    format: int64
+                width:
+                    type: integer
+                    format: int64
+                height:
+                    type: integer
+                    format: int64
         api.upload.v1.UploadMediaReply:
             type: object
             properties:
-                url:
-                    type: string
+                media:
+                    $ref: '#/components/schemas/api.upload.v1.Media'
         api.upload.v1.UploadMediaRequest:
             type: object
             properties:
                 content:
                     type: string
+            description: message UploadMediaRequest {  string fileName = 1;  bytes source = 2;}
 tags:
     - name: Upload

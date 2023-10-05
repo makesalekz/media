@@ -32,9 +32,16 @@ func (r *mediaRepo) CreateMedia(ctx context.Context, userId int64, extension str
 	uuid := uuid.NewString()
 	path := fmt.Sprintf("%s/%s.%s", time.Now().Format("2006/01/02"), uuid, extension)
 
-	return r.db.Media.Create().SetUserID(userId).SetPath(path).SetExtension(extension).Save(ctx)
+	return r.db.Media.Create().
+		SetUserID(userId).
+		SetPath(path).
+		SetExtension(extension).
+		Save(ctx)
 }
 
 func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error) {
-	return media.Update().SetLocation(location).SetUploadedAt(time.Now()).Save(ctx)
+	return media.Update().
+		SetLocation(location).
+		SetUploadedAt(time.Now()).
+		Save(ctx)
 }

@@ -17,6 +17,8 @@ type Media struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int64 `json:"id,omitempty"`
+	// FileName holds the value of the "file_name" field.
+	FileName string `json:"file_name,omitempty"`
 	// UserID holds the value of the "user_id" field.
 	UserID int64 `json:"user_id,omitempty"`
 	// Extension holds the value of the "extension" field.
@@ -25,6 +27,12 @@ type Media struct {
 	Path string `json:"path,omitempty"`
 	// Location holds the value of the "location" field.
 	Location *string `json:"location,omitempty"`
+	// Size holds the value of the "size" field.
+	Size int64 `json:"size,omitempty"`
+	// Width holds the value of the "width" field.
+	Width *int64 `json:"width,omitempty"`
+	// Height holds the value of the "height" field.
+	Height *int64 `json:"height,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UploadedAt holds the value of the "uploaded_at" field.
@@ -37,9 +45,9 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case media.FieldID, media.FieldUserID:
+		case media.FieldID, media.FieldUserID, media.FieldSize, media.FieldWidth, media.FieldHeight:
 			values[i] = new(sql.NullInt64)
-		case media.FieldExtension, media.FieldPath, media.FieldLocation:
+		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldLocation:
 			values[i] = new(sql.NullString)
 		case media.FieldCreatedAt, media.FieldUploadedAt:
 			values[i] = new(sql.NullTime)
@@ -64,6 +72,12 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			m.ID = int64(value.Int64)
+		case media.FieldFileName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field file_name", values[i])
+			} else if value.Valid {
+				m.FileName = value.String
+			}
 		case media.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
@@ -88,6 +102,26 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Location = new(string)
 				*m.Location = value.String
+			}
+		case media.FieldSize:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field size", values[i])
+			} else if value.Valid {
+				m.Size = value.Int64
+			}
+		case media.FieldWidth:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field width", values[i])
+			} else if value.Valid {
+				m.Width = new(int64)
+				*m.Width = value.Int64
+			}
+		case media.FieldHeight:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field height", values[i])
+			} else if value.Valid {
+				m.Height = new(int64)
+				*m.Height = value.Int64
 			}
 		case media.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -138,6 +172,9 @@ func (m *Media) String() string {
 	var builder strings.Builder
 	builder.WriteString("Media(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
+	builder.WriteString("file_name=")
+	builder.WriteString(m.FileName)
+	builder.WriteString(", ")
 	builder.WriteString("user_id=")
 	builder.WriteString(fmt.Sprintf("%v", m.UserID))
 	builder.WriteString(", ")
@@ -150,6 +187,19 @@ func (m *Media) String() string {
 	if v := m.Location; v != nil {
 		builder.WriteString("location=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	builder.WriteString("size=")
+	builder.WriteString(fmt.Sprintf("%v", m.Size))
+	builder.WriteString(", ")
+	if v := m.Width; v != nil {
+		builder.WriteString("width=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := m.Height; v != nil {
+		builder.WriteString("height=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")

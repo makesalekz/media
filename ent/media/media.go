@@ -13,6 +13,8 @@ const (
 	Label = "media"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldFileName holds the string denoting the file_name field in the database.
+	FieldFileName = "file_name"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldExtension holds the string denoting the extension field in the database.
@@ -21,6 +23,12 @@ const (
 	FieldPath = "path"
 	// FieldLocation holds the string denoting the location field in the database.
 	FieldLocation = "location"
+	// FieldSize holds the string denoting the size field in the database.
+	FieldSize = "size"
+	// FieldWidth holds the string denoting the width field in the database.
+	FieldWidth = "width"
+	// FieldHeight holds the string denoting the height field in the database.
+	FieldHeight = "height"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUploadedAt holds the string denoting the uploaded_at field in the database.
@@ -32,10 +40,14 @@ const (
 // Columns holds all SQL columns for media fields.
 var Columns = []string{
 	FieldID,
+	FieldFileName,
 	FieldUserID,
 	FieldExtension,
 	FieldPath,
 	FieldLocation,
+	FieldSize,
+	FieldWidth,
+	FieldHeight,
 	FieldCreatedAt,
 	FieldUploadedAt,
 }
@@ -51,6 +63,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// FileNameValidator is a validator for the "file_name" field. It is called by the builders before save.
+	FileNameValidator func(string) error
 	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
 	UserIDValidator func(int64) error
 	// ExtensionValidator is a validator for the "extension" field. It is called by the builders before save.
@@ -65,6 +79,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByFileName orders the results by the file_name field.
+func ByFileName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFileName, opts...).ToFunc()
 }
 
 // ByUserID orders the results by the user_id field.
@@ -85,6 +104,21 @@ func ByPath(opts ...sql.OrderTermOption) OrderOption {
 // ByLocation orders the results by the location field.
 func ByLocation(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+}
+
+// BySize orders the results by the size field.
+func BySize(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSize, opts...).ToFunc()
+}
+
+// ByWidth orders the results by the width field.
+func ByWidth(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWidth, opts...).ToFunc()
+}
+
+// ByHeight orders the results by the height field.
+func ByHeight(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHeight, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

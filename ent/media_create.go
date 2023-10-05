@@ -20,6 +20,12 @@ type MediaCreate struct {
 	hooks    []Hook
 }
 
+// SetFileName sets the "file_name" field.
+func (mc *MediaCreate) SetFileName(s string) *MediaCreate {
+	mc.mutation.SetFileName(s)
+	return mc
+}
+
 // SetUserID sets the "user_id" field.
 func (mc *MediaCreate) SetUserID(i int64) *MediaCreate {
 	mc.mutation.SetUserID(i)
@@ -48,6 +54,40 @@ func (mc *MediaCreate) SetLocation(s string) *MediaCreate {
 func (mc *MediaCreate) SetNillableLocation(s *string) *MediaCreate {
 	if s != nil {
 		mc.SetLocation(*s)
+	}
+	return mc
+}
+
+// SetSize sets the "size" field.
+func (mc *MediaCreate) SetSize(i int64) *MediaCreate {
+	mc.mutation.SetSize(i)
+	return mc
+}
+
+// SetWidth sets the "width" field.
+func (mc *MediaCreate) SetWidth(i int64) *MediaCreate {
+	mc.mutation.SetWidth(i)
+	return mc
+}
+
+// SetNillableWidth sets the "width" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableWidth(i *int64) *MediaCreate {
+	if i != nil {
+		mc.SetWidth(*i)
+	}
+	return mc
+}
+
+// SetHeight sets the "height" field.
+func (mc *MediaCreate) SetHeight(i int64) *MediaCreate {
+	mc.mutation.SetHeight(i)
+	return mc
+}
+
+// SetNillableHeight sets the "height" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableHeight(i *int64) *MediaCreate {
+	if i != nil {
+		mc.SetHeight(*i)
 	}
 	return mc
 }
@@ -123,6 +163,14 @@ func (mc *MediaCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (mc *MediaCreate) check() error {
+	if _, ok := mc.mutation.FileName(); !ok {
+		return &ValidationError{Name: "file_name", err: errors.New(`ent: missing required field "Media.file_name"`)}
+	}
+	if v, ok := mc.mutation.FileName(); ok {
+		if err := media.FileNameValidator(v); err != nil {
+			return &ValidationError{Name: "file_name", err: fmt.Errorf(`ent: validator failed for field "Media.file_name": %w`, err)}
+		}
+	}
 	if _, ok := mc.mutation.UserID(); !ok {
 		return &ValidationError{Name: "user_id", err: errors.New(`ent: missing required field "Media.user_id"`)}
 	}
@@ -141,6 +189,9 @@ func (mc *MediaCreate) check() error {
 	}
 	if _, ok := mc.mutation.Path(); !ok {
 		return &ValidationError{Name: "path", err: errors.New(`ent: missing required field "Media.path"`)}
+	}
+	if _, ok := mc.mutation.Size(); !ok {
+		return &ValidationError{Name: "size", err: errors.New(`ent: missing required field "Media.size"`)}
 	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Media.created_at"`)}
@@ -171,6 +222,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		_node = &Media{config: mc.config}
 		_spec = sqlgraph.NewCreateSpec(media.Table, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt64))
 	)
+	if value, ok := mc.mutation.FileName(); ok {
+		_spec.SetField(media.FieldFileName, field.TypeString, value)
+		_node.FileName = value
+	}
 	if value, ok := mc.mutation.UserID(); ok {
 		_spec.SetField(media.FieldUserID, field.TypeInt64, value)
 		_node.UserID = value
@@ -186,6 +241,18 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Location(); ok {
 		_spec.SetField(media.FieldLocation, field.TypeString, value)
 		_node.Location = &value
+	}
+	if value, ok := mc.mutation.Size(); ok {
+		_spec.SetField(media.FieldSize, field.TypeInt64, value)
+		_node.Size = value
+	}
+	if value, ok := mc.mutation.Width(); ok {
+		_spec.SetField(media.FieldWidth, field.TypeInt64, value)
+		_node.Width = &value
+	}
+	if value, ok := mc.mutation.Height(); ok {
+		_spec.SetField(media.FieldHeight, field.TypeInt64, value)
+		_node.Height = &value
 	}
 	if value, ok := mc.mutation.CreatedAt(); ok {
 		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)
