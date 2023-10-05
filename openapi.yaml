@@ -23,7 +23,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.upload.v1.UploadMediaReply'
+                                $ref: '#/components/schemas/api.upload.v1.MediaReply'
     /v1/media/upload:
         post:
             tags:
@@ -41,7 +41,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.upload.v1.UploadMediaReply'
+                                $ref: '#/components/schemas/api.upload.v1.MediaReply'
 components:
     schemas:
         api.upload.v1.Media:
@@ -65,7 +65,10 @@ components:
                 height:
                     type: integer
                     format: int32
-        api.upload.v1.UploadMediaReply:
+                duration:
+                    type: integer
+                    format: int32
+        api.upload.v1.MediaReply:
             type: object
             properties:
                 media:

@@ -15,15 +15,16 @@ type Media struct {
 // Fields of the Media.
 func (Media) Fields() []ent.Field {
 	return []ent.Field{
-		field.Int64("user_id").Positive(),
+		field.Int64("owner_id").Immutable(),
 		field.String("file_name").Immutable(),
 		field.String("extension").Immutable().MinLen(2).MaxLen(10),
 		field.String("path").Immutable().Unique(),
-		field.String("location").Nillable().Optional(),
-		field.Int32("size"),                         // in bytes
-		field.Int32("width").Nillable().Optional(),  // in pixels
-		field.Int32("height").Nillable().Optional(), // in pixels
-		field.Time("created_at").Default(time.Now),
+		field.String("url").Nillable().Optional(),
+		field.Int32("size"),                           // in bytes
+		field.Int32("width").Nillable().Optional(),    // in pixels
+		field.Int32("height").Nillable().Optional(),   // in pixels
+		field.Int32("duration").Nillable().Optional(), // in seconds
+		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("uploaded_at").Nillable().Optional(),
 	}
 }

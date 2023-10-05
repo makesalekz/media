@@ -11,18 +11,20 @@ option java_multiple_files = true;
 option java_package = "api.upload.v1";
 
 service Upload {
-  rpc UploadMedia (UploadMediaRequest) returns (UploadMediaReply){
+  rpc UploadMedia (UploadMediaRequest) returns (MediaReply){
     option (google.api.http) = {
       post: "/v1/media/upload"
       body: "*"
     };
   };
-  rpc UploadAvatar (UploadMediaRequest) returns (UploadMediaReply) {
+  rpc UploadAvatar (UploadMediaRequest) returns (MediaReply) {
     option (google.api.http) = {
       post: "/v1/media/avatar"
       body: "*"
     };
   };
+  rpc GetMedia (GetMediaRequest) returns (MediaReply);
+  rpc GetMediaList (GetMediaListRequest) returns (MediaListReply);
 }
 
 message Media {
@@ -30,9 +32,10 @@ message Media {
   string url = 2;
   string fileName = 3;
   string extension = 4;
-  int32 size = 5;            // in bytes
-  optional int32 width = 6;  // in pixels
-  optional int32 height = 7; // in pixels
+  int32 size = 5;              // in bytes
+  optional int32 width = 6;    // in pixels
+  optional int32 height = 7;   // in pixels
+  optional int32 duration = 8; // in seconds
 }
 
 message UploadMediaRequest {
@@ -40,8 +43,20 @@ message UploadMediaRequest {
   string fileName = 2; // header: X-File-Name
 }
 
-message UploadMediaReply {
+message MediaReply {
   Media media = 1;
+}
+
+message GetMediaRequest {
+  int64 mediaId = 1;
+}
+
+message GetMediaListRequest {
+  repeated int64 mediaIds = 1;
+}
+
+message MediaListReply {
+  repeated Media media = 1;
 }
 
 enum ErrorReason {

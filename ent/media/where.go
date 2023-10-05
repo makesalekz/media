@@ -54,9 +54,9 @@ func IDLTE(id int64) predicate.Media {
 	return predicate.Media(sql.FieldLTE(FieldID, id))
 }
 
-// UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
-func UserID(v int64) predicate.Media {
-	return predicate.Media(sql.FieldEQ(FieldUserID, v))
+// OwnerID applies equality check predicate on the "owner_id" field. It's identical to OwnerIDEQ.
+func OwnerID(v int64) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldOwnerID, v))
 }
 
 // FileName applies equality check predicate on the "file_name" field. It's identical to FileNameEQ.
@@ -74,9 +74,9 @@ func Path(v string) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldPath, v))
 }
 
-// Location applies equality check predicate on the "location" field. It's identical to LocationEQ.
-func Location(v string) predicate.Media {
-	return predicate.Media(sql.FieldEQ(FieldLocation, v))
+// URL applies equality check predicate on the "url" field. It's identical to URLEQ.
+func URL(v string) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldURL, v))
 }
 
 // Size applies equality check predicate on the "size" field. It's identical to SizeEQ.
@@ -94,6 +94,11 @@ func Height(v int32) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldHeight, v))
 }
 
+// Duration applies equality check predicate on the "duration" field. It's identical to DurationEQ.
+func Duration(v int32) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldDuration, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldCreatedAt, v))
@@ -104,44 +109,44 @@ func UploadedAt(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldUploadedAt, v))
 }
 
-// UserIDEQ applies the EQ predicate on the "user_id" field.
-func UserIDEQ(v int64) predicate.Media {
-	return predicate.Media(sql.FieldEQ(FieldUserID, v))
+// OwnerIDEQ applies the EQ predicate on the "owner_id" field.
+func OwnerIDEQ(v int64) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldOwnerID, v))
 }
 
-// UserIDNEQ applies the NEQ predicate on the "user_id" field.
-func UserIDNEQ(v int64) predicate.Media {
-	return predicate.Media(sql.FieldNEQ(FieldUserID, v))
+// OwnerIDNEQ applies the NEQ predicate on the "owner_id" field.
+func OwnerIDNEQ(v int64) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldOwnerID, v))
 }
 
-// UserIDIn applies the In predicate on the "user_id" field.
-func UserIDIn(vs ...int64) predicate.Media {
-	return predicate.Media(sql.FieldIn(FieldUserID, vs...))
+// OwnerIDIn applies the In predicate on the "owner_id" field.
+func OwnerIDIn(vs ...int64) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldOwnerID, vs...))
 }
 
-// UserIDNotIn applies the NotIn predicate on the "user_id" field.
-func UserIDNotIn(vs ...int64) predicate.Media {
-	return predicate.Media(sql.FieldNotIn(FieldUserID, vs...))
+// OwnerIDNotIn applies the NotIn predicate on the "owner_id" field.
+func OwnerIDNotIn(vs ...int64) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldOwnerID, vs...))
 }
 
-// UserIDGT applies the GT predicate on the "user_id" field.
-func UserIDGT(v int64) predicate.Media {
-	return predicate.Media(sql.FieldGT(FieldUserID, v))
+// OwnerIDGT applies the GT predicate on the "owner_id" field.
+func OwnerIDGT(v int64) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldOwnerID, v))
 }
 
-// UserIDGTE applies the GTE predicate on the "user_id" field.
-func UserIDGTE(v int64) predicate.Media {
-	return predicate.Media(sql.FieldGTE(FieldUserID, v))
+// OwnerIDGTE applies the GTE predicate on the "owner_id" field.
+func OwnerIDGTE(v int64) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldOwnerID, v))
 }
 
-// UserIDLT applies the LT predicate on the "user_id" field.
-func UserIDLT(v int64) predicate.Media {
-	return predicate.Media(sql.FieldLT(FieldUserID, v))
+// OwnerIDLT applies the LT predicate on the "owner_id" field.
+func OwnerIDLT(v int64) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldOwnerID, v))
 }
 
-// UserIDLTE applies the LTE predicate on the "user_id" field.
-func UserIDLTE(v int64) predicate.Media {
-	return predicate.Media(sql.FieldLTE(FieldUserID, v))
+// OwnerIDLTE applies the LTE predicate on the "owner_id" field.
+func OwnerIDLTE(v int64) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldOwnerID, v))
 }
 
 // FileNameEQ applies the EQ predicate on the "file_name" field.
@@ -339,79 +344,79 @@ func PathContainsFold(v string) predicate.Media {
 	return predicate.Media(sql.FieldContainsFold(FieldPath, v))
 }
 
-// LocationEQ applies the EQ predicate on the "location" field.
-func LocationEQ(v string) predicate.Media {
-	return predicate.Media(sql.FieldEQ(FieldLocation, v))
+// URLEQ applies the EQ predicate on the "url" field.
+func URLEQ(v string) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldURL, v))
 }
 
-// LocationNEQ applies the NEQ predicate on the "location" field.
-func LocationNEQ(v string) predicate.Media {
-	return predicate.Media(sql.FieldNEQ(FieldLocation, v))
+// URLNEQ applies the NEQ predicate on the "url" field.
+func URLNEQ(v string) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldURL, v))
 }
 
-// LocationIn applies the In predicate on the "location" field.
-func LocationIn(vs ...string) predicate.Media {
-	return predicate.Media(sql.FieldIn(FieldLocation, vs...))
+// URLIn applies the In predicate on the "url" field.
+func URLIn(vs ...string) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldURL, vs...))
 }
 
-// LocationNotIn applies the NotIn predicate on the "location" field.
-func LocationNotIn(vs ...string) predicate.Media {
-	return predicate.Media(sql.FieldNotIn(FieldLocation, vs...))
+// URLNotIn applies the NotIn predicate on the "url" field.
+func URLNotIn(vs ...string) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldURL, vs...))
 }
 
-// LocationGT applies the GT predicate on the "location" field.
-func LocationGT(v string) predicate.Media {
-	return predicate.Media(sql.FieldGT(FieldLocation, v))
+// URLGT applies the GT predicate on the "url" field.
+func URLGT(v string) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldURL, v))
 }
 
-// LocationGTE applies the GTE predicate on the "location" field.
-func LocationGTE(v string) predicate.Media {
-	return predicate.Media(sql.FieldGTE(FieldLocation, v))
+// URLGTE applies the GTE predicate on the "url" field.
+func URLGTE(v string) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldURL, v))
 }
 
-// LocationLT applies the LT predicate on the "location" field.
-func LocationLT(v string) predicate.Media {
-	return predicate.Media(sql.FieldLT(FieldLocation, v))
+// URLLT applies the LT predicate on the "url" field.
+func URLLT(v string) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldURL, v))
 }
 
-// LocationLTE applies the LTE predicate on the "location" field.
-func LocationLTE(v string) predicate.Media {
-	return predicate.Media(sql.FieldLTE(FieldLocation, v))
+// URLLTE applies the LTE predicate on the "url" field.
+func URLLTE(v string) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldURL, v))
 }
 
-// LocationContains applies the Contains predicate on the "location" field.
-func LocationContains(v string) predicate.Media {
-	return predicate.Media(sql.FieldContains(FieldLocation, v))
+// URLContains applies the Contains predicate on the "url" field.
+func URLContains(v string) predicate.Media {
+	return predicate.Media(sql.FieldContains(FieldURL, v))
 }
 
-// LocationHasPrefix applies the HasPrefix predicate on the "location" field.
-func LocationHasPrefix(v string) predicate.Media {
-	return predicate.Media(sql.FieldHasPrefix(FieldLocation, v))
+// URLHasPrefix applies the HasPrefix predicate on the "url" field.
+func URLHasPrefix(v string) predicate.Media {
+	return predicate.Media(sql.FieldHasPrefix(FieldURL, v))
 }
 
-// LocationHasSuffix applies the HasSuffix predicate on the "location" field.
-func LocationHasSuffix(v string) predicate.Media {
-	return predicate.Media(sql.FieldHasSuffix(FieldLocation, v))
+// URLHasSuffix applies the HasSuffix predicate on the "url" field.
+func URLHasSuffix(v string) predicate.Media {
+	return predicate.Media(sql.FieldHasSuffix(FieldURL, v))
 }
 
-// LocationIsNil applies the IsNil predicate on the "location" field.
-func LocationIsNil() predicate.Media {
-	return predicate.Media(sql.FieldIsNull(FieldLocation))
+// URLIsNil applies the IsNil predicate on the "url" field.
+func URLIsNil() predicate.Media {
+	return predicate.Media(sql.FieldIsNull(FieldURL))
 }
 
-// LocationNotNil applies the NotNil predicate on the "location" field.
-func LocationNotNil() predicate.Media {
-	return predicate.Media(sql.FieldNotNull(FieldLocation))
+// URLNotNil applies the NotNil predicate on the "url" field.
+func URLNotNil() predicate.Media {
+	return predicate.Media(sql.FieldNotNull(FieldURL))
 }
 
-// LocationEqualFold applies the EqualFold predicate on the "location" field.
-func LocationEqualFold(v string) predicate.Media {
-	return predicate.Media(sql.FieldEqualFold(FieldLocation, v))
+// URLEqualFold applies the EqualFold predicate on the "url" field.
+func URLEqualFold(v string) predicate.Media {
+	return predicate.Media(sql.FieldEqualFold(FieldURL, v))
 }
 
-// LocationContainsFold applies the ContainsFold predicate on the "location" field.
-func LocationContainsFold(v string) predicate.Media {
-	return predicate.Media(sql.FieldContainsFold(FieldLocation, v))
+// URLContainsFold applies the ContainsFold predicate on the "url" field.
+func URLContainsFold(v string) predicate.Media {
+	return predicate.Media(sql.FieldContainsFold(FieldURL, v))
 }
 
 // SizeEQ applies the EQ predicate on the "size" field.
@@ -552,6 +557,56 @@ func HeightIsNil() predicate.Media {
 // HeightNotNil applies the NotNil predicate on the "height" field.
 func HeightNotNil() predicate.Media {
 	return predicate.Media(sql.FieldNotNull(FieldHeight))
+}
+
+// DurationEQ applies the EQ predicate on the "duration" field.
+func DurationEQ(v int32) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldDuration, v))
+}
+
+// DurationNEQ applies the NEQ predicate on the "duration" field.
+func DurationNEQ(v int32) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldDuration, v))
+}
+
+// DurationIn applies the In predicate on the "duration" field.
+func DurationIn(vs ...int32) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldDuration, vs...))
+}
+
+// DurationNotIn applies the NotIn predicate on the "duration" field.
+func DurationNotIn(vs ...int32) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldDuration, vs...))
+}
+
+// DurationGT applies the GT predicate on the "duration" field.
+func DurationGT(v int32) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldDuration, v))
+}
+
+// DurationGTE applies the GTE predicate on the "duration" field.
+func DurationGTE(v int32) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldDuration, v))
+}
+
+// DurationLT applies the LT predicate on the "duration" field.
+func DurationLT(v int32) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldDuration, v))
+}
+
+// DurationLTE applies the LTE predicate on the "duration" field.
+func DurationLTE(v int32) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldDuration, v))
+}
+
+// DurationIsNil applies the IsNil predicate on the "duration" field.
+func DurationIsNil() predicate.Media {
+	return predicate.Media(sql.FieldIsNull(FieldDuration))
+}
+
+// DurationNotNil applies the NotNil predicate on the "duration" field.
+func DurationNotNil() predicate.Media {
+	return predicate.Media(sql.FieldNotNull(FieldDuration))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

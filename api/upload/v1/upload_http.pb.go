@@ -23,8 +23,8 @@ const OperationUploadUploadAvatar = "/api.upload.v1.Upload/UploadAvatar"
 const OperationUploadUploadMedia = "/api.upload.v1.Upload/UploadMedia"
 
 type UploadHTTPServer interface {
-	UploadAvatar(context.Context, *UploadMediaRequest) (*UploadMediaReply, error)
-	UploadMedia(context.Context, *UploadMediaRequest) (*UploadMediaReply, error)
+	UploadAvatar(context.Context, *UploadMediaRequest) (*MediaReply, error)
+	UploadMedia(context.Context, *UploadMediaRequest) (*MediaReply, error)
 }
 
 func RegisterUploadHTTPServer(s *http.Server, srv UploadHTTPServer) {
@@ -50,7 +50,7 @@ func _Upload_UploadMedia0_HTTP_Handler(srv UploadHTTPServer) func(ctx http.Conte
 		if err != nil {
 			return err
 		}
-		reply := out.(*UploadMediaReply)
+		reply := out.(*MediaReply)
 		return ctx.Result(200, reply)
 	}
 }
@@ -72,14 +72,14 @@ func _Upload_UploadAvatar0_HTTP_Handler(srv UploadHTTPServer) func(ctx http.Cont
 		if err != nil {
 			return err
 		}
-		reply := out.(*UploadMediaReply)
+		reply := out.(*MediaReply)
 		return ctx.Result(200, reply)
 	}
 }
 
 type UploadHTTPClient interface {
-	UploadAvatar(ctx context.Context, req *UploadMediaRequest, opts ...http.CallOption) (rsp *UploadMediaReply, err error)
-	UploadMedia(ctx context.Context, req *UploadMediaRequest, opts ...http.CallOption) (rsp *UploadMediaReply, err error)
+	UploadAvatar(ctx context.Context, req *UploadMediaRequest, opts ...http.CallOption) (rsp *MediaReply, err error)
+	UploadMedia(ctx context.Context, req *UploadMediaRequest, opts ...http.CallOption) (rsp *MediaReply, err error)
 }
 
 type UploadHTTPClientImpl struct {
@@ -90,8 +90,8 @@ func NewUploadHTTPClient(client *http.Client) UploadHTTPClient {
 	return &UploadHTTPClientImpl{client}
 }
 
-func (c *UploadHTTPClientImpl) UploadAvatar(ctx context.Context, in *UploadMediaRequest, opts ...http.CallOption) (*UploadMediaReply, error) {
-	var out UploadMediaReply
+func (c *UploadHTTPClientImpl) UploadAvatar(ctx context.Context, in *UploadMediaRequest, opts ...http.CallOption) (*MediaReply, error) {
+	var out MediaReply
 	pattern := "/v1/media/avatar"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUploadUploadAvatar))
@@ -103,8 +103,8 @@ func (c *UploadHTTPClientImpl) UploadAvatar(ctx context.Context, in *UploadMedia
 	return &out, err
 }
 
-func (c *UploadHTTPClientImpl) UploadMedia(ctx context.Context, in *UploadMediaRequest, opts ...http.CallOption) (*UploadMediaReply, error) {
-	var out UploadMediaReply
+func (c *UploadHTTPClientImpl) UploadMedia(ctx context.Context, in *UploadMediaRequest, opts ...http.CallOption) (*MediaReply, error) {
+	var out MediaReply
 	pattern := "/v1/media/upload"
 	path := binding.EncodeURL(pattern, in, false)
 	opts = append(opts, http.Operation(OperationUploadUploadMedia))

@@ -11,14 +11,15 @@ var (
 	// MediaColumns holds the columns for the "media" table.
 	MediaColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt64, Increment: true},
-		{Name: "user_id", Type: field.TypeInt64},
+		{Name: "owner_id", Type: field.TypeInt64},
 		{Name: "file_name", Type: field.TypeString},
 		{Name: "extension", Type: field.TypeString, Size: 10},
 		{Name: "path", Type: field.TypeString, Unique: true},
-		{Name: "location", Type: field.TypeString, Nullable: true},
+		{Name: "url", Type: field.TypeString, Nullable: true},
 		{Name: "size", Type: field.TypeInt32},
 		{Name: "width", Type: field.TypeInt32, Nullable: true},
 		{Name: "height", Type: field.TypeInt32, Nullable: true},
+		{Name: "duration", Type: field.TypeInt32, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "uploaded_at", Type: field.TypeTime, Nullable: true},
 	}

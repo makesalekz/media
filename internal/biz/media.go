@@ -78,7 +78,12 @@ func (uc *MediaUsecase) dialIam(ctx context.Context) (users.UsersClient, error) 
 	return users.NewUsersClient(conn), nil
 }
 
-func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
+func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
+	userId, ok := uc.jwt.GetUserIdFromContext(ctx)
+	if !ok {
+		return nil, upload_v1.ErrorUnauthorized("Unauthorized")
+	}
+
 	contentType := file.GetContentType()
 	extension, ok := getExtension(contentType)
 	if !ok {
@@ -105,8 +110,8 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName 
 	return media, nil
 }
 
-func (uc *MediaUsecase) UploadAvatar(ctx context.Context, userId int64, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
-	media, err := uc.UploadMedia(ctx, userId, fileName, file)
+func (uc *MediaUsecase) UploadAvatar(ctx context.Context, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
+	media, err := uc.UploadMedia(ctx, fileName, file)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +122,7 @@ func (uc *MediaUsecase) UploadAvatar(ctx context.Context, userId int64, fileName
 	}
 
 	reply, err := usersClient.UpdateOwnProfile(ctx, &users.UpdateOwnProfileRequest{
-		Avatar: *media.Location,
+		Avatar: *media.URL,
 	})
 	if err != nil {
 		return nil, upload_v1.ErrorServiceFailed("users.UpdateOwnProfile: %s", err.Error())
@@ -125,4 +130,22 @@ func (uc *MediaUsecase) UploadAvatar(ctx context.Context, userId int64, fileName
 	uc.log.Infof("users.UpdateOwnProfile avatar: %s", reply.User.GetAvatar())
 
 	return media, nil
+}
+
+func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error) {
+	media, err := uc.mediaRepo.GetMedia(ctx, mediaId)
+	if err != nil {
+		return nil, upload_v1.ErrorDatabaseQuery("GetMedia error: %s", err)
+	}
+
+	return media, nil
+}
+
+func (uc *MediaUsecase) GetMediaList(ctx context.Context, mediaIds []int64) ([]*ent.Media, error) {
+	mediaList, err := uc.mediaRepo.GetMediaList(ctx, mediaIds)
+	if err != nil {
+		return nil, upload_v1.ErrorDatabaseQuery("GetMediaList error: %s", err)
+	}
+
+	return mediaList, nil
 }

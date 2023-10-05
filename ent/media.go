@@ -17,22 +17,24 @@ type Media struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int64 `json:"id,omitempty"`
-	// UserID holds the value of the "user_id" field.
-	UserID int64 `json:"user_id,omitempty"`
+	// OwnerID holds the value of the "owner_id" field.
+	OwnerID int64 `json:"owner_id,omitempty"`
 	// FileName holds the value of the "file_name" field.
 	FileName string `json:"file_name,omitempty"`
 	// Extension holds the value of the "extension" field.
 	Extension string `json:"extension,omitempty"`
 	// Path holds the value of the "path" field.
 	Path string `json:"path,omitempty"`
-	// Location holds the value of the "location" field.
-	Location *string `json:"location,omitempty"`
+	// URL holds the value of the "url" field.
+	URL *string `json:"url,omitempty"`
 	// Size holds the value of the "size" field.
 	Size int32 `json:"size,omitempty"`
 	// Width holds the value of the "width" field.
 	Width *int32 `json:"width,omitempty"`
 	// Height holds the value of the "height" field.
 	Height *int32 `json:"height,omitempty"`
+	// Duration holds the value of the "duration" field.
+	Duration *int32 `json:"duration,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UploadedAt holds the value of the "uploaded_at" field.
@@ -45,9 +47,9 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case media.FieldID, media.FieldUserID, media.FieldSize, media.FieldWidth, media.FieldHeight:
+		case media.FieldID, media.FieldOwnerID, media.FieldSize, media.FieldWidth, media.FieldHeight, media.FieldDuration:
 			values[i] = new(sql.NullInt64)
-		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldLocation:
+		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldURL:
 			values[i] = new(sql.NullString)
 		case media.FieldCreatedAt, media.FieldUploadedAt:
 			values[i] = new(sql.NullTime)
@@ -72,11 +74,11 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			m.ID = int64(value.Int64)
-		case media.FieldUserID:
+		case media.FieldOwnerID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field user_id", values[i])
+				return fmt.Errorf("unexpected type %T for field owner_id", values[i])
 			} else if value.Valid {
-				m.UserID = value.Int64
+				m.OwnerID = value.Int64
 			}
 		case media.FieldFileName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -96,12 +98,12 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Path = value.String
 			}
-		case media.FieldLocation:
+		case media.FieldURL:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field location", values[i])
+				return fmt.Errorf("unexpected type %T for field url", values[i])
 			} else if value.Valid {
-				m.Location = new(string)
-				*m.Location = value.String
+				m.URL = new(string)
+				*m.URL = value.String
 			}
 		case media.FieldSize:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -122,6 +124,13 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.Height = new(int32)
 				*m.Height = int32(value.Int64)
+			}
+		case media.FieldDuration:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field duration", values[i])
+			} else if value.Valid {
+				m.Duration = new(int32)
+				*m.Duration = int32(value.Int64)
 			}
 		case media.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -172,8 +181,8 @@ func (m *Media) String() string {
 	var builder strings.Builder
 	builder.WriteString("Media(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
-	builder.WriteString("user_id=")
-	builder.WriteString(fmt.Sprintf("%v", m.UserID))
+	builder.WriteString("owner_id=")
+	builder.WriteString(fmt.Sprintf("%v", m.OwnerID))
 	builder.WriteString(", ")
 	builder.WriteString("file_name=")
 	builder.WriteString(m.FileName)
@@ -184,8 +193,8 @@ func (m *Media) String() string {
 	builder.WriteString("path=")
 	builder.WriteString(m.Path)
 	builder.WriteString(", ")
-	if v := m.Location; v != nil {
-		builder.WriteString("location=")
+	if v := m.URL; v != nil {
+		builder.WriteString("url=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
@@ -199,6 +208,11 @@ func (m *Media) String() string {
 	builder.WriteString(", ")
 	if v := m.Height; v != nil {
 		builder.WriteString("height=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := m.Duration; v != nil {
+		builder.WriteString("duration=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

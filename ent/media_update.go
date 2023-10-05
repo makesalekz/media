@@ -28,36 +28,23 @@ func (mu *MediaUpdate) Where(ps ...predicate.Media) *MediaUpdate {
 	return mu
 }
 
-// SetUserID sets the "user_id" field.
-func (mu *MediaUpdate) SetUserID(i int64) *MediaUpdate {
-	mu.mutation.ResetUserID()
-	mu.mutation.SetUserID(i)
+// SetURL sets the "url" field.
+func (mu *MediaUpdate) SetURL(s string) *MediaUpdate {
+	mu.mutation.SetURL(s)
 	return mu
 }
 
-// AddUserID adds i to the "user_id" field.
-func (mu *MediaUpdate) AddUserID(i int64) *MediaUpdate {
-	mu.mutation.AddUserID(i)
-	return mu
-}
-
-// SetLocation sets the "location" field.
-func (mu *MediaUpdate) SetLocation(s string) *MediaUpdate {
-	mu.mutation.SetLocation(s)
-	return mu
-}
-
-// SetNillableLocation sets the "location" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableLocation(s *string) *MediaUpdate {
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableURL(s *string) *MediaUpdate {
 	if s != nil {
-		mu.SetLocation(*s)
+		mu.SetURL(*s)
 	}
 	return mu
 }
 
-// ClearLocation clears the value of the "location" field.
-func (mu *MediaUpdate) ClearLocation() *MediaUpdate {
-	mu.mutation.ClearLocation()
+// ClearURL clears the value of the "url" field.
+func (mu *MediaUpdate) ClearURL() *MediaUpdate {
+	mu.mutation.ClearURL()
 	return mu
 }
 
@@ -128,17 +115,30 @@ func (mu *MediaUpdate) ClearHeight() *MediaUpdate {
 	return mu
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (mu *MediaUpdate) SetCreatedAt(t time.Time) *MediaUpdate {
-	mu.mutation.SetCreatedAt(t)
+// SetDuration sets the "duration" field.
+func (mu *MediaUpdate) SetDuration(i int32) *MediaUpdate {
+	mu.mutation.ResetDuration()
+	mu.mutation.SetDuration(i)
 	return mu
 }
 
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableCreatedAt(t *time.Time) *MediaUpdate {
-	if t != nil {
-		mu.SetCreatedAt(*t)
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableDuration(i *int32) *MediaUpdate {
+	if i != nil {
+		mu.SetDuration(*i)
 	}
+	return mu
+}
+
+// AddDuration adds i to the "duration" field.
+func (mu *MediaUpdate) AddDuration(i int32) *MediaUpdate {
+	mu.mutation.AddDuration(i)
+	return mu
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (mu *MediaUpdate) ClearDuration() *MediaUpdate {
+	mu.mutation.ClearDuration()
 	return mu
 }
 
@@ -194,20 +194,7 @@ func (mu *MediaUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (mu *MediaUpdate) check() error {
-	if v, ok := mu.mutation.UserID(); ok {
-		if err := media.UserIDValidator(v); err != nil {
-			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "Media.user_id": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := mu.check(); err != nil {
-		return n, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt64))
 	if ps := mu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -216,17 +203,11 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
-	if value, ok := mu.mutation.UserID(); ok {
-		_spec.SetField(media.FieldUserID, field.TypeInt64, value)
+	if value, ok := mu.mutation.URL(); ok {
+		_spec.SetField(media.FieldURL, field.TypeString, value)
 	}
-	if value, ok := mu.mutation.AddedUserID(); ok {
-		_spec.AddField(media.FieldUserID, field.TypeInt64, value)
-	}
-	if value, ok := mu.mutation.Location(); ok {
-		_spec.SetField(media.FieldLocation, field.TypeString, value)
-	}
-	if mu.mutation.LocationCleared() {
-		_spec.ClearField(media.FieldLocation, field.TypeString)
+	if mu.mutation.URLCleared() {
+		_spec.ClearField(media.FieldURL, field.TypeString)
 	}
 	if value, ok := mu.mutation.Size(); ok {
 		_spec.SetField(media.FieldSize, field.TypeInt32, value)
@@ -252,8 +233,14 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if mu.mutation.HeightCleared() {
 		_spec.ClearField(media.FieldHeight, field.TypeInt32)
 	}
-	if value, ok := mu.mutation.CreatedAt(); ok {
-		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)
+	if value, ok := mu.mutation.Duration(); ok {
+		_spec.SetField(media.FieldDuration, field.TypeInt32, value)
+	}
+	if value, ok := mu.mutation.AddedDuration(); ok {
+		_spec.AddField(media.FieldDuration, field.TypeInt32, value)
+	}
+	if mu.mutation.DurationCleared() {
+		_spec.ClearField(media.FieldDuration, field.TypeInt32)
 	}
 	if value, ok := mu.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)
@@ -281,36 +268,23 @@ type MediaUpdateOne struct {
 	mutation *MediaMutation
 }
 
-// SetUserID sets the "user_id" field.
-func (muo *MediaUpdateOne) SetUserID(i int64) *MediaUpdateOne {
-	muo.mutation.ResetUserID()
-	muo.mutation.SetUserID(i)
+// SetURL sets the "url" field.
+func (muo *MediaUpdateOne) SetURL(s string) *MediaUpdateOne {
+	muo.mutation.SetURL(s)
 	return muo
 }
 
-// AddUserID adds i to the "user_id" field.
-func (muo *MediaUpdateOne) AddUserID(i int64) *MediaUpdateOne {
-	muo.mutation.AddUserID(i)
-	return muo
-}
-
-// SetLocation sets the "location" field.
-func (muo *MediaUpdateOne) SetLocation(s string) *MediaUpdateOne {
-	muo.mutation.SetLocation(s)
-	return muo
-}
-
-// SetNillableLocation sets the "location" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableLocation(s *string) *MediaUpdateOne {
+// SetNillableURL sets the "url" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableURL(s *string) *MediaUpdateOne {
 	if s != nil {
-		muo.SetLocation(*s)
+		muo.SetURL(*s)
 	}
 	return muo
 }
 
-// ClearLocation clears the value of the "location" field.
-func (muo *MediaUpdateOne) ClearLocation() *MediaUpdateOne {
-	muo.mutation.ClearLocation()
+// ClearURL clears the value of the "url" field.
+func (muo *MediaUpdateOne) ClearURL() *MediaUpdateOne {
+	muo.mutation.ClearURL()
 	return muo
 }
 
@@ -381,17 +355,30 @@ func (muo *MediaUpdateOne) ClearHeight() *MediaUpdateOne {
 	return muo
 }
 
-// SetCreatedAt sets the "created_at" field.
-func (muo *MediaUpdateOne) SetCreatedAt(t time.Time) *MediaUpdateOne {
-	muo.mutation.SetCreatedAt(t)
+// SetDuration sets the "duration" field.
+func (muo *MediaUpdateOne) SetDuration(i int32) *MediaUpdateOne {
+	muo.mutation.ResetDuration()
+	muo.mutation.SetDuration(i)
 	return muo
 }
 
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableCreatedAt(t *time.Time) *MediaUpdateOne {
-	if t != nil {
-		muo.SetCreatedAt(*t)
+// SetNillableDuration sets the "duration" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableDuration(i *int32) *MediaUpdateOne {
+	if i != nil {
+		muo.SetDuration(*i)
 	}
+	return muo
+}
+
+// AddDuration adds i to the "duration" field.
+func (muo *MediaUpdateOne) AddDuration(i int32) *MediaUpdateOne {
+	muo.mutation.AddDuration(i)
+	return muo
+}
+
+// ClearDuration clears the value of the "duration" field.
+func (muo *MediaUpdateOne) ClearDuration() *MediaUpdateOne {
+	muo.mutation.ClearDuration()
 	return muo
 }
 
@@ -460,20 +447,7 @@ func (muo *MediaUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// check runs all checks and user-defined validators on the builder.
-func (muo *MediaUpdateOne) check() error {
-	if v, ok := muo.mutation.UserID(); ok {
-		if err := media.UserIDValidator(v); err != nil {
-			return &ValidationError{Name: "user_id", err: fmt.Errorf(`ent: validator failed for field "Media.user_id": %w`, err)}
-		}
-	}
-	return nil
-}
-
 func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error) {
-	if err := muo.check(); err != nil {
-		return _node, err
-	}
 	_spec := sqlgraph.NewUpdateSpec(media.Table, media.Columns, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt64))
 	id, ok := muo.mutation.ID()
 	if !ok {
@@ -499,17 +473,11 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			}
 		}
 	}
-	if value, ok := muo.mutation.UserID(); ok {
-		_spec.SetField(media.FieldUserID, field.TypeInt64, value)
+	if value, ok := muo.mutation.URL(); ok {
+		_spec.SetField(media.FieldURL, field.TypeString, value)
 	}
-	if value, ok := muo.mutation.AddedUserID(); ok {
-		_spec.AddField(media.FieldUserID, field.TypeInt64, value)
-	}
-	if value, ok := muo.mutation.Location(); ok {
-		_spec.SetField(media.FieldLocation, field.TypeString, value)
-	}
-	if muo.mutation.LocationCleared() {
-		_spec.ClearField(media.FieldLocation, field.TypeString)
+	if muo.mutation.URLCleared() {
+		_spec.ClearField(media.FieldURL, field.TypeString)
 	}
 	if value, ok := muo.mutation.Size(); ok {
 		_spec.SetField(media.FieldSize, field.TypeInt32, value)
@@ -535,8 +503,14 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 	if muo.mutation.HeightCleared() {
 		_spec.ClearField(media.FieldHeight, field.TypeInt32)
 	}
-	if value, ok := muo.mutation.CreatedAt(); ok {
-		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)
+	if value, ok := muo.mutation.Duration(); ok {
+		_spec.SetField(media.FieldDuration, field.TypeInt32, value)
+	}
+	if value, ok := muo.mutation.AddedDuration(); ok {
+		_spec.AddField(media.FieldDuration, field.TypeInt32, value)
+	}
+	if muo.mutation.DurationCleared() {
+		_spec.ClearField(media.FieldDuration, field.TypeInt32)
 	}
 	if value, ok := muo.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)

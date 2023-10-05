@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"media/ent"
+	"media/ent/media"
 
 	"github.com/google/uuid"
 	_ "github.com/lib/pq"
@@ -13,8 +14,10 @@ import (
 
 // MediaRepo
 type MediaRepo interface {
-	CreateMedia(ctx context.Context, userId int64, fileName, extension string, size int) (*ent.Media, error)
+	CreateMedia(ctx context.Context, ownerId int64, fileName, extension string, size int) (*ent.Media, error)
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
+	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
+	GetMediaList(ctx context.Context, mediaIds []int64) ([]*ent.Media, error)
 }
 
 type mediaRepo struct {
@@ -28,12 +31,12 @@ func NewMediaRepo(d *Data) MediaRepo {
 	}
 }
 
-func (r *mediaRepo) CreateMedia(ctx context.Context, userId int64, fileName, extension string, size int) (*ent.Media, error) {
+func (r *mediaRepo) CreateMedia(ctx context.Context, ownerId int64, fileName, extension string, size int) (*ent.Media, error) {
 	uuid := uuid.NewString()
 	path := fmt.Sprintf("%s/%s.%s", time.Now().Format("2006/01/02"), uuid, extension)
 
 	return r.db.Media.Create().
-		SetUserID(userId).
+		SetOwnerID(ownerId).
 		SetFileName(fileName).
 		SetPath(path).
 		SetExtension(extension).
@@ -41,9 +44,17 @@ func (r *mediaRepo) CreateMedia(ctx context.Context, userId int64, fileName, ext
 		Save(ctx)
 }
 
-func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error) {
+func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, URL string) (*ent.Media, error) {
 	return media.Update().
-		SetLocation(location).
+		SetURL(URL).
 		SetUploadedAt(time.Now()).
 		Save(ctx)
+}
+
+func (r *mediaRepo) GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error) {
+	return r.db.Media.Get(ctx, mediaId)
+}
+
+func (r *mediaRepo) GetMediaList(ctx context.Context, mediaIds []int64) ([]*ent.Media, error) {
+	return r.db.Media.Query().Where(media.IDIn(mediaIds...)).All(ctx)
 }

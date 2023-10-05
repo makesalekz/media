@@ -14,10 +14,6 @@ import (
 func init() {
 	mediaFields := schema.Media{}.Fields()
 	_ = mediaFields
-	// mediaDescUserID is the schema descriptor for user_id field.
-	mediaDescUserID := mediaFields[0].Descriptor()
-	// media.UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	media.UserIDValidator = mediaDescUserID.Validators[0].(func(int64) error)
 	// mediaDescExtension is the schema descriptor for extension field.
 	mediaDescExtension := mediaFields[2].Descriptor()
 	// media.ExtensionValidator is a validator for the "extension" field. It is called by the builders before save.
@@ -37,7 +33,7 @@ func init() {
 		}
 	}()
 	// mediaDescCreatedAt is the schema descriptor for created_at field.
-	mediaDescCreatedAt := mediaFields[8].Descriptor()
+	mediaDescCreatedAt := mediaFields[9].Descriptor()
 	// media.DefaultCreatedAt holds the default value on creation for the created_at field.
 	media.DefaultCreatedAt = mediaDescCreatedAt.Default.(func() time.Time)
 }

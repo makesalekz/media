@@ -13,22 +13,24 @@ const (
 	Label = "media"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldUserID holds the string denoting the user_id field in the database.
-	FieldUserID = "user_id"
+	// FieldOwnerID holds the string denoting the owner_id field in the database.
+	FieldOwnerID = "owner_id"
 	// FieldFileName holds the string denoting the file_name field in the database.
 	FieldFileName = "file_name"
 	// FieldExtension holds the string denoting the extension field in the database.
 	FieldExtension = "extension"
 	// FieldPath holds the string denoting the path field in the database.
 	FieldPath = "path"
-	// FieldLocation holds the string denoting the location field in the database.
-	FieldLocation = "location"
+	// FieldURL holds the string denoting the url field in the database.
+	FieldURL = "url"
 	// FieldSize holds the string denoting the size field in the database.
 	FieldSize = "size"
 	// FieldWidth holds the string denoting the width field in the database.
 	FieldWidth = "width"
 	// FieldHeight holds the string denoting the height field in the database.
 	FieldHeight = "height"
+	// FieldDuration holds the string denoting the duration field in the database.
+	FieldDuration = "duration"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUploadedAt holds the string denoting the uploaded_at field in the database.
@@ -40,14 +42,15 @@ const (
 // Columns holds all SQL columns for media fields.
 var Columns = []string{
 	FieldID,
-	FieldUserID,
+	FieldOwnerID,
 	FieldFileName,
 	FieldExtension,
 	FieldPath,
-	FieldLocation,
+	FieldURL,
 	FieldSize,
 	FieldWidth,
 	FieldHeight,
+	FieldDuration,
 	FieldCreatedAt,
 	FieldUploadedAt,
 }
@@ -63,8 +66,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// UserIDValidator is a validator for the "user_id" field. It is called by the builders before save.
-	UserIDValidator func(int64) error
 	// ExtensionValidator is a validator for the "extension" field. It is called by the builders before save.
 	ExtensionValidator func(string) error
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
@@ -79,9 +80,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByUserID orders the results by the user_id field.
-func ByUserID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserID, opts...).ToFunc()
+// ByOwnerID orders the results by the owner_id field.
+func ByOwnerID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOwnerID, opts...).ToFunc()
 }
 
 // ByFileName orders the results by the file_name field.
@@ -99,9 +100,9 @@ func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
 }
 
-// ByLocation orders the results by the location field.
-func ByLocation(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+// ByURL orders the results by the url field.
+func ByURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldURL, opts...).ToFunc()
 }
 
 // BySize orders the results by the size field.
@@ -117,6 +118,11 @@ func ByWidth(opts ...sql.OrderTermOption) OrderOption {
 // ByHeight orders the results by the height field.
 func ByHeight(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHeight, opts...).ToFunc()
+}
+
+// ByDuration orders the results by the duration field.
+func ByDuration(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDuration, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.
