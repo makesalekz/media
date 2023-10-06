@@ -45,8 +45,8 @@ type MediaMutation struct {
 	addwidth      *int32
 	height        *int32
 	addheight     *int32
-	duration      *int32
-	addduration   *int32
+	duration      *float32
+	addduration   *float32
 	created_at    *time.Time
 	uploaded_at   *time.Time
 	clearedFields map[string]struct{}
@@ -563,13 +563,13 @@ func (m *MediaMutation) ResetHeight() {
 }
 
 // SetDuration sets the "duration" field.
-func (m *MediaMutation) SetDuration(i int32) {
-	m.duration = &i
+func (m *MediaMutation) SetDuration(f float32) {
+	m.duration = &f
 	m.addduration = nil
 }
 
 // Duration returns the value of the "duration" field in the mutation.
-func (m *MediaMutation) Duration() (r int32, exists bool) {
+func (m *MediaMutation) Duration() (r float32, exists bool) {
 	v := m.duration
 	if v == nil {
 		return
@@ -580,7 +580,7 @@ func (m *MediaMutation) Duration() (r int32, exists bool) {
 // OldDuration returns the old "duration" field's value of the Media entity.
 // If the Media object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MediaMutation) OldDuration(ctx context.Context) (v *int32, err error) {
+func (m *MediaMutation) OldDuration(ctx context.Context) (v *float32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDuration is only allowed on UpdateOne operations")
 	}
@@ -594,17 +594,17 @@ func (m *MediaMutation) OldDuration(ctx context.Context) (v *int32, err error) {
 	return oldValue.Duration, nil
 }
 
-// AddDuration adds i to the "duration" field.
-func (m *MediaMutation) AddDuration(i int32) {
+// AddDuration adds f to the "duration" field.
+func (m *MediaMutation) AddDuration(f float32) {
 	if m.addduration != nil {
-		*m.addduration += i
+		*m.addduration += f
 	} else {
-		m.addduration = &i
+		m.addduration = &f
 	}
 }
 
 // AddedDuration returns the value that was added to the "duration" field in this mutation.
-func (m *MediaMutation) AddedDuration() (r int32, exists bool) {
+func (m *MediaMutation) AddedDuration() (r float32, exists bool) {
 	v := m.addduration
 	if v == nil {
 		return
@@ -912,7 +912,7 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 		m.SetHeight(v)
 		return nil
 	case media.FieldDuration:
-		v, ok := value.(int32)
+		v, ok := value.(float32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -1011,7 +1011,7 @@ func (m *MediaMutation) AddField(name string, value ent.Value) error {
 		m.AddHeight(v)
 		return nil
 	case media.FieldDuration:
-		v, ok := value.(int32)
+		v, ok := value.(float32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

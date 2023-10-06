@@ -20,10 +20,10 @@ func (Media) Fields() []ent.Field {
 		field.String("extension").Immutable().MinLen(2).MaxLen(10),
 		field.String("path").Immutable().Unique(),
 		field.String("url").Nillable().Optional(),
-		field.Int32("size"),                           // in bytes
-		field.Int32("width").Nillable().Optional(),    // in pixels
-		field.Int32("height").Nillable().Optional(),   // in pixels
-		field.Int32("duration").Nillable().Optional(), // in seconds
+		field.Int32("size"),                             // in bytes
+		field.Int32("width").Nillable().Optional(),      // in pixels
+		field.Int32("height").Nillable().Optional(),     // in pixels
+		field.Float32("duration").Nillable().Optional(), // in seconds
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("uploaded_at").Nillable().Optional(),
 	}

@@ -93,15 +93,15 @@ func (mc *MediaCreate) SetNillableHeight(i *int32) *MediaCreate {
 }
 
 // SetDuration sets the "duration" field.
-func (mc *MediaCreate) SetDuration(i int32) *MediaCreate {
-	mc.mutation.SetDuration(i)
+func (mc *MediaCreate) SetDuration(f float32) *MediaCreate {
+	mc.mutation.SetDuration(f)
 	return mc
 }
 
 // SetNillableDuration sets the "duration" field if the given value is not nil.
-func (mc *MediaCreate) SetNillableDuration(i *int32) *MediaCreate {
-	if i != nil {
-		mc.SetDuration(*i)
+func (mc *MediaCreate) SetNillableDuration(f *float32) *MediaCreate {
+	if f != nil {
+		mc.SetDuration(*f)
 	}
 	return mc
 }
@@ -259,7 +259,7 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		_node.Height = &value
 	}
 	if value, ok := mc.mutation.Duration(); ok {
-		_spec.SetField(media.FieldDuration, field.TypeInt32, value)
+		_spec.SetField(media.FieldDuration, field.TypeFloat32, value)
 		_node.Duration = &value
 	}
 	if value, ok := mc.mutation.CreatedAt(); ok {

@@ -52,6 +52,11 @@ make migrations
 
 ## Run
 
+Add values to Consul for keys:
+
+1. `app/media/AWS_REGION`
+2. `app/media/AWS_BUCKET`
+
 ### Run debug
 
 ```bash

@@ -95,7 +95,7 @@ func Height(v int32) predicate.Media {
 }
 
 // Duration applies equality check predicate on the "duration" field. It's identical to DurationEQ.
-func Duration(v int32) predicate.Media {
+func Duration(v float32) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldDuration, v))
 }
 
@@ -560,42 +560,42 @@ func HeightNotNil() predicate.Media {
 }
 
 // DurationEQ applies the EQ predicate on the "duration" field.
-func DurationEQ(v int32) predicate.Media {
+func DurationEQ(v float32) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldDuration, v))
 }
 
 // DurationNEQ applies the NEQ predicate on the "duration" field.
-func DurationNEQ(v int32) predicate.Media {
+func DurationNEQ(v float32) predicate.Media {
 	return predicate.Media(sql.FieldNEQ(FieldDuration, v))
 }
 
 // DurationIn applies the In predicate on the "duration" field.
-func DurationIn(vs ...int32) predicate.Media {
+func DurationIn(vs ...float32) predicate.Media {
 	return predicate.Media(sql.FieldIn(FieldDuration, vs...))
 }
 
 // DurationNotIn applies the NotIn predicate on the "duration" field.
-func DurationNotIn(vs ...int32) predicate.Media {
+func DurationNotIn(vs ...float32) predicate.Media {
 	return predicate.Media(sql.FieldNotIn(FieldDuration, vs...))
 }
 
 // DurationGT applies the GT predicate on the "duration" field.
-func DurationGT(v int32) predicate.Media {
+func DurationGT(v float32) predicate.Media {
 	return predicate.Media(sql.FieldGT(FieldDuration, v))
 }
 
 // DurationGTE applies the GTE predicate on the "duration" field.
-func DurationGTE(v int32) predicate.Media {
+func DurationGTE(v float32) predicate.Media {
 	return predicate.Media(sql.FieldGTE(FieldDuration, v))
 }
 
 // DurationLT applies the LT predicate on the "duration" field.
-func DurationLT(v int32) predicate.Media {
+func DurationLT(v float32) predicate.Media {
 	return predicate.Media(sql.FieldLT(FieldDuration, v))
 }
 
 // DurationLTE applies the LTE predicate on the "duration" field.
-func DurationLTE(v int32) predicate.Media {
+func DurationLTE(v float32) predicate.Media {
 	return predicate.Media(sql.FieldLTE(FieldDuration, v))
 }
 

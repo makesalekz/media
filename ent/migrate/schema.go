@@ -19,7 +19,7 @@ var (
 		{Name: "size", Type: field.TypeInt32},
 		{Name: "width", Type: field.TypeInt32, Nullable: true},
 		{Name: "height", Type: field.TypeInt32, Nullable: true},
-		{Name: "duration", Type: field.TypeInt32, Nullable: true},
+		{Name: "duration", Type: field.TypeFloat32, Nullable: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "uploaded_at", Type: field.TypeTime, Nullable: true},
 	}

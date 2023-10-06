@@ -35,7 +35,7 @@ message Media {
   int32 size = 5;              // in bytes
   optional int32 width = 6;    // in pixels
   optional int32 height = 7;   // in pixels
-  optional int32 duration = 8; // in seconds
+  optional float duration = 8; // in seconds
 }
 
 message UploadMediaRequest {

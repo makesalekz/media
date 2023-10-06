@@ -90,14 +90,14 @@ type Media struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id        int64  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Url       string `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
-	FileName  string `protobuf:"bytes,3,opt,name=fileName,proto3" json:"fileName,omitempty"`
-	Extension string `protobuf:"bytes,4,opt,name=extension,proto3" json:"extension,omitempty"`
-	Size      int32  `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`               // in bytes
-	Width     *int32 `protobuf:"varint,6,opt,name=width,proto3,oneof" json:"width,omitempty"`       // in pixels
-	Height    *int32 `protobuf:"varint,7,opt,name=height,proto3,oneof" json:"height,omitempty"`     // in pixels
-	Duration  *int32 `protobuf:"varint,8,opt,name=duration,proto3,oneof" json:"duration,omitempty"` // in seconds
+	Id        int64    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Url       string   `protobuf:"bytes,2,opt,name=url,proto3" json:"url,omitempty"`
+	FileName  string   `protobuf:"bytes,3,opt,name=fileName,proto3" json:"fileName,omitempty"`
+	Extension string   `protobuf:"bytes,4,opt,name=extension,proto3" json:"extension,omitempty"`
+	Size      int32    `protobuf:"varint,5,opt,name=size,proto3" json:"size,omitempty"`                // in bytes
+	Width     *int32   `protobuf:"varint,6,opt,name=width,proto3,oneof" json:"width,omitempty"`        // in pixels
+	Height    *int32   `protobuf:"varint,7,opt,name=height,proto3,oneof" json:"height,omitempty"`      // in pixels
+	Duration  *float32 `protobuf:"fixed32,8,opt,name=duration,proto3,oneof" json:"duration,omitempty"` // in seconds
 }
 
 func (x *Media) Reset() {
@@ -181,7 +181,7 @@ func (x *Media) GetHeight() int32 {
 	return 0
 }
 
-func (x *Media) GetDuration() int32 {
+func (x *Media) GetDuration() float32 {
 	if x != nil && x.Duration != nil {
 		return *x.Duration
 	}
@@ -453,7 +453,7 @@ var file_upload_v1_upload_proto_rawDesc = []byte{
 	0x52, 0x05, 0x77, 0x69, 0x64, 0x74, 0x68, 0x88, 0x01, 0x01, 0x12, 0x1b, 0x0a, 0x06, 0x68, 0x65,
 	0x69, 0x67, 0x68, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x05, 0x48, 0x01, 0x52, 0x06, 0x68, 0x65,
 	0x69, 0x67, 0x68, 0x74, 0x88, 0x01, 0x01, 0x12, 0x1f, 0x0a, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x05, 0x48, 0x02, 0x52, 0x08, 0x64, 0x75, 0x72,
+	0x69, 0x6f, 0x6e, 0x18, 0x08, 0x20, 0x01, 0x28, 0x02, 0x48, 0x02, 0x52, 0x08, 0x64, 0x75, 0x72,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x88, 0x01, 0x01, 0x42, 0x08, 0x0a, 0x06, 0x5f, 0x77, 0x69, 0x64,
 	0x74, 0x68, 0x42, 0x09, 0x0a, 0x07, 0x5f, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x42, 0x0b, 0x0a,
 	0x09, 0x5f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x60, 0x0a, 0x12, 0x55, 0x70,

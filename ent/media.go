@@ -34,7 +34,7 @@ type Media struct {
 	// Height holds the value of the "height" field.
 	Height *int32 `json:"height,omitempty"`
 	// Duration holds the value of the "duration" field.
-	Duration *int32 `json:"duration,omitempty"`
+	Duration *float32 `json:"duration,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UploadedAt holds the value of the "uploaded_at" field.
@@ -47,7 +47,9 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case media.FieldID, media.FieldOwnerID, media.FieldSize, media.FieldWidth, media.FieldHeight, media.FieldDuration:
+		case media.FieldDuration:
+			values[i] = new(sql.NullFloat64)
+		case media.FieldID, media.FieldOwnerID, media.FieldSize, media.FieldWidth, media.FieldHeight:
 			values[i] = new(sql.NullInt64)
 		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldURL:
 			values[i] = new(sql.NullString)
@@ -126,11 +128,11 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				*m.Height = int32(value.Int64)
 			}
 		case media.FieldDuration:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field duration", values[i])
 			} else if value.Valid {
-				m.Duration = new(int32)
-				*m.Duration = int32(value.Int64)
+				m.Duration = new(float32)
+				*m.Duration = float32(value.Float64)
 			}
 		case media.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {

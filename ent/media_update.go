@@ -116,23 +116,23 @@ func (mu *MediaUpdate) ClearHeight() *MediaUpdate {
 }
 
 // SetDuration sets the "duration" field.
-func (mu *MediaUpdate) SetDuration(i int32) *MediaUpdate {
+func (mu *MediaUpdate) SetDuration(f float32) *MediaUpdate {
 	mu.mutation.ResetDuration()
-	mu.mutation.SetDuration(i)
+	mu.mutation.SetDuration(f)
 	return mu
 }
 
 // SetNillableDuration sets the "duration" field if the given value is not nil.
-func (mu *MediaUpdate) SetNillableDuration(i *int32) *MediaUpdate {
-	if i != nil {
-		mu.SetDuration(*i)
+func (mu *MediaUpdate) SetNillableDuration(f *float32) *MediaUpdate {
+	if f != nil {
+		mu.SetDuration(*f)
 	}
 	return mu
 }
 
-// AddDuration adds i to the "duration" field.
-func (mu *MediaUpdate) AddDuration(i int32) *MediaUpdate {
-	mu.mutation.AddDuration(i)
+// AddDuration adds f to the "duration" field.
+func (mu *MediaUpdate) AddDuration(f float32) *MediaUpdate {
+	mu.mutation.AddDuration(f)
 	return mu
 }
 
@@ -234,13 +234,13 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.ClearField(media.FieldHeight, field.TypeInt32)
 	}
 	if value, ok := mu.mutation.Duration(); ok {
-		_spec.SetField(media.FieldDuration, field.TypeInt32, value)
+		_spec.SetField(media.FieldDuration, field.TypeFloat32, value)
 	}
 	if value, ok := mu.mutation.AddedDuration(); ok {
-		_spec.AddField(media.FieldDuration, field.TypeInt32, value)
+		_spec.AddField(media.FieldDuration, field.TypeFloat32, value)
 	}
 	if mu.mutation.DurationCleared() {
-		_spec.ClearField(media.FieldDuration, field.TypeInt32)
+		_spec.ClearField(media.FieldDuration, field.TypeFloat32)
 	}
 	if value, ok := mu.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)
@@ -356,23 +356,23 @@ func (muo *MediaUpdateOne) ClearHeight() *MediaUpdateOne {
 }
 
 // SetDuration sets the "duration" field.
-func (muo *MediaUpdateOne) SetDuration(i int32) *MediaUpdateOne {
+func (muo *MediaUpdateOne) SetDuration(f float32) *MediaUpdateOne {
 	muo.mutation.ResetDuration()
-	muo.mutation.SetDuration(i)
+	muo.mutation.SetDuration(f)
 	return muo
 }
 
 // SetNillableDuration sets the "duration" field if the given value is not nil.
-func (muo *MediaUpdateOne) SetNillableDuration(i *int32) *MediaUpdateOne {
-	if i != nil {
-		muo.SetDuration(*i)
+func (muo *MediaUpdateOne) SetNillableDuration(f *float32) *MediaUpdateOne {
+	if f != nil {
+		muo.SetDuration(*f)
 	}
 	return muo
 }
 
-// AddDuration adds i to the "duration" field.
-func (muo *MediaUpdateOne) AddDuration(i int32) *MediaUpdateOne {
-	muo.mutation.AddDuration(i)
+// AddDuration adds f to the "duration" field.
+func (muo *MediaUpdateOne) AddDuration(f float32) *MediaUpdateOne {
+	muo.mutation.AddDuration(f)
 	return muo
 }
 
@@ -504,13 +504,13 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 		_spec.ClearField(media.FieldHeight, field.TypeInt32)
 	}
 	if value, ok := muo.mutation.Duration(); ok {
-		_spec.SetField(media.FieldDuration, field.TypeInt32, value)
+		_spec.SetField(media.FieldDuration, field.TypeFloat32, value)
 	}
 	if value, ok := muo.mutation.AddedDuration(); ok {
-		_spec.AddField(media.FieldDuration, field.TypeInt32, value)
+		_spec.AddField(media.FieldDuration, field.TypeFloat32, value)
 	}
 	if muo.mutation.DurationCleared() {
-		_spec.ClearField(media.FieldDuration, field.TypeInt32)
+		_spec.ClearField(media.FieldDuration, field.TypeFloat32)
 	}
 	if value, ok := muo.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)
