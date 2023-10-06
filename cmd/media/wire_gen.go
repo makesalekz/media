@@ -42,8 +42,15 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	mediaUsecase, err := biz.NewMediaUsecase(logger, config, jwtProcessor, mediaRepo, s3Uploader)
+	natsClient, cleanup2, err := data.NewNatsClient(config)
 	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	queueManager := biz.NewQueueManager(config, natsClient, logger)
+	mediaUsecase, err := biz.NewMediaUsecase(logger, config, jwtProcessor, mediaRepo, s3Uploader, queueManager)
+	if err != nil {
+		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
@@ -52,6 +59,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, uploadService)
 	app := newApp(logger, config, grpcServer, httpServer)
 	return app, func() {
+		cleanup2()
 		cleanup()
 	}, nil
 }

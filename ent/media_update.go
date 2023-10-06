@@ -28,6 +28,26 @@ func (mu *MediaUpdate) Where(ps ...predicate.Media) *MediaUpdate {
 	return mu
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (mu *MediaUpdate) SetDeletedAt(t time.Time) *MediaUpdate {
+	mu.mutation.SetDeletedAt(t)
+	return mu
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableDeletedAt(t *time.Time) *MediaUpdate {
+	if t != nil {
+		mu.SetDeletedAt(*t)
+	}
+	return mu
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (mu *MediaUpdate) ClearDeletedAt() *MediaUpdate {
+	mu.mutation.ClearDeletedAt()
+	return mu
+}
+
 // SetURL sets the "url" field.
 func (mu *MediaUpdate) SetURL(s string) *MediaUpdate {
 	mu.mutation.SetURL(s)
@@ -142,6 +162,20 @@ func (mu *MediaUpdate) ClearDuration() *MediaUpdate {
 	return mu
 }
 
+// SetIsActivated sets the "is_activated" field.
+func (mu *MediaUpdate) SetIsActivated(b bool) *MediaUpdate {
+	mu.mutation.SetIsActivated(b)
+	return mu
+}
+
+// SetNillableIsActivated sets the "is_activated" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableIsActivated(b *bool) *MediaUpdate {
+	if b != nil {
+		mu.SetIsActivated(*b)
+	}
+	return mu
+}
+
 // SetUploadedAt sets the "uploaded_at" field.
 func (mu *MediaUpdate) SetUploadedAt(t time.Time) *MediaUpdate {
 	mu.mutation.SetUploadedAt(t)
@@ -203,6 +237,12 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := mu.mutation.DeletedAt(); ok {
+		_spec.SetField(media.FieldDeletedAt, field.TypeTime, value)
+	}
+	if mu.mutation.DeletedAtCleared() {
+		_spec.ClearField(media.FieldDeletedAt, field.TypeTime)
+	}
 	if value, ok := mu.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 	}
@@ -242,6 +282,9 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if mu.mutation.DurationCleared() {
 		_spec.ClearField(media.FieldDuration, field.TypeFloat32)
 	}
+	if value, ok := mu.mutation.IsActivated(); ok {
+		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)
+	}
 	if value, ok := mu.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)
 	}
@@ -266,6 +309,26 @@ type MediaUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *MediaMutation
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (muo *MediaUpdateOne) SetDeletedAt(t time.Time) *MediaUpdateOne {
+	muo.mutation.SetDeletedAt(t)
+	return muo
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableDeletedAt(t *time.Time) *MediaUpdateOne {
+	if t != nil {
+		muo.SetDeletedAt(*t)
+	}
+	return muo
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (muo *MediaUpdateOne) ClearDeletedAt() *MediaUpdateOne {
+	muo.mutation.ClearDeletedAt()
+	return muo
 }
 
 // SetURL sets the "url" field.
@@ -382,6 +445,20 @@ func (muo *MediaUpdateOne) ClearDuration() *MediaUpdateOne {
 	return muo
 }
 
+// SetIsActivated sets the "is_activated" field.
+func (muo *MediaUpdateOne) SetIsActivated(b bool) *MediaUpdateOne {
+	muo.mutation.SetIsActivated(b)
+	return muo
+}
+
+// SetNillableIsActivated sets the "is_activated" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableIsActivated(b *bool) *MediaUpdateOne {
+	if b != nil {
+		muo.SetIsActivated(*b)
+	}
+	return muo
+}
+
 // SetUploadedAt sets the "uploaded_at" field.
 func (muo *MediaUpdateOne) SetUploadedAt(t time.Time) *MediaUpdateOne {
 	muo.mutation.SetUploadedAt(t)
@@ -473,6 +550,12 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 			}
 		}
 	}
+	if value, ok := muo.mutation.DeletedAt(); ok {
+		_spec.SetField(media.FieldDeletedAt, field.TypeTime, value)
+	}
+	if muo.mutation.DeletedAtCleared() {
+		_spec.ClearField(media.FieldDeletedAt, field.TypeTime)
+	}
 	if value, ok := muo.mutation.URL(); ok {
 		_spec.SetField(media.FieldURL, field.TypeString, value)
 	}
@@ -511,6 +594,9 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 	}
 	if muo.mutation.DurationCleared() {
 		_spec.ClearField(media.FieldDuration, field.TypeFloat32)
+	}
+	if value, ok := muo.mutation.IsActivated(); ok {
+		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)
 	}
 	if value, ok := muo.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)

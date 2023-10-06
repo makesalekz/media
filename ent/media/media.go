@@ -5,6 +5,7 @@ package media
 import (
 	"time"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -13,6 +14,8 @@ const (
 	Label = "media"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldDeletedAt holds the string denoting the deleted_at field in the database.
+	FieldDeletedAt = "deleted_at"
 	// FieldOwnerID holds the string denoting the owner_id field in the database.
 	FieldOwnerID = "owner_id"
 	// FieldFileName holds the string denoting the file_name field in the database.
@@ -31,6 +34,8 @@ const (
 	FieldHeight = "height"
 	// FieldDuration holds the string denoting the duration field in the database.
 	FieldDuration = "duration"
+	// FieldIsActivated holds the string denoting the is_activated field in the database.
+	FieldIsActivated = "is_activated"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUploadedAt holds the string denoting the uploaded_at field in the database.
@@ -42,6 +47,7 @@ const (
 // Columns holds all SQL columns for media fields.
 var Columns = []string{
 	FieldID,
+	FieldDeletedAt,
 	FieldOwnerID,
 	FieldFileName,
 	FieldExtension,
@@ -51,6 +57,7 @@ var Columns = []string{
 	FieldWidth,
 	FieldHeight,
 	FieldDuration,
+	FieldIsActivated,
 	FieldCreatedAt,
 	FieldUploadedAt,
 }
@@ -65,9 +72,18 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "media/ent/runtime"
 var (
+	Hooks        [1]ent.Hook
+	Interceptors [1]ent.Interceptor
 	// ExtensionValidator is a validator for the "extension" field. It is called by the builders before save.
 	ExtensionValidator func(string) error
+	// DefaultIsActivated holds the default value on creation for the "is_activated" field.
+	DefaultIsActivated bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 )
@@ -78,6 +94,11 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
+}
+
+// ByDeletedAt orders the results by the deleted_at field.
+func ByDeletedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDeletedAt, opts...).ToFunc()
 }
 
 // ByOwnerID orders the results by the owner_id field.
@@ -123,6 +144,11 @@ func ByHeight(opts ...sql.OrderTermOption) OrderOption {
 // ByDuration orders the results by the duration field.
 func ByDuration(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDuration, opts...).ToFunc()
+}
+
+// ByIsActivated orders the results by the is_activated field.
+func ByIsActivated(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsActivated, opts...).ToFunc()
 }
 
 // ByCreatedAt orders the results by the created_at field.

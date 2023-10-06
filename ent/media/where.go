@@ -54,6 +54,11 @@ func IDLTE(id int64) predicate.Media {
 	return predicate.Media(sql.FieldLTE(FieldID, id))
 }
 
+// DeletedAt applies equality check predicate on the "deleted_at" field. It's identical to DeletedAtEQ.
+func DeletedAt(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldDeletedAt, v))
+}
+
 // OwnerID applies equality check predicate on the "owner_id" field. It's identical to OwnerIDEQ.
 func OwnerID(v int64) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldOwnerID, v))
@@ -99,6 +104,11 @@ func Duration(v float32) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldDuration, v))
 }
 
+// IsActivated applies equality check predicate on the "is_activated" field. It's identical to IsActivatedEQ.
+func IsActivated(v bool) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldIsActivated, v))
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldCreatedAt, v))
@@ -107,6 +117,56 @@ func CreatedAt(v time.Time) predicate.Media {
 // UploadedAt applies equality check predicate on the "uploaded_at" field. It's identical to UploadedAtEQ.
 func UploadedAt(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldUploadedAt, v))
+}
+
+// DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
+func DeletedAtEQ(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtNEQ applies the NEQ predicate on the "deleted_at" field.
+func DeletedAtNEQ(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldDeletedAt, v))
+}
+
+// DeletedAtIn applies the In predicate on the "deleted_at" field.
+func DeletedAtIn(vs ...time.Time) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtNotIn applies the NotIn predicate on the "deleted_at" field.
+func DeletedAtNotIn(vs ...time.Time) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldDeletedAt, vs...))
+}
+
+// DeletedAtGT applies the GT predicate on the "deleted_at" field.
+func DeletedAtGT(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldDeletedAt, v))
+}
+
+// DeletedAtGTE applies the GTE predicate on the "deleted_at" field.
+func DeletedAtGTE(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldDeletedAt, v))
+}
+
+// DeletedAtLT applies the LT predicate on the "deleted_at" field.
+func DeletedAtLT(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldDeletedAt, v))
+}
+
+// DeletedAtLTE applies the LTE predicate on the "deleted_at" field.
+func DeletedAtLTE(v time.Time) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldDeletedAt, v))
+}
+
+// DeletedAtIsNil applies the IsNil predicate on the "deleted_at" field.
+func DeletedAtIsNil() predicate.Media {
+	return predicate.Media(sql.FieldIsNull(FieldDeletedAt))
+}
+
+// DeletedAtNotNil applies the NotNil predicate on the "deleted_at" field.
+func DeletedAtNotNil() predicate.Media {
+	return predicate.Media(sql.FieldNotNull(FieldDeletedAt))
 }
 
 // OwnerIDEQ applies the EQ predicate on the "owner_id" field.
@@ -607,6 +667,16 @@ func DurationIsNil() predicate.Media {
 // DurationNotNil applies the NotNil predicate on the "duration" field.
 func DurationNotNil() predicate.Media {
 	return predicate.Media(sql.FieldNotNull(FieldDuration))
+}
+
+// IsActivatedEQ applies the EQ predicate on the "is_activated" field.
+func IsActivatedEQ(v bool) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldIsActivated, v))
+}
+
+// IsActivatedNEQ applies the NEQ predicate on the "is_activated" field.
+func IsActivatedNEQ(v bool) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldIsActivated, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.

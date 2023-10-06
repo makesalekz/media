@@ -8,7 +8,8 @@ import "google/protobuf/duration.proto";
 message Bootstrap {
   Server server = 1;
   string db = 2;
-  Discovery discovery = 3;
+  string nats = 3;
+  Discovery discovery = 4;
 }
 
 message Server {

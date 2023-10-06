@@ -15,6 +15,7 @@ import (
 // MediaRepo
 type MediaRepo interface {
 	CreateMedia(ctx context.Context, ownerId int64, fileName, extension string, size int) (*ent.Media, error)
+	DeleteMedia(ctx context.Context, mediaId int64) error
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
 	GetMediaList(ctx context.Context, mediaIds []int64) ([]*ent.Media, error)
@@ -42,6 +43,11 @@ func (r *mediaRepo) CreateMedia(ctx context.Context, ownerId int64, fileName, ex
 		SetExtension(extension).
 		SetSize(int32(size)).
 		Save(ctx)
+}
+
+func (r *mediaRepo) DeleteMedia(ctx context.Context, mediaId int64) error {
+	_, err := r.db.Media.Delete().Where(media.ID(mediaId)).Exec(ctx)
+	return err
 }
 
 func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, URL string) (*ent.Media, error) {

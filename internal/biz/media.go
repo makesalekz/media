@@ -3,6 +3,7 @@ package biz
 import (
 	"context"
 	_ "embed"
+	"encoding/json"
 	upload_v1 "media/api/upload/v1"
 	"media/ent"
 	"strings"
@@ -17,6 +18,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
+	"github.com/nats-io/nats.go"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 )
 
@@ -28,18 +30,57 @@ type MediaUsecase struct {
 	jwt       *data.JwtProcessor
 	mediaRepo data.MediaRepo
 	s3        *data.S3Uploader
+	qm        *QueueManager
 }
 
 // NewGreeterUsecase new a Greeter usecase.
-func NewMediaUsecase(logger log.Logger, c *data.Config, jwt *data.JwtProcessor, mediaRepo data.MediaRepo, s3 *data.S3Uploader) (*MediaUsecase, error) {
-	return &MediaUsecase{
+func NewMediaUsecase(
+	logger log.Logger,
+	c *data.Config,
+	jwt *data.JwtProcessor,
+	mediaRepo data.MediaRepo,
+	s3 *data.S3Uploader,
+	qm *QueueManager,
+) (*MediaUsecase, error) {
+	uc := &MediaUsecase{
 		conf:      c.Bootstrap,
 		log:       log.NewHelper(logger),
 		discovery: c.GetRegistry(),
 		jwt:       jwt,
 		mediaRepo: mediaRepo,
 		s3:        s3,
-	}, nil
+		qm:        qm,
+	}
+
+	qm.AddConsumer(QueueDeleteMedia, uc.deleteMediaConsumer)
+
+	return uc, nil
+}
+
+func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bool {
+	var mediaId int64
+	err := json.Unmarshal(m.Data, &mediaId)
+	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
+		return true
+	}
+
+	media, err := uc.mediaRepo.GetMedia(ctx, mediaId)
+	if err != nil {
+		return false
+	}
+
+	err = uc.s3.Delete(ctx, media.Path)
+	if err != nil {
+		return false
+	}
+
+	err = uc.mediaRepo.DeleteMedia(ctx, media.ID)
+	if err != nil {
+		return true
+	}
+
+	return true
 }
 
 func getExtension(contentType string) (string, bool) {
@@ -97,7 +138,7 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName string, file *
 
 	location, err := uc.s3.Upload(ctx, media.Path, file)
 	if err != nil {
-		// TODO: delete media
+		uc.mediaRepo.DeleteMedia(ctx, media.ID)
 
 		return nil, upload_v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 	}

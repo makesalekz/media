@@ -17,6 +17,8 @@ type Media struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int64 `json:"id,omitempty"`
+	// DeletedAt holds the value of the "deleted_at" field.
+	DeletedAt *time.Time `json:"deleted_at,omitempty"`
 	// OwnerID holds the value of the "owner_id" field.
 	OwnerID int64 `json:"owner_id,omitempty"`
 	// FileName holds the value of the "file_name" field.
@@ -35,6 +37,8 @@ type Media struct {
 	Height *int32 `json:"height,omitempty"`
 	// Duration holds the value of the "duration" field.
 	Duration *float32 `json:"duration,omitempty"`
+	// IsActivated holds the value of the "is_activated" field.
+	IsActivated bool `json:"is_activated,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UploadedAt holds the value of the "uploaded_at" field.
@@ -47,13 +51,15 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case media.FieldIsActivated:
+			values[i] = new(sql.NullBool)
 		case media.FieldDuration:
 			values[i] = new(sql.NullFloat64)
 		case media.FieldID, media.FieldOwnerID, media.FieldSize, media.FieldWidth, media.FieldHeight:
 			values[i] = new(sql.NullInt64)
 		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldURL:
 			values[i] = new(sql.NullString)
-		case media.FieldCreatedAt, media.FieldUploadedAt:
+		case media.FieldDeletedAt, media.FieldCreatedAt, media.FieldUploadedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -76,6 +82,13 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			m.ID = int64(value.Int64)
+		case media.FieldDeletedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field deleted_at", values[i])
+			} else if value.Valid {
+				m.DeletedAt = new(time.Time)
+				*m.DeletedAt = value.Time
+			}
 		case media.FieldOwnerID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field owner_id", values[i])
@@ -134,6 +147,12 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				m.Duration = new(float32)
 				*m.Duration = float32(value.Float64)
 			}
+		case media.FieldIsActivated:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_activated", values[i])
+			} else if value.Valid {
+				m.IsActivated = value.Bool
+			}
 		case media.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -183,6 +202,11 @@ func (m *Media) String() string {
 	var builder strings.Builder
 	builder.WriteString("Media(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", m.ID))
+	if v := m.DeletedAt; v != nil {
+		builder.WriteString("deleted_at=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("owner_id=")
 	builder.WriteString(fmt.Sprintf("%v", m.OwnerID))
 	builder.WriteString(", ")
@@ -217,6 +241,9 @@ func (m *Media) String() string {
 		builder.WriteString("duration=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("is_activated=")
+	builder.WriteString(fmt.Sprintf("%v", m.IsActivated))
 	builder.WriteString(", ")
 	builder.WriteString("created_at=")
 	builder.WriteString(m.CreatedAt.Format(time.ANSIC))

@@ -20,6 +20,20 @@ type MediaCreate struct {
 	hooks    []Hook
 }
 
+// SetDeletedAt sets the "deleted_at" field.
+func (mc *MediaCreate) SetDeletedAt(t time.Time) *MediaCreate {
+	mc.mutation.SetDeletedAt(t)
+	return mc
+}
+
+// SetNillableDeletedAt sets the "deleted_at" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableDeletedAt(t *time.Time) *MediaCreate {
+	if t != nil {
+		mc.SetDeletedAt(*t)
+	}
+	return mc
+}
+
 // SetOwnerID sets the "owner_id" field.
 func (mc *MediaCreate) SetOwnerID(i int64) *MediaCreate {
 	mc.mutation.SetOwnerID(i)
@@ -106,6 +120,20 @@ func (mc *MediaCreate) SetNillableDuration(f *float32) *MediaCreate {
 	return mc
 }
 
+// SetIsActivated sets the "is_activated" field.
+func (mc *MediaCreate) SetIsActivated(b bool) *MediaCreate {
+	mc.mutation.SetIsActivated(b)
+	return mc
+}
+
+// SetNillableIsActivated sets the "is_activated" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableIsActivated(b *bool) *MediaCreate {
+	if b != nil {
+		mc.SetIsActivated(*b)
+	}
+	return mc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (mc *MediaCreate) SetCreatedAt(t time.Time) *MediaCreate {
 	mc.mutation.SetCreatedAt(t)
@@ -141,7 +169,9 @@ func (mc *MediaCreate) Mutation() *MediaMutation {
 
 // Save creates the Media in the database.
 func (mc *MediaCreate) Save(ctx context.Context) (*Media, error) {
-	mc.defaults()
+	if err := mc.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, mc.sqlSave, mc.mutation, mc.hooks)
 }
 
@@ -168,11 +198,19 @@ func (mc *MediaCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (mc *MediaCreate) defaults() {
+func (mc *MediaCreate) defaults() error {
+	if _, ok := mc.mutation.IsActivated(); !ok {
+		v := media.DefaultIsActivated
+		mc.mutation.SetIsActivated(v)
+	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
+		if media.DefaultCreatedAt == nil {
+			return fmt.Errorf("ent: uninitialized media.DefaultCreatedAt (forgotten import ent/runtime?)")
+		}
 		v := media.DefaultCreatedAt()
 		mc.mutation.SetCreatedAt(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -196,6 +234,9 @@ func (mc *MediaCreate) check() error {
 	}
 	if _, ok := mc.mutation.Size(); !ok {
 		return &ValidationError{Name: "size", err: errors.New(`ent: missing required field "Media.size"`)}
+	}
+	if _, ok := mc.mutation.IsActivated(); !ok {
+		return &ValidationError{Name: "is_activated", err: errors.New(`ent: missing required field "Media.is_activated"`)}
 	}
 	if _, ok := mc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Media.created_at"`)}
@@ -226,6 +267,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 		_node = &Media{config: mc.config}
 		_spec = sqlgraph.NewCreateSpec(media.Table, sqlgraph.NewFieldSpec(media.FieldID, field.TypeInt64))
 	)
+	if value, ok := mc.mutation.DeletedAt(); ok {
+		_spec.SetField(media.FieldDeletedAt, field.TypeTime, value)
+		_node.DeletedAt = &value
+	}
 	if value, ok := mc.mutation.OwnerID(); ok {
 		_spec.SetField(media.FieldOwnerID, field.TypeInt64, value)
 		_node.OwnerID = value
@@ -261,6 +306,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Duration(); ok {
 		_spec.SetField(media.FieldDuration, field.TypeFloat32, value)
 		_node.Duration = &value
+	}
+	if value, ok := mc.mutation.IsActivated(); ok {
+		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)
+		_node.IsActivated = value
 	}
 	if value, ok := mc.mutation.CreatedAt(); ok {
 		_spec.SetField(media.FieldCreatedAt, field.TypeTime, value)

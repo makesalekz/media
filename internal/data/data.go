@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"media/ent"
+	_ "media/ent/runtime"
 	"media/internal/conf"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -13,7 +14,7 @@ import (
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewConfig, NewJwtProcessor, NewS3Uploader, NewMediaRepo)
+var ProviderSet = wire.NewSet(NewData, NewConfig, NewJwtProcessor, NewNatsClient, NewS3Uploader, NewMediaRepo)
 
 // Data .
 type Data struct {

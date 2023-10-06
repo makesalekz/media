@@ -33,6 +33,7 @@ type MediaMutation struct {
 	op            Op
 	typ           string
 	id            *int64
+	deleted_at    *time.Time
 	owner_id      *int64
 	addowner_id   *int64
 	file_name     *string
@@ -47,6 +48,7 @@ type MediaMutation struct {
 	addheight     *int32
 	duration      *float32
 	addduration   *float32
+	is_activated  *bool
 	created_at    *time.Time
 	uploaded_at   *time.Time
 	clearedFields map[string]struct{}
@@ -151,6 +153,55 @@ func (m *MediaMutation) IDs(ctx context.Context) ([]int64, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *MediaMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *MediaMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *MediaMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[media.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *MediaMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[media.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *MediaMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, media.FieldDeletedAt)
 }
 
 // SetOwnerID sets the "owner_id" field.
@@ -632,6 +683,42 @@ func (m *MediaMutation) ResetDuration() {
 	delete(m.clearedFields, media.FieldDuration)
 }
 
+// SetIsActivated sets the "is_activated" field.
+func (m *MediaMutation) SetIsActivated(b bool) {
+	m.is_activated = &b
+}
+
+// IsActivated returns the value of the "is_activated" field in the mutation.
+func (m *MediaMutation) IsActivated() (r bool, exists bool) {
+	v := m.is_activated
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsActivated returns the old "is_activated" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldIsActivated(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsActivated is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsActivated requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsActivated: %w", err)
+	}
+	return oldValue.IsActivated, nil
+}
+
+// ResetIsActivated resets all changes to the "is_activated" field.
+func (m *MediaMutation) ResetIsActivated() {
+	m.is_activated = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *MediaMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -751,7 +838,10 @@ func (m *MediaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MediaMutation) Fields() []string {
-	fields := make([]string, 0, 11)
+	fields := make([]string, 0, 13)
+	if m.deleted_at != nil {
+		fields = append(fields, media.FieldDeletedAt)
+	}
 	if m.owner_id != nil {
 		fields = append(fields, media.FieldOwnerID)
 	}
@@ -779,6 +869,9 @@ func (m *MediaMutation) Fields() []string {
 	if m.duration != nil {
 		fields = append(fields, media.FieldDuration)
 	}
+	if m.is_activated != nil {
+		fields = append(fields, media.FieldIsActivated)
+	}
 	if m.created_at != nil {
 		fields = append(fields, media.FieldCreatedAt)
 	}
@@ -793,6 +886,8 @@ func (m *MediaMutation) Fields() []string {
 // schema.
 func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 	switch name {
+	case media.FieldDeletedAt:
+		return m.DeletedAt()
 	case media.FieldOwnerID:
 		return m.OwnerID()
 	case media.FieldFileName:
@@ -811,6 +906,8 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 		return m.Height()
 	case media.FieldDuration:
 		return m.Duration()
+	case media.FieldIsActivated:
+		return m.IsActivated()
 	case media.FieldCreatedAt:
 		return m.CreatedAt()
 	case media.FieldUploadedAt:
@@ -824,6 +921,8 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
+	case media.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
 	case media.FieldOwnerID:
 		return m.OldOwnerID(ctx)
 	case media.FieldFileName:
@@ -842,6 +941,8 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldHeight(ctx)
 	case media.FieldDuration:
 		return m.OldDuration(ctx)
+	case media.FieldIsActivated:
+		return m.OldIsActivated(ctx)
 	case media.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case media.FieldUploadedAt:
@@ -855,6 +956,13 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *MediaMutation) SetField(name string, value ent.Value) error {
 	switch name {
+	case media.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
 	case media.FieldOwnerID:
 		v, ok := value.(int64)
 		if !ok {
@@ -917,6 +1025,13 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDuration(v)
+		return nil
+	case media.FieldIsActivated:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsActivated(v)
 		return nil
 	case media.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1025,6 +1140,9 @@ func (m *MediaMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *MediaMutation) ClearedFields() []string {
 	var fields []string
+	if m.FieldCleared(media.FieldDeletedAt) {
+		fields = append(fields, media.FieldDeletedAt)
+	}
 	if m.FieldCleared(media.FieldURL) {
 		fields = append(fields, media.FieldURL)
 	}
@@ -1054,6 +1172,9 @@ func (m *MediaMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *MediaMutation) ClearField(name string) error {
 	switch name {
+	case media.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
 	case media.FieldURL:
 		m.ClearURL()
 		return nil
@@ -1077,6 +1198,9 @@ func (m *MediaMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *MediaMutation) ResetField(name string) error {
 	switch name {
+	case media.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
 	case media.FieldOwnerID:
 		m.ResetOwnerID()
 		return nil
@@ -1103,6 +1227,9 @@ func (m *MediaMutation) ResetField(name string) error {
 		return nil
 	case media.FieldDuration:
 		m.ResetDuration()
+		return nil
+	case media.FieldIsActivated:
+		m.ResetIsActivated()
 		return nil
 	case media.FieldCreatedAt:
 		m.ResetCreatedAt()

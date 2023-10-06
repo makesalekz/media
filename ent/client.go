@@ -283,12 +283,14 @@ func (c *MediaClient) GetX(ctx context.Context, id int64) *Media {
 
 // Hooks returns the client hooks.
 func (c *MediaClient) Hooks() []Hook {
-	return c.hooks.Media
+	hooks := c.hooks.Media
+	return append(hooks[:len(hooks):len(hooks)], media.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
 func (c *MediaClient) Interceptors() []Interceptor {
-	return c.inters.Media
+	inters := c.inters.Media
+	return append(inters[:len(inters):len(inters)], media.Interceptors[:]...)
 }
 
 func (c *MediaClient) mutate(ctx context.Context, m *MediaMutation) (Value, error) {

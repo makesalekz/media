@@ -3,6 +3,8 @@ package schema
 import (
 	"time"
 
+	"media/ent/mixins"
+
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
 )
@@ -24,6 +26,7 @@ func (Media) Fields() []ent.Field {
 		field.Int32("width").Nillable().Optional(),      // in pixels
 		field.Int32("height").Nillable().Optional(),     // in pixels
 		field.Float32("duration").Nillable().Optional(), // in seconds
+		field.Bool("is_activated").Default(false),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("uploaded_at").Nillable().Optional(),
 	}
@@ -32,4 +35,10 @@ func (Media) Fields() []ent.Field {
 // Edges of the Media.
 func (Media) Edges() []ent.Edge {
 	return nil
+}
+
+func (Media) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixins.SoftDeleteMixin{},
+	}
 }

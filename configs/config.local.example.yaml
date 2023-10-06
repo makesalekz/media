@@ -6,6 +6,7 @@ server:
     addr: 0.0.0.0:9004
     timeout: 30s
 db: host=localhost port=5432 user=me dbname=api password=password sslmode=disable
+nats: nats://localhost:4222
 discovery:
   iam: localhost:9000
   iam_timeout: 30s

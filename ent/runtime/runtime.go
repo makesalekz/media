@@ -2,7 +2,50 @@
 
 package runtime
 
-// The schema-stitching logic is generated in media/ent/runtime.go
+import (
+	"media/ent/media"
+	"media/ent/schema"
+	"time"
+)
+
+// The init function reads all schema descriptors with runtime code
+// (default values, validators, hooks and policies) and stitches it
+// to their package variables.
+func init() {
+	mediaMixin := schema.Media{}.Mixin()
+	mediaMixinHooks0 := mediaMixin[0].Hooks()
+	media.Hooks[0] = mediaMixinHooks0[0]
+	mediaMixinInters0 := mediaMixin[0].Interceptors()
+	media.Interceptors[0] = mediaMixinInters0[0]
+	mediaFields := schema.Media{}.Fields()
+	_ = mediaFields
+	// mediaDescExtension is the schema descriptor for extension field.
+	mediaDescExtension := mediaFields[2].Descriptor()
+	// media.ExtensionValidator is a validator for the "extension" field. It is called by the builders before save.
+	media.ExtensionValidator = func() func(string) error {
+		validators := mediaDescExtension.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(extension string) error {
+			for _, fn := range fns {
+				if err := fn(extension); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// mediaDescIsActivated is the schema descriptor for is_activated field.
+	mediaDescIsActivated := mediaFields[9].Descriptor()
+	// media.DefaultIsActivated holds the default value on creation for the is_activated field.
+	media.DefaultIsActivated = mediaDescIsActivated.Default.(bool)
+	// mediaDescCreatedAt is the schema descriptor for created_at field.
+	mediaDescCreatedAt := mediaFields[10].Descriptor()
+	// media.DefaultCreatedAt holds the default value on creation for the created_at field.
+	media.DefaultCreatedAt = mediaDescCreatedAt.Default.(func() time.Time)
+}
 
 const (
 	Version = "v0.12.3"                                         // Version of ent codegen.

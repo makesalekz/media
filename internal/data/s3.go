@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 )
@@ -54,4 +55,18 @@ func (u *S3Uploader) Upload(ctx context.Context, path string, file *httpbody.Htt
 	}
 
 	return out.Location, nil
+}
+
+func (u *S3Uploader) Delete(ctx context.Context, path string) error {
+	batcher := s3manager.NewBatchDelete(u.session)
+	return batcher.Delete(aws.BackgroundContext(), &s3manager.DeleteObjectsIterator{
+		Objects: []s3manager.BatchDeleteObject{
+			{
+				Object: &s3.DeleteObjectInput{
+					Key:    aws.String(path),
+					Bucket: aws.String(u.bucket),
+				},
+			},
+		},
+	})
 }
