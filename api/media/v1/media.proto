@@ -1,25 +1,19 @@
 syntax = "proto3";
 
-package api.upload.v1;
+package api.media.v1;
 
 import "google/api/annotations.proto";
 import "errors/errors.proto";
 import "google/api/httpbody.proto";
 
-option go_package = "media/api/upload/v1;upload_v1";
+option go_package = "media/api/media/v1;media_v1";
 option java_multiple_files = true;
-option java_package = "api.upload.v1";
+option java_package = "api.media.v1";
 
-service Upload {
+service MediaService {
   rpc UploadMedia (UploadMediaRequest) returns (MediaReply){
     option (google.api.http) = {
-      post: "/v1/media/upload"
-      body: "*"
-    };
-  };
-  rpc UploadAvatar (UploadMediaRequest) returns (MediaReply) {
-    option (google.api.http) = {
-      post: "/v1/media/avatar"
+      post: "/v1/media"
       body: "*"
     };
   };
@@ -29,13 +23,14 @@ service Upload {
 
 message Media {
   int64 id = 1;
-  string url = 2;
-  string fileName = 3;
-  string extension = 4;
-  int32 size = 5;              // in bytes
-  optional int32 width = 6;    // in pixels
-  optional int32 height = 7;   // in pixels
-  optional float duration = 8; // in seconds
+  int64 ownerId = 2;
+  string url = 3;
+  string fileName = 4;
+  string extension = 5;
+  int32 size = 6;              // in bytes
+  optional int32 width = 7;    // in pixels
+  optional int32 height = 8;   // in pixels
+  optional float duration = 9; // in seconds
 }
 
 message UploadMediaRequest {
@@ -53,6 +48,7 @@ message GetMediaRequest {
 
 message GetMediaListRequest {
   repeated int64 mediaIds = 1;
+  bool ownOnly = 2;
 }
 
 message MediaListReply {

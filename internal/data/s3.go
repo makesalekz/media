@@ -22,11 +22,11 @@ type S3Uploader struct {
 func NewS3Uploader(c *Config) (*S3Uploader, error) {
 	region, err := c.Value("AWS_REGION").String()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get AWS_REGION: %v", err)
 	}
 	bucket, err := c.Value("AWS_BUCKET").String()
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get AWS_BUCKET: %v", err)
 	}
 	sess, err := session.NewSession(&aws.Config{
 		Region: aws.String(region)},

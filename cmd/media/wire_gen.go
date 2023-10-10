@@ -54,9 +54,9 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	uploadService := service.NewUploadService(logger, jwtProcessor, mediaUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, uploadService)
-	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, uploadService)
+	mediaService := service.NewMediaService(logger, mediaUsecase)
+	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, mediaService)
+	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, mediaService)
 	app := newApp(logger, config, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()

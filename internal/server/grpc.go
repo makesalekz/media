@@ -1,7 +1,7 @@
 package server
 
 import (
-	upload_v1 "media/api/upload/v1"
+	media_v1 "media/api/media/v1"
 	"media/internal/conf"
 	"media/internal/data"
 	"media/internal/service"
@@ -15,14 +15,14 @@ import (
 )
 
 // NewGRPCServer new a gRPC server.
-func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor, upload *service.UploadService) *grpc.Server {
+func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor, srvc *service.MediaService) *grpc.Server {
 	var opts = []grpc.ServerOption{
 		grpc.Middleware(
 			recovery.Recovery(),
 			metadata.Server(),
 			jwt.Server(func(token *jwtv4.Token) (interface{}, error) {
 				return jwtp.GetSecret(), nil
-			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256)),
+			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims { return &jwtv4.RegisteredClaims{} })),
 		),
 	}
 	if c.Server.Grpc.Network != "" {
@@ -36,7 +36,7 @@ func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	}
 	srv := grpc.NewServer(opts...)
 
-	upload_v1.RegisterUploadServer(srv, upload)
+	media_v1.RegisterMediaServiceServer(srv, srvc)
 
 	return srv
 }

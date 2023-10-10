@@ -4,7 +4,7 @@ import (
 	"io"
 	"net/http"
 
-	upload_v1 "media/api/upload/v1"
+	media_v1 "media/api/media/v1"
 	"media/internal/conf"
 	"media/internal/data"
 	"media/internal/service"
@@ -20,7 +20,7 @@ import (
 )
 
 // NewHTTPServer new an HTTP server.
-func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor, upload *service.UploadService) *khttp.Server {
+func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor, srvc *service.MediaService) *khttp.Server {
 	var opts = []khttp.ServerOption{
 		khttp.Middleware(
 			recovery.Recovery(),
@@ -41,8 +41,8 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 			}
 			defer r.Body.Close()
 
-			v.(*upload_v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
-			v.(*upload_v1.UploadMediaRequest).Content = &httpbody.HttpBody{
+			v.(*media_v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
+			v.(*media_v1.UploadMediaRequest).Content = &httpbody.HttpBody{
 				ContentType: http.DetectContentType(file),
 				Data:        file,
 			}
@@ -60,7 +60,7 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	}
 	srv := khttp.NewServer(opts...)
 
-	upload_v1.RegisterUploadHTTPServer(srv, upload)
+	media_v1.RegisterMediaServiceHTTPServer(srv, srvc)
 
 	return srv
 }

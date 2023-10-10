@@ -12,13 +12,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type FilterMediaDto struct {
+	OwnerId  *int64
+	MediaIds []int64
+}
+
 // MediaRepo
 type MediaRepo interface {
 	CreateMedia(ctx context.Context, ownerId int64, fileName, extension string, size int) (*ent.Media, error)
 	DeleteMedia(ctx context.Context, mediaId int64) error
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
-	GetMediaList(ctx context.Context, mediaIds []int64) ([]*ent.Media, error)
+	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
 }
 
 type mediaRepo struct {
@@ -61,6 +66,12 @@ func (r *mediaRepo) GetMedia(ctx context.Context, mediaId int64) (*ent.Media, er
 	return r.db.Media.Get(ctx, mediaId)
 }
 
-func (r *mediaRepo) GetMediaList(ctx context.Context, mediaIds []int64) ([]*ent.Media, error) {
-	return r.db.Media.Query().Where(media.IDIn(mediaIds...)).All(ctx)
+func (r *mediaRepo) GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error) {
+	query := r.db.Media.Query().Where(media.IDIn(filter.MediaIds...))
+
+	if filter.OwnerId != nil {
+		query.Where(media.OwnerID(*filter.OwnerId))
+	}
+
+	return query.All(ctx)
 }
