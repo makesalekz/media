@@ -42,6 +42,7 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 			defer r.Body.Close()
 
 			v.(*media_v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
+			v.(*media_v1.UploadMediaRequest).FilePath = r.Header.Get("X-File-Path")
 			v.(*media_v1.UploadMediaRequest).Content = &httpbody.HttpBody{
 				ContentType: http.DetectContentType(file),
 				Data:        file,
