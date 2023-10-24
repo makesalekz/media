@@ -36,6 +36,7 @@ message Media {
 message UploadMediaRequest {
   google.api.HttpBody content = 1;
   string fileName = 2; // header: X-File-Name
+  string filePath = 3; // header: X-File-Path
 }
 
 message MediaReply {

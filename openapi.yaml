@@ -65,5 +65,7 @@ components:
                     type: string
                 fileName:
                     type: string
+                filePath:
+                    type: string
 tags:
     - name: MediaService

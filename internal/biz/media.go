@@ -2,9 +2,9 @@ package biz
 
 import (
 	"context"
-	_ "embed"
 	"encoding/json"
-	"strings"
+	"fmt"
+	"time"
 
 	media_v1 "media/api/media/v1"
 	"media/ent"
@@ -13,6 +13,7 @@ import (
 
 	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 )
@@ -79,22 +80,24 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 }
 
 func getExtension(contentType string) (string, bool) {
-	allowedContentTypes := []string{
-		"image/jpeg",
-		"image/png",
-		"image/webp",
+	allowedContentTypes := map[string]string{
+		"image/jpeg":      "jpg",
+		"image/png":       "png",
+		"image/webp":      "webp",
+		"application/zip": "zip",
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
 	}
 
-	for _, allowedContentType := range allowedContentTypes {
-		if contentType == allowedContentType {
-			return strings.Split(contentType, "/")[1], true
+	for mimeType, extension := range allowedContentTypes {
+		if contentType == mimeType {
+			return extension, true
 		}
 	}
 
 	return "", false
 }
 
-func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName string, file *httpbody.HttpBody) (*ent.Media, error) {
+func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath string, file *httpbody.HttpBody) (*ent.Media, error) {
 	userId, ok := uc.jwt.GetUserIdFromContext(ctx)
 	if !ok {
 		return nil, media_v1.ErrorUnauthorized("Unauthorized")
@@ -106,7 +109,21 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName string, file *
 		return nil, media_v1.ErrorInvalidContentType("Invalid content type: %s", contentType)
 	}
 
-	media, err := uc.mediaRepo.CreateMedia(ctx, userId, fileName, extension, len(file.GetData()))
+	path := filePath
+	if path == "" {
+		uuid := uuid.NewString()
+		path = fmt.Sprintf("%s/%s.%s", time.Now().Format("2006/01/02"), uuid, extension)
+	} else {
+		path += fileName
+	}
+
+	media, err := uc.mediaRepo.CreateMedia(ctx, data.CreateMediaDto{
+		OwnerId:   userId,
+		FileName:  fileName,
+		Path:      path,
+		Extension: extension,
+		Size:      int32(len(file.GetData())),
+	})
 	if err != nil {
 		return nil, media_v1.ErrorDatabaseQuery("CreateMedia error: %s", err)
 	}

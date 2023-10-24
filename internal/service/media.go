@@ -42,7 +42,7 @@ func replyMedia(media *ent.Media) *media_v1.Media {
 }
 
 func (s *MediaService) UploadMedia(ctx context.Context, req *media_v1.UploadMediaRequest) (*media_v1.MediaReply, error) {
-	media, err := s.uc.UploadMedia(ctx, req.FileName, req.Content)
+	media, err := s.uc.UploadMedia(ctx, req.FileName, req.FilePath, req.Content)
 	if err != nil {
 		return nil, err
 	}

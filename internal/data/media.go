@@ -2,15 +2,21 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"media/ent"
 	"media/ent/media"
 
-	"github.com/google/uuid"
 	_ "github.com/lib/pq"
 )
+
+type CreateMediaDto struct {
+	OwnerId   int64
+	FileName  string
+	Path      string
+	Extension string
+	Size      int32
+}
 
 type FilterMediaDto struct {
 	OwnerId  *int64
@@ -19,7 +25,7 @@ type FilterMediaDto struct {
 
 // MediaRepo
 type MediaRepo interface {
-	CreateMedia(ctx context.Context, ownerId int64, fileName, extension string, size int) (*ent.Media, error)
+	CreateMedia(ctx context.Context, dto CreateMediaDto) (*ent.Media, error)
 	DeleteMedia(ctx context.Context, mediaId int64) error
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
@@ -37,16 +43,13 @@ func NewMediaRepo(d *Data) MediaRepo {
 	}
 }
 
-func (r *mediaRepo) CreateMedia(ctx context.Context, ownerId int64, fileName, extension string, size int) (*ent.Media, error) {
-	uuid := uuid.NewString()
-	path := fmt.Sprintf("%s/%s.%s", time.Now().Format("2006/01/02"), uuid, extension)
-
+func (r *mediaRepo) CreateMedia(ctx context.Context, dto CreateMediaDto) (*ent.Media, error) {
 	return r.db.Media.Create().
-		SetOwnerID(ownerId).
-		SetFileName(fileName).
-		SetPath(path).
-		SetExtension(extension).
-		SetSize(int32(size)).
+		SetOwnerID(dto.OwnerId).
+		SetFileName(dto.FileName).
+		SetPath(dto.Path).
+		SetExtension(dto.Extension).
+		SetSize(dto.Size).
 		Save(ctx)
 }
 
