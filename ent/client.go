@@ -8,13 +8,12 @@ import (
 	"fmt"
 	"log"
 
-	"media/ent/migrate"
-
-	"media/ent/media"
+	"gitlab.calendaria.team/services/media/ent/migrate"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/media/ent/media"
 )
 
 // Client is the client that holds all ent builders.

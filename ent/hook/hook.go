@@ -5,7 +5,8 @@ package hook
 import (
 	"context"
 	"fmt"
-	"media/ent"
+
+	"gitlab.calendaria.team/services/media/ent"
 )
 
 // The MediaFunc type is an adapter to allow the use of ordinary

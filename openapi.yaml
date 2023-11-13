@@ -15,7 +15,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/api.media.v1.UploadMediaRequest'
+                            $ref: '#/components/schemas/media.v1.UploadMediaRequest'
                 required: true
             responses:
                 "200":
@@ -23,10 +23,10 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/api.media.v1.MediaReply'
+                                $ref: '#/components/schemas/media.v1.MediaReply'
 components:
     schemas:
-        api.media.v1.Media:
+        media.v1.Media:
             type: object
             properties:
                 id:
@@ -51,12 +51,12 @@ components:
                 duration:
                     type: number
                     format: float
-        api.media.v1.MediaReply:
+        media.v1.MediaReply:
             type: object
             properties:
                 media:
-                    $ref: '#/components/schemas/api.media.v1.Media'
-        api.media.v1.UploadMediaRequest:
+                    $ref: '#/components/schemas/media.v1.Media'
+        media.v1.UploadMediaRequest:
             type: object
             properties:
                 content:

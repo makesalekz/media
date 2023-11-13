@@ -4,12 +4,12 @@ package ent
 
 import (
 	"context"
-	"media/ent/media"
-	"media/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/media/ent/media"
+	"gitlab.calendaria.team/services/media/ent/predicate"
 )
 
 // MediaDelete is the builder for deleting a Media entity.

@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"media/ent"
-	"media/ent/media"
+	"gitlab.calendaria.team/services/media/ent"
+	"gitlab.calendaria.team/services/media/ent/media"
 
 	_ "github.com/lib/pq"
 )

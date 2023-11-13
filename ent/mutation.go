@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"media/ent/media"
-	"media/ent/predicate"
 	"sync"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/media/ent/media"
+	"gitlab.calendaria.team/services/media/ent/predicate"
 )
 
 const (

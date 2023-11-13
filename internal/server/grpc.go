@@ -1,17 +1,16 @@
 package server
 
 import (
-	media_v1 "media/api/media/v1"
-	"media/internal/conf"
-	"media/internal/data"
-	"media/internal/service"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
+	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
+	"gitlab.calendaria.team/services/media/internal/conf"
+	"gitlab.calendaria.team/services/media/internal/data"
+	"gitlab.calendaria.team/services/media/internal/service"
 )
 
 // NewGRPCServer new a gRPC server.

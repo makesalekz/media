@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"media/ent/media"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/media/ent/media"
 )
 
 // MediaCreate is the builder for creating a Media entity.

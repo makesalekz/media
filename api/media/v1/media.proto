@@ -1,14 +1,14 @@
 syntax = "proto3";
 
-package api.media.v1;
+package media.v1;
 
 import "google/api/annotations.proto";
 import "errors/errors.proto";
 import "google/api/httpbody.proto";
 
-option go_package = "media/api/media/v1;media_v1";
+option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
 option java_multiple_files = true;
-option java_package = "api.media.v1";
+option java_package = "media.v1";
 
 service MediaService {
   rpc UploadMedia (UploadMediaRequest) returns (MediaReply){

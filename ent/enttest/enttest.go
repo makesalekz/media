@@ -4,13 +4,13 @@ package enttest
 
 import (
 	"context"
-	"media/ent"
-	// required by schema hooks.
-	_ "media/ent/runtime"
 
-	"media/ent/migrate"
+	"gitlab.calendaria.team/services/media/ent"
+	// required by schema hooks.
+	_ "gitlab.calendaria.team/services/media/ent/runtime"
 
 	"entgo.io/ent/dialect/sql/schema"
+	"gitlab.calendaria.team/services/media/ent/migrate"
 )
 
 type (
