@@ -4,7 +4,7 @@ services:
   db:
     container_name: ${SERVICE_NAME}_db
     restart: always
-    image: postgres:latest
+    image: postgres:15.4
     volumes:
       - ${DB_VOLUME}:/var/lib/postgresql/data
     ports:
