@@ -44,7 +44,7 @@ db:
 start:
 	set -a && source .env && set +a && \
 	export REGISTRY_IMAGE=busybox && \
-	docker compose build dev-service && \
+	docker compose build --ssh default=$$HOME/.ssh/id_rsa dev-service && \
 	docker compose --profile=dev up -d dev-service
 
 .PHONY: stop
