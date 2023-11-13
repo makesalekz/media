@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"media/ent/media"
-	"media/ent/predicate"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/media/ent/media"
+	"gitlab.calendaria.team/services/media/ent/predicate"
 )
 
 // MediaUpdate is the builder for updating Media entities.

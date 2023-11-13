@@ -3,7 +3,7 @@ package schema
 import (
 	"time"
 
-	"media/ent/mixins"
+	"gitlab.calendaria.team/services/media/ent/mixins"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"

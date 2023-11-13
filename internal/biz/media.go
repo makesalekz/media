@@ -6,15 +6,14 @@ import (
 	"fmt"
 	"time"
 
-	media_v1 "media/api/media/v1"
-	"media/ent"
-	"media/internal/conf"
-	"media/internal/data"
-
 	consul "github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	"github.com/nats-io/nats.go"
+	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
+	"gitlab.calendaria.team/services/media/ent"
+	"gitlab.calendaria.team/services/media/internal/conf"
+	"gitlab.calendaria.team/services/media/internal/data"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 )
 

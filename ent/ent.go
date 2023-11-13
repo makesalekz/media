@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"media/ent/media"
 	"reflect"
 	"sync"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"gitlab.calendaria.team/services/media/ent/media"
 )
 
 // ent aliases to avoid import conflicts in user's code.

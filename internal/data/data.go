@@ -4,13 +4,13 @@ import (
 	"context"
 	"os"
 
-	"media/ent"
-	_ "media/ent/runtime"
-	"media/internal/conf"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
+	"gitlab.calendaria.team/services/media/ent"
+	"gitlab.calendaria.team/services/media/internal/conf"
+
 	_ "github.com/lib/pq"
+	_ "gitlab.calendaria.team/services/media/ent/runtime"
 )
 
 // ProviderSet is data providers.

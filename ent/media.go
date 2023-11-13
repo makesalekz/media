@@ -4,12 +4,12 @@ package ent
 
 import (
 	"fmt"
-	"media/ent/media"
 	"strings"
 	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"gitlab.calendaria.team/services/media/ent/media"
 )
 
 // Media is the model entity for the Media schema.

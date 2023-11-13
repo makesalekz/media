@@ -2,12 +2,11 @@ package service
 
 import (
 	"context"
-	"media/ent"
-
-	media_v1 "media/api/media/v1"
-	"media/internal/biz"
 
 	"github.com/go-kratos/kratos/v2/log"
+	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
+	"gitlab.calendaria.team/services/media/ent"
+	"gitlab.calendaria.team/services/media/internal/biz"
 )
 
 type MediaService struct {

@@ -5,14 +5,13 @@ import (
 	"fmt"
 	"os"
 
-	"media/internal/conf"
-
 	"github.com/go-kratos/consul/registry"
 	"github.com/go-kratos/kratos/contrib/config/consul/v2"
 	"github.com/go-kratos/kratos/v2/config"
 	"github.com/hashicorp/consul/api"
 	vault "github.com/hashicorp/vault/api"
 	auth "github.com/hashicorp/vault/api/auth/approle"
+	"gitlab.calendaria.team/services/media/internal/conf"
 )
 
 type Config struct {

@@ -3,9 +3,10 @@
 package runtime
 
 import (
-	"media/ent/media"
-	"media/ent/schema"
 	"time"
+
+	"gitlab.calendaria.team/services/media/ent/media"
+	"gitlab.calendaria.team/services/media/ent/schema"
 )
 
 // The init function reads all schema descriptors with runtime code

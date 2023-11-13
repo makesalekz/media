@@ -6,12 +6,12 @@ import (
 	"context"
 	"fmt"
 	"math"
-	"media/ent/media"
-	"media/ent/predicate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"gitlab.calendaria.team/services/media/ent/media"
+	"gitlab.calendaria.team/services/media/ent/predicate"
 )
 
 // MediaQuery is the builder for querying Media entities.
