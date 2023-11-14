@@ -22,7 +22,7 @@ docker-build:
     REGISTRY_IMAGE: ${CI_REGISTRY_IMAGE}:${ENVIRONMENT_CODE}
   script:
     # build and push to registry
-    - docker build ${DOCKER_BUILD_ARGS} -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} .
+    - docker build --ssh default=~/.ssh/id_gitlab -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} .
     - tag_sha_latest_and_push
     # set environment
     - docker exec vault vault write auth/approle/role/app-${CI_PROJECT_NAME} policies="app_${CI_PROJECT_NAME}"
