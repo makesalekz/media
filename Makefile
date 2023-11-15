@@ -52,7 +52,7 @@ start:
 stop:
 	set -a && source .env && set +a && \
 	export REGISTRY_IMAGE=busybox && \
-	docker compose --profile=dev down
+	docker compose --profile=dev down dev-service
 
 .PHONY: config
 # generate internal proto

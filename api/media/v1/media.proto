@@ -70,4 +70,5 @@ enum ErrorReason {
   INVALID_CONTENT_TYPE = 11 [(errors.code) = 400];
 
   S3UPLOAD_FAILED = 20;
+  NOT_FOUND = 21 [(errors.code) = 404];
 }

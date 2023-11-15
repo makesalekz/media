@@ -145,6 +145,9 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath stri
 func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error) {
 	media, err := uc.mediaRepo.GetMedia(ctx, mediaId)
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, media_v1.ErrorNotFound("Media not found")
+		}
 		return nil, media_v1.ErrorDatabaseQuery("GetMedia error: %s", err)
 	}
 
@@ -168,6 +171,9 @@ func (uc *MediaUsecase) GetMediaList(ctx context.Context, ownOnly bool, mediaIds
 	mediaList, err := uc.mediaRepo.GetMediaList(ctx, filter)
 	if err != nil {
 		return nil, media_v1.ErrorDatabaseQuery("GetMediaList error: %s", err)
+	}
+	if len(mediaList) == 0 {
+		return nil, media_v1.ErrorNotFound("Media not found")
 	}
 
 	return mediaList, nil
