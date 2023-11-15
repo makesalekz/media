@@ -172,9 +172,6 @@ func (uc *MediaUsecase) GetMediaList(ctx context.Context, ownOnly bool, mediaIds
 	if err != nil {
 		return nil, media_v1.ErrorDatabaseQuery("GetMediaList error: %s", err)
 	}
-	if len(mediaList) == 0 {
-		return nil, media_v1.ErrorNotFound("Media not found")
-	}
 
 	return mediaList, nil
 }
