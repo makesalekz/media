@@ -34,8 +34,8 @@ services:
       - VAULT_ADDRESS=${VAULT_ADDRESS}
       - VAULT_ROLE_ID=${VAULT_ROLE_ID}
       - VAULT_SECRET_ID_PATH=/run/secrets/vault_secret_id
-      - AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     secrets:
       - vault_secret_id
   dev-service:
@@ -59,8 +59,8 @@ services:
       - CONSUL_ADDRESS=http://consul:8500
       - VAULT_ADDRESS=http://vault:8200
       - VAULT_TOKEN=myroot
-      - AWS_ACCESS_KEY_ID={AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY={AWS_SECRET_ACCESS_KEY}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
 
 volumes:
   dbvol:
