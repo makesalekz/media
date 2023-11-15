@@ -96,3 +96,15 @@ func IsS3uploadFailed(err error) bool {
 func ErrorS3uploadFailed(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ErrorReason_S3UPLOAD_FAILED.String(), fmt.Sprintf(format, args...))
 }
+
+func IsNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_NOT_FOUND.String() && e.Code == 404
+}
+
+func ErrorNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, ErrorReason_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
