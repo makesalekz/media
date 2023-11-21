@@ -71,5 +71,4 @@ enum ErrorReason {
 
   S3UPLOAD_FAILED = 20;
   NOT_FOUND = 21 [(errors.code) = 404];
-  VIDEO_PROCESSING_ERROR = 22;
 }
