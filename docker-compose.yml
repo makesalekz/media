@@ -54,6 +54,7 @@ services:
     profiles:
       - dev
     environment:
+      - DEBUG=true
       - AUTOMIGRATE=true
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=http://consul:8500

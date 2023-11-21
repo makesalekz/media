@@ -29,6 +29,7 @@ type MediaRepo interface {
 	DeleteMedia(ctx context.Context, mediaId int64) error
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
+	SetVideoParameters(ctx context.Context, video *ent.Media, duration float32, thumbnailUrl string) (*ent.Media, error)
 	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
 }
 
@@ -62,6 +63,13 @@ func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, URL 
 	return media.Update().
 		SetURL(URL).
 		SetUploadedAt(time.Now()).
+		Save(ctx)
+}
+
+func (r *mediaRepo) SetVideoParameters(ctx context.Context, video *ent.Media, duration float32, thumbnailUrl string) (*ent.Media, error) {
+	return video.Update().
+		SetThumbnailURL(thumbnailUrl).
+		SetDuration(duration).
 		Save(ctx)
 }
 

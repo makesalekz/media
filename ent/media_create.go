@@ -120,6 +120,20 @@ func (mc *MediaCreate) SetNillableDuration(f *float32) *MediaCreate {
 	return mc
 }
 
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (mc *MediaCreate) SetThumbnailURL(s string) *MediaCreate {
+	mc.mutation.SetThumbnailURL(s)
+	return mc
+}
+
+// SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableThumbnailURL(s *string) *MediaCreate {
+	if s != nil {
+		mc.SetThumbnailURL(*s)
+	}
+	return mc
+}
+
 // SetIsActivated sets the "is_activated" field.
 func (mc *MediaCreate) SetIsActivated(b bool) *MediaCreate {
 	mc.mutation.SetIsActivated(b)
@@ -306,6 +320,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.Duration(); ok {
 		_spec.SetField(media.FieldDuration, field.TypeFloat32, value)
 		_node.Duration = &value
+	}
+	if value, ok := mc.mutation.ThumbnailURL(); ok {
+		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
+		_node.ThumbnailURL = &value
 	}
 	if value, ok := mc.mutation.IsActivated(); ok {
 		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)

@@ -48,6 +48,7 @@ type MediaMutation struct {
 	addheight     *int32
 	duration      *float32
 	addduration   *float32
+	thumbnail_url *string
 	is_activated  *bool
 	created_at    *time.Time
 	uploaded_at   *time.Time
@@ -683,6 +684,55 @@ func (m *MediaMutation) ResetDuration() {
 	delete(m.clearedFields, media.FieldDuration)
 }
 
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (m *MediaMutation) SetThumbnailURL(s string) {
+	m.thumbnail_url = &s
+}
+
+// ThumbnailURL returns the value of the "thumbnail_url" field in the mutation.
+func (m *MediaMutation) ThumbnailURL() (r string, exists bool) {
+	v := m.thumbnail_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldThumbnailURL returns the old "thumbnail_url" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldThumbnailURL(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldThumbnailURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldThumbnailURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldThumbnailURL: %w", err)
+	}
+	return oldValue.ThumbnailURL, nil
+}
+
+// ClearThumbnailURL clears the value of the "thumbnail_url" field.
+func (m *MediaMutation) ClearThumbnailURL() {
+	m.thumbnail_url = nil
+	m.clearedFields[media.FieldThumbnailURL] = struct{}{}
+}
+
+// ThumbnailURLCleared returns if the "thumbnail_url" field was cleared in this mutation.
+func (m *MediaMutation) ThumbnailURLCleared() bool {
+	_, ok := m.clearedFields[media.FieldThumbnailURL]
+	return ok
+}
+
+// ResetThumbnailURL resets all changes to the "thumbnail_url" field.
+func (m *MediaMutation) ResetThumbnailURL() {
+	m.thumbnail_url = nil
+	delete(m.clearedFields, media.FieldThumbnailURL)
+}
+
 // SetIsActivated sets the "is_activated" field.
 func (m *MediaMutation) SetIsActivated(b bool) {
 	m.is_activated = &b
@@ -838,7 +888,7 @@ func (m *MediaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MediaMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 14)
 	if m.deleted_at != nil {
 		fields = append(fields, media.FieldDeletedAt)
 	}
@@ -868,6 +918,9 @@ func (m *MediaMutation) Fields() []string {
 	}
 	if m.duration != nil {
 		fields = append(fields, media.FieldDuration)
+	}
+	if m.thumbnail_url != nil {
+		fields = append(fields, media.FieldThumbnailURL)
 	}
 	if m.is_activated != nil {
 		fields = append(fields, media.FieldIsActivated)
@@ -906,6 +959,8 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 		return m.Height()
 	case media.FieldDuration:
 		return m.Duration()
+	case media.FieldThumbnailURL:
+		return m.ThumbnailURL()
 	case media.FieldIsActivated:
 		return m.IsActivated()
 	case media.FieldCreatedAt:
@@ -941,6 +996,8 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldHeight(ctx)
 	case media.FieldDuration:
 		return m.OldDuration(ctx)
+	case media.FieldThumbnailURL:
+		return m.OldThumbnailURL(ctx)
 	case media.FieldIsActivated:
 		return m.OldIsActivated(ctx)
 	case media.FieldCreatedAt:
@@ -1025,6 +1082,13 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDuration(v)
+		return nil
+	case media.FieldThumbnailURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetThumbnailURL(v)
 		return nil
 	case media.FieldIsActivated:
 		v, ok := value.(bool)
@@ -1155,6 +1219,9 @@ func (m *MediaMutation) ClearedFields() []string {
 	if m.FieldCleared(media.FieldDuration) {
 		fields = append(fields, media.FieldDuration)
 	}
+	if m.FieldCleared(media.FieldThumbnailURL) {
+		fields = append(fields, media.FieldThumbnailURL)
+	}
 	if m.FieldCleared(media.FieldUploadedAt) {
 		fields = append(fields, media.FieldUploadedAt)
 	}
@@ -1186,6 +1253,9 @@ func (m *MediaMutation) ClearField(name string) error {
 		return nil
 	case media.FieldDuration:
 		m.ClearDuration()
+		return nil
+	case media.FieldThumbnailURL:
+		m.ClearThumbnailURL()
 		return nil
 	case media.FieldUploadedAt:
 		m.ClearUploadedAt()
@@ -1227,6 +1297,9 @@ func (m *MediaMutation) ResetField(name string) error {
 		return nil
 	case media.FieldDuration:
 		m.ResetDuration()
+		return nil
+	case media.FieldThumbnailURL:
+		m.ResetThumbnailURL()
 		return nil
 	case media.FieldIsActivated:
 		m.ResetIsActivated()

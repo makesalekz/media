@@ -162,6 +162,26 @@ func (mu *MediaUpdate) ClearDuration() *MediaUpdate {
 	return mu
 }
 
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (mu *MediaUpdate) SetThumbnailURL(s string) *MediaUpdate {
+	mu.mutation.SetThumbnailURL(s)
+	return mu
+}
+
+// SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableThumbnailURL(s *string) *MediaUpdate {
+	if s != nil {
+		mu.SetThumbnailURL(*s)
+	}
+	return mu
+}
+
+// ClearThumbnailURL clears the value of the "thumbnail_url" field.
+func (mu *MediaUpdate) ClearThumbnailURL() *MediaUpdate {
+	mu.mutation.ClearThumbnailURL()
+	return mu
+}
+
 // SetIsActivated sets the "is_activated" field.
 func (mu *MediaUpdate) SetIsActivated(b bool) *MediaUpdate {
 	mu.mutation.SetIsActivated(b)
@@ -281,6 +301,12 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.DurationCleared() {
 		_spec.ClearField(media.FieldDuration, field.TypeFloat32)
+	}
+	if value, ok := mu.mutation.ThumbnailURL(); ok {
+		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
+	}
+	if mu.mutation.ThumbnailURLCleared() {
+		_spec.ClearField(media.FieldThumbnailURL, field.TypeString)
 	}
 	if value, ok := mu.mutation.IsActivated(); ok {
 		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)
@@ -445,6 +471,26 @@ func (muo *MediaUpdateOne) ClearDuration() *MediaUpdateOne {
 	return muo
 }
 
+// SetThumbnailURL sets the "thumbnail_url" field.
+func (muo *MediaUpdateOne) SetThumbnailURL(s string) *MediaUpdateOne {
+	muo.mutation.SetThumbnailURL(s)
+	return muo
+}
+
+// SetNillableThumbnailURL sets the "thumbnail_url" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableThumbnailURL(s *string) *MediaUpdateOne {
+	if s != nil {
+		muo.SetThumbnailURL(*s)
+	}
+	return muo
+}
+
+// ClearThumbnailURL clears the value of the "thumbnail_url" field.
+func (muo *MediaUpdateOne) ClearThumbnailURL() *MediaUpdateOne {
+	muo.mutation.ClearThumbnailURL()
+	return muo
+}
+
 // SetIsActivated sets the "is_activated" field.
 func (muo *MediaUpdateOne) SetIsActivated(b bool) *MediaUpdateOne {
 	muo.mutation.SetIsActivated(b)
@@ -594,6 +640,12 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 	}
 	if muo.mutation.DurationCleared() {
 		_spec.ClearField(media.FieldDuration, field.TypeFloat32)
+	}
+	if value, ok := muo.mutation.ThumbnailURL(); ok {
+		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
+	}
+	if muo.mutation.ThumbnailURLCleared() {
+		_spec.ClearField(media.FieldThumbnailURL, field.TypeString)
 	}
 	if value, ok := muo.mutation.IsActivated(); ok {
 		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)
