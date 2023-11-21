@@ -39,6 +39,8 @@ components:
                     type: string
                 extension:
                     type: string
+                createdAt:
+                    type: string
                 size:
                     type: integer
                     format: int32
