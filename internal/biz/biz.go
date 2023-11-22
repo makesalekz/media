@@ -21,6 +21,9 @@ var (
 		"video/3gpp":      "3gp",
 		"video/3gpp2":     "3g2",
 		"video/qucktime":  "mov",
+
+		"application/zip": "zip",
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
 	}
 )
 
