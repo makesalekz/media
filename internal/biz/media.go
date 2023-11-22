@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	consul "github.com/go-kratos/consul/registry"
@@ -138,7 +139,7 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath stri
 		return nil, media_v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err)
 	}
 
-	if _, ok := allowedContentTypesConst[contentType]; ok {
+	if strings.Contains(contentType, "video") {
 		go uc.processVideo(file, userId, media)
 	}
 
