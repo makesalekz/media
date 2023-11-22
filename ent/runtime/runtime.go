@@ -39,11 +39,11 @@ func init() {
 		}
 	}()
 	// mediaDescIsActivated is the schema descriptor for is_activated field.
-	mediaDescIsActivated := mediaFields[9].Descriptor()
+	mediaDescIsActivated := mediaFields[11].Descriptor()
 	// media.DefaultIsActivated holds the default value on creation for the is_activated field.
 	media.DefaultIsActivated = mediaDescIsActivated.Default.(bool)
 	// mediaDescCreatedAt is the schema descriptor for created_at field.
-	mediaDescCreatedAt := mediaFields[10].Descriptor()
+	mediaDescCreatedAt := mediaFields[12].Descriptor()
 	// media.DefaultCreatedAt holds the default value on creation for the created_at field.
 	media.DefaultCreatedAt = mediaDescCreatedAt.Default.(func() time.Time)
 }

@@ -27,10 +27,11 @@ message Media {
   string url = 3;
   string fileName = 4;
   string extension = 5;
-  int32 size = 6;              // in bytes
-  optional int32 width = 7;    // in pixels
-  optional int32 height = 8;   // in pixels
-  optional float duration = 9; // in seconds
+  string createdAt = 6;
+  int32 size = 7;              // in bytes
+  optional int32 width = 8;    // in pixels
+  optional int32 height = 9;   // in pixels
+  optional float duration = 10; // in seconds
 }
 
 message UploadMediaRequest {

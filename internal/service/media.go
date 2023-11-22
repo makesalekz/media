@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
@@ -33,6 +34,7 @@ func replyMedia(media *ent.Media) *media_v1.Media {
 		Width:     media.Width,
 		Height:    media.Height,
 		Duration:  media.Duration,
+		CreatedAt: media.CreatedAt.Format(time.RFC3339),
 	}
 	if media.URL != nil {
 		result.Url = *media.URL

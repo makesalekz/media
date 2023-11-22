@@ -34,6 +34,10 @@ const (
 	FieldHeight = "height"
 	// FieldDuration holds the string denoting the duration field in the database.
 	FieldDuration = "duration"
+	// FieldThumbnailURL holds the string denoting the thumbnail_url field in the database.
+	FieldThumbnailURL = "thumbnail_url"
+	// FieldThumbnailPath holds the string denoting the thumbnail_path field in the database.
+	FieldThumbnailPath = "thumbnail_path"
 	// FieldIsActivated holds the string denoting the is_activated field in the database.
 	FieldIsActivated = "is_activated"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -57,6 +61,8 @@ var Columns = []string{
 	FieldWidth,
 	FieldHeight,
 	FieldDuration,
+	FieldThumbnailURL,
+	FieldThumbnailPath,
 	FieldIsActivated,
 	FieldCreatedAt,
 	FieldUploadedAt,
@@ -144,6 +150,16 @@ func ByHeight(opts ...sql.OrderTermOption) OrderOption {
 // ByDuration orders the results by the duration field.
 func ByDuration(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDuration, opts...).ToFunc()
+}
+
+// ByThumbnailURL orders the results by the thumbnail_url field.
+func ByThumbnailURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThumbnailURL, opts...).ToFunc()
+}
+
+// ByThumbnailPath orders the results by the thumbnail_path field.
+func ByThumbnailPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldThumbnailPath, opts...).ToFunc()
 }
 
 // ByIsActivated orders the results by the is_activated field.
