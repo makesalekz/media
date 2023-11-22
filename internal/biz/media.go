@@ -72,9 +72,9 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 			return false
 		}
 
-		if media.ThumbnailURL != nil {
-			if *media.ThumbnailURL != "" {
-				err = uc.s3.Delete(ctx, *media.ThumbnailURL)
+		if media.ThumbnailPath != nil {
+			if *media.ThumbnailPath != "" {
+				err = uc.s3.Delete(ctx, *media.ThumbnailPath)
 				if err != nil {
 					return false
 				}
@@ -140,7 +140,7 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath stri
 			return nil, media_v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 		}
 	} else {
-		location = uuid.NewString() + "_debug"
+		location = uuid.NewString() + "_debug_media_location"
 	}
 
 	media, err = uc.mediaRepo.SetMediaLocation(ctx, media, location)
@@ -201,10 +201,11 @@ func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, medi
 		return err
 	}
 
+	var path string
 	var location string
 	if uc.s3.Session != nil {
 		uuid := uuid.NewString()
-		path := fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, thumbnail.Extension)
+		path = fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, thumbnail.Extension)
 
 		location, err = uc.s3.Upload(context.Background(), path, thumbnail.Data, thumbnail.MimeType)
 		if err != nil {
@@ -217,7 +218,9 @@ func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, medi
 			return err
 		}
 	} else {
-		location = uuid.NewString() + "_debug"
+		uuid := uuid.NewString()
+		location = uuid + "_debug_thumbnail_location"
+		path = uuid + "_debug_thumbnail_path"
 	}
 
 	duration, err := vp.ExtractDurationFromMetadata(meta)
@@ -225,7 +228,14 @@ func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, medi
 		uc.log.Errorf("uc.processVideo: ExtractDurationFromMetadata error: %v", err)
 	}
 
-	media, err = uc.mediaRepo.SetVideoParameters(context.Background(), media, duration, location)
+	media, err = uc.mediaRepo.SetVideoParameters(
+		context.Background(),
+		media,
+		data.SetVideoParamsDto{
+			Duration:      duration,
+			ThumbnailUrl:  location,
+			ThumbnailPath: path,
+		})
 	if err != nil {
 		err = media_v1.ErrorDatabaseQuery("uc.processVideo: SetVideoParameters error: %s", err)
 		uc.log.Error(err)

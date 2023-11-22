@@ -18,6 +18,12 @@ type CreateMediaDto struct {
 	Size      int32
 }
 
+type SetVideoParamsDto struct {
+	Duration      float32
+	ThumbnailUrl  string
+	ThumbnailPath string
+}
+
 type FilterMediaDto struct {
 	OwnerId  *int64
 	MediaIds []int64
@@ -29,7 +35,7 @@ type MediaRepo interface {
 	DeleteMedia(ctx context.Context, mediaId int64) error
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
-	SetVideoParameters(ctx context.Context, video *ent.Media, duration float32, thumbnailUrl string) (*ent.Media, error)
+	SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error)
 	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
 }
 
@@ -66,10 +72,11 @@ func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, URL 
 		Save(ctx)
 }
 
-func (r *mediaRepo) SetVideoParameters(ctx context.Context, video *ent.Media, duration float32, thumbnailUrl string) (*ent.Media, error) {
+func (r *mediaRepo) SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error) {
 	return video.Update().
-		SetThumbnailURL(thumbnailUrl).
-		SetDuration(duration).
+		SetThumbnailURL(dto.ThumbnailUrl).
+		SetThumbnailPath(dto.ThumbnailPath).
+		SetDuration(dto.Duration).
 		Save(ctx)
 }
 

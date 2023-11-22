@@ -134,6 +134,20 @@ func (mc *MediaCreate) SetNillableThumbnailURL(s *string) *MediaCreate {
 	return mc
 }
 
+// SetThumbnailPath sets the "thumbnail_path" field.
+func (mc *MediaCreate) SetThumbnailPath(s string) *MediaCreate {
+	mc.mutation.SetThumbnailPath(s)
+	return mc
+}
+
+// SetNillableThumbnailPath sets the "thumbnail_path" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableThumbnailPath(s *string) *MediaCreate {
+	if s != nil {
+		mc.SetThumbnailPath(*s)
+	}
+	return mc
+}
+
 // SetIsActivated sets the "is_activated" field.
 func (mc *MediaCreate) SetIsActivated(b bool) *MediaCreate {
 	mc.mutation.SetIsActivated(b)
@@ -324,6 +338,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.ThumbnailURL(); ok {
 		_spec.SetField(media.FieldThumbnailURL, field.TypeString, value)
 		_node.ThumbnailURL = &value
+	}
+	if value, ok := mc.mutation.ThumbnailPath(); ok {
+		_spec.SetField(media.FieldThumbnailPath, field.TypeString, value)
+		_node.ThumbnailPath = &value
 	}
 	if value, ok := mc.mutation.IsActivated(); ok {
 		_spec.SetField(media.FieldIsActivated, field.TypeBool, value)

@@ -22,6 +22,7 @@ var (
 		{Name: "height", Type: field.TypeInt32, Nullable: true},
 		{Name: "duration", Type: field.TypeFloat32, Nullable: true},
 		{Name: "thumbnail_url", Type: field.TypeString, Nullable: true},
+		{Name: "thumbnail_path", Type: field.TypeString, Nullable: true},
 		{Name: "is_activated", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "uploaded_at", Type: field.TypeTime, Nullable: true},

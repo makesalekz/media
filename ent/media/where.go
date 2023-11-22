@@ -109,6 +109,11 @@ func ThumbnailURL(v string) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldThumbnailURL, v))
 }
 
+// ThumbnailPath applies equality check predicate on the "thumbnail_path" field. It's identical to ThumbnailPathEQ.
+func ThumbnailPath(v string) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldThumbnailPath, v))
+}
+
 // IsActivated applies equality check predicate on the "is_activated" field. It's identical to IsActivatedEQ.
 func IsActivated(v bool) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldIsActivated, v))
@@ -747,6 +752,81 @@ func ThumbnailURLEqualFold(v string) predicate.Media {
 // ThumbnailURLContainsFold applies the ContainsFold predicate on the "thumbnail_url" field.
 func ThumbnailURLContainsFold(v string) predicate.Media {
 	return predicate.Media(sql.FieldContainsFold(FieldThumbnailURL, v))
+}
+
+// ThumbnailPathEQ applies the EQ predicate on the "thumbnail_path" field.
+func ThumbnailPathEQ(v string) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathNEQ applies the NEQ predicate on the "thumbnail_path" field.
+func ThumbnailPathNEQ(v string) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathIn applies the In predicate on the "thumbnail_path" field.
+func ThumbnailPathIn(vs ...string) predicate.Media {
+	return predicate.Media(sql.FieldIn(FieldThumbnailPath, vs...))
+}
+
+// ThumbnailPathNotIn applies the NotIn predicate on the "thumbnail_path" field.
+func ThumbnailPathNotIn(vs ...string) predicate.Media {
+	return predicate.Media(sql.FieldNotIn(FieldThumbnailPath, vs...))
+}
+
+// ThumbnailPathGT applies the GT predicate on the "thumbnail_path" field.
+func ThumbnailPathGT(v string) predicate.Media {
+	return predicate.Media(sql.FieldGT(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathGTE applies the GTE predicate on the "thumbnail_path" field.
+func ThumbnailPathGTE(v string) predicate.Media {
+	return predicate.Media(sql.FieldGTE(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathLT applies the LT predicate on the "thumbnail_path" field.
+func ThumbnailPathLT(v string) predicate.Media {
+	return predicate.Media(sql.FieldLT(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathLTE applies the LTE predicate on the "thumbnail_path" field.
+func ThumbnailPathLTE(v string) predicate.Media {
+	return predicate.Media(sql.FieldLTE(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathContains applies the Contains predicate on the "thumbnail_path" field.
+func ThumbnailPathContains(v string) predicate.Media {
+	return predicate.Media(sql.FieldContains(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathHasPrefix applies the HasPrefix predicate on the "thumbnail_path" field.
+func ThumbnailPathHasPrefix(v string) predicate.Media {
+	return predicate.Media(sql.FieldHasPrefix(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathHasSuffix applies the HasSuffix predicate on the "thumbnail_path" field.
+func ThumbnailPathHasSuffix(v string) predicate.Media {
+	return predicate.Media(sql.FieldHasSuffix(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathIsNil applies the IsNil predicate on the "thumbnail_path" field.
+func ThumbnailPathIsNil() predicate.Media {
+	return predicate.Media(sql.FieldIsNull(FieldThumbnailPath))
+}
+
+// ThumbnailPathNotNil applies the NotNil predicate on the "thumbnail_path" field.
+func ThumbnailPathNotNil() predicate.Media {
+	return predicate.Media(sql.FieldNotNull(FieldThumbnailPath))
+}
+
+// ThumbnailPathEqualFold applies the EqualFold predicate on the "thumbnail_path" field.
+func ThumbnailPathEqualFold(v string) predicate.Media {
+	return predicate.Media(sql.FieldEqualFold(FieldThumbnailPath, v))
+}
+
+// ThumbnailPathContainsFold applies the ContainsFold predicate on the "thumbnail_path" field.
+func ThumbnailPathContainsFold(v string) predicate.Media {
+	return predicate.Media(sql.FieldContainsFold(FieldThumbnailPath, v))
 }
 
 // IsActivatedEQ applies the EQ predicate on the "is_activated" field.

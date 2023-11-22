@@ -39,6 +39,8 @@ type Media struct {
 	Duration *float32 `json:"duration,omitempty"`
 	// ThumbnailURL holds the value of the "thumbnail_url" field.
 	ThumbnailURL *string `json:"thumbnail_url,omitempty"`
+	// ThumbnailPath holds the value of the "thumbnail_path" field.
+	ThumbnailPath *string `json:"thumbnail_path,omitempty"`
 	// IsActivated holds the value of the "is_activated" field.
 	IsActivated bool `json:"is_activated,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -59,7 +61,7 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case media.FieldID, media.FieldOwnerID, media.FieldSize, media.FieldWidth, media.FieldHeight:
 			values[i] = new(sql.NullInt64)
-		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldURL, media.FieldThumbnailURL:
+		case media.FieldFileName, media.FieldExtension, media.FieldPath, media.FieldURL, media.FieldThumbnailURL, media.FieldThumbnailPath:
 			values[i] = new(sql.NullString)
 		case media.FieldDeletedAt, media.FieldCreatedAt, media.FieldUploadedAt:
 			values[i] = new(sql.NullTime)
@@ -155,6 +157,13 @@ func (m *Media) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				m.ThumbnailURL = new(string)
 				*m.ThumbnailURL = value.String
+			}
+		case media.FieldThumbnailPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field thumbnail_path", values[i])
+			} else if value.Valid {
+				m.ThumbnailPath = new(string)
+				*m.ThumbnailPath = value.String
 			}
 		case media.FieldIsActivated:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -253,6 +262,11 @@ func (m *Media) String() string {
 	builder.WriteString(", ")
 	if v := m.ThumbnailURL; v != nil {
 		builder.WriteString("thumbnail_url=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := m.ThumbnailPath; v != nil {
+		builder.WriteString("thumbnail_path=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")

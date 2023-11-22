@@ -27,6 +27,7 @@ func (Media) Fields() []ent.Field {
 		field.Int32("height").Nillable().Optional(),     // in pixels
 		field.Float32("duration").Nillable().Optional(), // in seconds
 		field.String("thumbnail_url").Nillable().Optional(),
+		field.String("thumbnail_path").Nillable().Optional(),
 		field.Bool("is_activated").Default(false),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("uploaded_at").Nillable().Optional(),
