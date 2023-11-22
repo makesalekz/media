@@ -72,6 +72,15 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 			return false
 		}
 
+		if media.ThumbnailURL != nil {
+			if *media.ThumbnailURL != "" {
+				err = uc.s3.Delete(ctx, *media.ThumbnailURL)
+				if err != nil {
+					return false
+				}
+			}
+		}
+
 		err = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 		if err != nil {
 			return true
@@ -195,11 +204,12 @@ func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, medi
 	var location string
 	if uc.s3.Session != nil {
 		uuid := uuid.NewString()
-		path := fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, data.DefaultImageExtension)
+		path := fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, thumbnail.Extension)
 
 		location, err = uc.s3.Upload(context.Background(), path, thumbnail.Data, thumbnail.MimeType)
 		if err != nil {
 			uc.mediaRepo.DeleteMedia(context.Background(), media.ID)
+			uc.s3.Delete(context.Background(), media.Path)
 
 			err = media_v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 			uc.log.Error(err)
