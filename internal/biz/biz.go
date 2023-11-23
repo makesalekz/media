@@ -1,6 +1,8 @@
 package biz
 
-import "github.com/google/wire"
+import (
+	"github.com/google/wire"
+)
 
 const (
 	QueueDeleteMedia = "delete"
@@ -20,7 +22,7 @@ var (
 		"video/webm":      "webm",
 		"video/3gpp":      "3gp",
 		"video/3gpp2":     "3g2",
-		"video/qucktime":  "mov",
+		"video/quicktime": "mov",
 
 		"application/zip": "zip",
 		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",

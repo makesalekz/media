@@ -22,12 +22,6 @@ type VideoProcessor struct {
 	stdErr io.ReadCloser
 }
 
-type Image struct {
-	Data      []byte
-	Extension string
-	MimeType  string
-}
-
 func NewVideoProcessor() (*VideoProcessor, error) {
 	cmd := exec.Command("ffmpeg",
 		"-i", "pipe:",
@@ -101,7 +95,7 @@ func (vp *VideoProcessor) Wait() error {
 	return vp.cmd.Wait()
 }
 
-func (vp *VideoProcessor) ExtractDurationFromMetadata(metadata string) (float32, error) {
+func ExtractDurationFromMetadata(metadata string) (float32, error) {
 	for scanner := bufio.NewScanner(strings.NewReader(metadata)); scanner.Scan(); {
 		if strings.Contains(scanner.Text(), "Duration") {
 			line, ok := strings.CutPrefix(scanner.Text(), "  Duration: ")

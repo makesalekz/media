@@ -3,8 +3,8 @@ syntax = "proto3";
 package media.v1;
 
 import "google/api/annotations.proto";
-import "errors/errors.proto";
 import "google/api/httpbody.proto";
+import "api/media/v1/models.proto";
 
 option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
 option java_multiple_files = true;
@@ -19,19 +19,6 @@ service MediaService {
   };
   rpc GetMedia (GetMediaRequest) returns (MediaReply);
   rpc GetMediaList (GetMediaListRequest) returns (MediaListReply);
-}
-
-message Media {
-  int64 id = 1;
-  int64 ownerId = 2;
-  string url = 3;
-  string fileName = 4;
-  string extension = 5;
-  string createdAt = 6;
-  int32 size = 7;              // in bytes
-  optional int32 width = 8;    // in pixels
-  optional int32 height = 9;   // in pixels
-  optional float duration = 10; // in seconds
 }
 
 message UploadMediaRequest {
@@ -55,21 +42,4 @@ message GetMediaListRequest {
 
 message MediaListReply {
   repeated Media media = 1;
-}
-
-enum ErrorReason {
-  // Set default error code.
-  option (errors.default_code) = 500;
-
-  // Set the error code separately for an enumeration.
-  INTERNAL = 0;
-  GRPC_CONNECTION = 1;
-  SERVICE_FAILED = 2;
-  DATABASE_QUERY = 3;
-
-  UNAUTHORIZED = 10 [(errors.code) = 401];
-  INVALID_CONTENT_TYPE = 11 [(errors.code) = 400];
-
-  S3UPLOAD_FAILED = 20;
-  NOT_FOUND = 21 [(errors.code) = 404];
 }
