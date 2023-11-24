@@ -156,8 +156,8 @@ func (uc *MediaUsecase) appendMedia(ctx context.Context, userId int64, media *en
 
 		return err
 	}
-	format := re.FindStringSubmatch(contentType)
 
+	format := re.FindStringSubmatch(contentType)
 	if format == nil || len(format) == 0 {
 		uc.log.Error(media_v1.ErrorInvalidContentType("invalid content type: %s", contentType))
 
@@ -166,14 +166,14 @@ func (uc *MediaUsecase) appendMedia(ctx context.Context, userId int64, media *en
 
 	switch format[1] {
 	case "video":
-		err = uc.processVideo(file, userId, media)
+		err = uc.appendVideo(file, userId, media)
 		if err != nil {
 			uc.log.Error(err)
 
 			return err
 		}
 	case "image":
-		err = uc.processImage(file, userId, media)
+		err = uc.appendImage(file, userId, media)
 		if err != nil {
 			uc.log.Error(err)
 
@@ -184,7 +184,7 @@ func (uc *MediaUsecase) appendMedia(ctx context.Context, userId int64, media *en
 	return nil
 }
 
-func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, media *ent.Media) error {
+func (uc *MediaUsecase) appendVideo(file *httpbody.HttpBody, userId int64, media *ent.Media) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
@@ -206,7 +206,7 @@ func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, medi
 	return nil
 }
 
-func (uc *MediaUsecase) processImage(file *httpbody.HttpBody, userId int64, media *ent.Media) error {
+func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, userId int64, media *ent.Media) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
@@ -272,14 +272,10 @@ func (uc *MediaUsecase) extractVideoInfo(file *httpbody.HttpBody) (string, *data
 }
 
 func (uc *MediaUsecase) setVideoParams(ctx context.Context, userId int64, media *ent.Media, thumbnail *data.Image, meta string) error {
-	var path string
-	var location string
-	var err error
-
 	uuid := uuid.NewString()
-	path = fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, thumbnail.Extension)
+	path := fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, thumbnail.Extension)
 
-	location, err = uc.s3.Upload(ctx, path, thumbnail.Data, thumbnail.MimeType)
+	location, err := uc.s3.Upload(ctx, path, thumbnail.Data, thumbnail.MimeType)
 	if err != nil {
 		uc.s3.Delete(ctx, path)
 		err = media_v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
