@@ -205,7 +205,7 @@ func (uc *MediaUsecase) appendVideo(file *httpbody.HttpBody, userId int64, media
 		return err
 	}
 
-	err = uc.setMediaDims(ctx, media, thumbnail)
+	err = uc.setMediaDimensions(ctx, media, thumbnail)
 	if err != nil {
 		return err
 	}
@@ -231,7 +231,7 @@ func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, userId int64, media
 		MimeType:  contentType,
 	}
 
-	err := uc.setMediaDims(ctx, media, img)
+	err := uc.setMediaDimensions(ctx, media, img)
 	if err != nil {
 		return err
 	}
@@ -339,23 +339,19 @@ func (uc *MediaUsecase) setVideoParams(
 	return nil
 }
 
-func (uc *MediaUsecase) setMediaDims(ctx context.Context, media *ent.Media, img *data.Image) error {
+func (uc *MediaUsecase) setMediaDimensions(ctx context.Context, media *ent.Media, img *data.Image) error {
 	width, height, err := img.GetDimensions()
 	if err != nil {
-		err = media_v1.ErrorInternal("uc.setMediaDims: GetDimensions error: %s", err)
+		err = media_v1.ErrorInternal("uc.setMediaDimensions: GetDimensions error: %s", err)
 
 		return err
 	}
 
-	media, err = uc.mediaRepo.SetDimensions(
-		ctx,
-		media,
-		data.SetDimensionslDto{
-			Width:  width,
-			Height: height,
-		})
+	setDimensionsDto := data.SetDimensionsDto{Width: width, Height: height}
+
+	media, err = uc.mediaRepo.SetDimensions(ctx, media, setDimensionsDto)
 	if err != nil {
-		err = media_v1.ErrorDatabaseQuery("uc.setMediaDims: SetDims error: %s", err)
+		err = media_v1.ErrorDatabaseQuery("uc.setMediaDimensions: SetDimensions error: %s", err)
 
 		return err
 	}
