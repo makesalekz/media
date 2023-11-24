@@ -150,7 +150,12 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath stri
 	return media, nil
 }
 
-func (uc *MediaUsecase) appendMedia(ctx context.Context, userId int64, media *ent.Media, file *httpbody.HttpBody) error {
+func (uc *MediaUsecase) appendMedia(
+	ctx context.Context,
+	userId int64,
+	media *ent.Media,
+	file *httpbody.HttpBody,
+) error {
 	contentType := file.GetContentType()
 	re, err := regexp.Compile("^(.*)\\/.*")
 	if err != nil {
@@ -290,7 +295,13 @@ func (uc *MediaUsecase) extractVideoInfo(ctx context.Context, file *httpbody.Htt
 	return meta, thumbnail, nil
 }
 
-func (uc *MediaUsecase) setVideoParams(ctx context.Context, userId int64, media *ent.Media, thumbnail *data.Image, meta string) error {
+func (uc *MediaUsecase) setVideoParams(
+	ctx context.Context,
+	userId int64,
+	media *ent.Media,
+	thumbnail *data.Image,
+	meta string,
+) error {
 	uuid := uuid.NewString()
 	path := fmt.Sprintf("%d/%s/%s.%s", userId, time.Now().Format("2006/01"), uuid, thumbnail.Extension)
 
