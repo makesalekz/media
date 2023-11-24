@@ -5,7 +5,6 @@ go 1.19
 require (
 	entgo.io/ent v0.12.3
 	github.com/aws/aws-sdk-go v1.45.8
-	github.com/cloudflare/cfssl v1.6.4
 	github.com/gabriel-vasile/mimetype v1.4.3
 	github.com/go-kratos/consul v0.1.5
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20231121021043-9adece088b51
