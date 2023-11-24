@@ -23,6 +23,7 @@ services:
       - backend
     volumes:
       - ./configs:/data/conf
+      - ${TMP_VOLUME}:/data/tmp
     restart: unless-stopped
     depends_on:
       - db
@@ -50,6 +51,7 @@ services:
       - backend
     volumes:
       - ./configs:/data/conf
+      - ${TMP_VOLUME}:/data/tmp
     restart: unless-stopped
     profiles:
       - dev
@@ -67,6 +69,11 @@ volumes:
   dbvol:
     name: ${SERVICE_NAME}_db
     external: true
+  tmpvol:
+    name: ${SERVICE_NAME}_tmp
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
 
 networks:
   backend:

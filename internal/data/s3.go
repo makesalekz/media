@@ -49,6 +49,10 @@ func NewS3Uploader(c *Config) (*S3Uploader, error) {
 }
 
 func (u *S3Uploader) Upload(ctx context.Context, path string, fileData []byte, mimeType string) (string, error) {
+	if os.Getenv("DEBUG") != "" {
+		return path + "_debug", nil
+	}
+
 	uploader := s3manager.NewUploader(u.Session)
 	out, err := uploader.Upload(&s3manager.UploadInput{
 		ACL:         aws.String("public-read"),
@@ -65,6 +69,10 @@ func (u *S3Uploader) Upload(ctx context.Context, path string, fileData []byte, m
 }
 
 func (u *S3Uploader) Delete(ctx context.Context, path string) error {
+	if os.Getenv("DEBUG") != "" {
+		return nil
+	}
+
 	batcher := s3manager.NewBatchDelete(u.Session)
 	return batcher.Delete(aws.BackgroundContext(), &s3manager.DeleteObjectsIterator{
 		Objects: []s3manager.BatchDeleteObject{

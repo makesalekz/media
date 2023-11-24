@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package utils.v1;
+
+option go_package = "gitlab.calendaria.team/services/utils/api/utils/v1;utils_v1";
+option java_multiple_files = true;
+option java_package = "utils.v1";
+
+message EmptyRequest {}
+message EmptyReply {}
+
+message PaginateRequest {
+	int32 limit = 1;
+	int64 fromId = 2;
+	int64 toId = 3;
+	int64 aroundId = 4;
+	string fromDate = 5;
+	string toDate = 6;
+	string aroundDate = 7;
+	string fromLabel = 8;
+	bool descending = 9;
+}
+
+message PaginateReply {
+	optional int32 total = 1;
+	optional int64 fromId = 2;
+	optional int64 toId = 3;
+	optional string fromDate = 4;
+	optional string toDate = 5;
+	optional string fromLabel = 6;
+}

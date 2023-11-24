@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package media.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
+option java_multiple_files = true;
+option java_package = "media.v1";
+
+message Media {
+    int64 id = 1;
+    int64 ownerId = 2;
+    string url = 3;
+    string fileName = 4;
+    string extension = 5;
+    string createdAt = 6;
+    int32 size = 7;              // in bytes
+    optional int32 width = 8;    // in pixels
+    optional int32 height = 9;   // in pixels
+    optional float duration = 10; // in seconds
+}

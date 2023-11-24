@@ -2,11 +2,15 @@ package data
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const (
@@ -17,30 +21,12 @@ const (
 
 type VideoProcessor struct {
 	cmd    *exec.Cmd
-	stdIn  io.WriteCloser
 	stdOut io.ReadCloser
 	stdErr io.ReadCloser
 }
 
-type Image struct {
-	Data      []byte
-	Extension string
-	MimeType  string
-}
-
-func NewVideoProcessor() (*VideoProcessor, error) {
-	cmd := exec.Command("ffmpeg",
-		"-i", "pipe:",
-		"-ss", "00:00:00",
-		"-frames:v", "1",
-		"-hide_banner",
-		//"-report",
-		fmt.Sprintf("pipe:1.%s", DefaultImageExtension),
-	)
-	stdIn, err := cmd.StdinPipe()
-	if err != nil {
-		return nil, err
-	}
+func NewVideoProcessor(ctx context.Context) (*VideoProcessor, error) {
+	cmd := exec.CommandContext(ctx, "ffmpeg")
 
 	stdErr, err := cmd.StderrPipe()
 	if err != nil {
@@ -54,25 +40,46 @@ func NewVideoProcessor() (*VideoProcessor, error) {
 
 	return &VideoProcessor{
 		cmd:    cmd,
-		stdIn:  stdIn,
 		stdErr: stdErr,
 		stdOut: stdOut,
 	}, nil
 }
 
-func (vp *VideoProcessor) ProcessVideo(data []byte) error {
-	_, err := vp.stdIn.Write(data)
+func (vp *VideoProcessor) GetThumbnailGenerator(data []byte) (*ThumbnailGenerator, error) {
+	tmp, err := os.CreateTemp(os.Getenv("TMP_VOLUME"), uuid.NewString())
 	if err != nil {
-		if !strings.Contains(err.Error(), ignoreError) {
-			return err
-		}
+		return nil, err
 	}
 
-	return nil
+	tg := &ThumbnailGenerator{
+		vp:  vp,
+		tmp: tmp,
+	}
+
+	_, err = tmp.Write(data)
+	if err != nil {
+		return nil, err
+	}
+
+	tg.vp.cmd.Args = append(tg.vp.cmd.Args,
+		"-i", tmp.Name(),
+		"-ss", "00:00:00",
+		"-frames:v", "1",
+		"-hide_banner",
+		//"-report",
+		fmt.Sprintf("pipe:1.%s", DefaultImageExtension))
+
+	return tg, nil
 }
 
-func (vp *VideoProcessor) GetThumbnail() (*Image, error) {
-	thumnailImageData, err := io.ReadAll(vp.stdOut)
+type ThumbnailGenerator struct {
+	vp *VideoProcessor
+
+	tmp *os.File
+}
+
+func (tg *ThumbnailGenerator) GetThumbnail() (*Image, error) {
+	thumnailImageData, err := io.ReadAll(tg.vp.stdOut)
 	if err != nil {
 		return nil, err
 	}
@@ -81,11 +88,11 @@ func (vp *VideoProcessor) GetThumbnail() (*Image, error) {
 		Data:      thumnailImageData,
 		Extension: DefaultImageExtension,
 		MimeType:  DefaultImageMIMEType,
-	}, err
+	}, nil
 }
 
-func (vp *VideoProcessor) GetMetadata() (string, error) {
-	metadataBytes, err := io.ReadAll(vp.stdErr)
+func (tg *ThumbnailGenerator) GetMetadata() (string, error) {
+	metadataBytes, err := io.ReadAll(tg.vp.stdErr)
 	if err != nil {
 		return "", err
 	}
@@ -93,15 +100,24 @@ func (vp *VideoProcessor) GetMetadata() (string, error) {
 	return string(metadataBytes), nil
 }
 
-func (vp *VideoProcessor) Start() error {
-	return vp.cmd.Start()
+func (tg *ThumbnailGenerator) Start() error {
+	return tg.vp.cmd.Start()
 }
 
-func (vp *VideoProcessor) Wait() error {
-	return vp.cmd.Wait()
+func (tg *ThumbnailGenerator) Wait() error {
+	return tg.vp.cmd.Wait()
 }
 
-func (vp *VideoProcessor) ExtractDurationFromMetadata(metadata string) (float32, error) {
+func (tg *ThumbnailGenerator) Close() error {
+	err := os.Remove(tg.tmp.Name())
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func ExtractDurationFromMetadata(metadata string) (float32, error) {
 	for scanner := bufio.NewScanner(strings.NewReader(metadata)); scanner.Scan(); {
 		if strings.Contains(scanner.Text(), "Duration") {
 			line, ok := strings.CutPrefix(scanner.Text(), "  Duration: ")

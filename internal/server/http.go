@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/auth/jwt"
@@ -11,7 +12,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
-	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
+	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/internal/conf"
 	"gitlab.calendaria.team/services/media/internal/data"
 	"gitlab.calendaria.team/services/media/internal/service"
@@ -40,10 +41,15 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 			}
 			defer r.Body.Close()
 
-			v.(*media_v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
-			v.(*media_v1.UploadMediaRequest).FilePath = r.Header.Get("X-File-Path")
-			v.(*media_v1.UploadMediaRequest).Content = &httpbody.HttpBody{
-				ContentType: http.DetectContentType(file),
+			contentType := mimetype.Detect(file).String()
+			if contentType == "application/octet-stream" && r.Header.Get("Content-Type") != "" {
+				contentType = r.Header.Get("Content-Type")
+			}
+
+			v.(*v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
+			v.(*v1.UploadMediaRequest).FilePath = r.Header.Get("X-File-Path")
+			v.(*v1.UploadMediaRequest).Content = &httpbody.HttpBody{
+				ContentType: contentType,
 				Data:        file,
 			}
 			return nil
@@ -60,7 +66,7 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	}
 	srv := khttp.NewServer(opts...)
 
-	media_v1.RegisterMediaServiceHTTPServer(srv, srvc)
+	v1.RegisterMediaServiceHTTPServer(srv, srvc)
 
 	return srv
 }
