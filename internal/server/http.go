@@ -12,7 +12,6 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/internal/conf"
 	"gitlab.calendaria.team/services/media/internal/data"
@@ -65,24 +64,4 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	v1.RegisterMediaServiceHTTPServer(srv, srvc)
 
 	return srv
-}
-
-func NewTechServer() *khttp.Server {
-	var techOpts = []khttp.ServerOption{
-		khttp.Middleware(
-			recovery.Recovery(),
-		),
-		khttp.Address("localhost:8008"),
-		khttp.ResponseEncoder(func(w http.ResponseWriter, r *http.Request, i interface{}) error {
-			if r.URL.Path == "/metrics" {
-				promhttp.Handler().ServeHTTP(w, r)
-			}
-
-			return nil
-		}),
-	}
-
-	techSrv := khttp.NewServer(techOpts...)
-
-	return techSrv
 }

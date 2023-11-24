@@ -214,7 +214,6 @@ func (uc *MediaUsecase) processImage(file *httpbody.HttpBody, userId int64, medi
 	extension, ok := getExtension(contentType)
 	if !ok {
 		err := media_v1.ErrorInvalidContentType("incorect type: %v", file.ContentType)
-		uc.log.Error(err)
 
 		return err
 	}
@@ -227,8 +226,6 @@ func (uc *MediaUsecase) processImage(file *httpbody.HttpBody, userId int64, medi
 
 	err := uc.setMediaDims(ctx, media, img)
 	if err != nil {
-		uc.log.Error(err)
-
 		return err
 	}
 
