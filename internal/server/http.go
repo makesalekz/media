@@ -41,10 +41,15 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 			}
 			defer r.Body.Close()
 
+			contentType := mimetype.Detect(file).String()
+			if contentType == "application/octet-stream" {
+				contentType = r.Header.Get("Content-Type")
+			}
+
 			v.(*v1.UploadMediaRequest).FileName = r.Header.Get("X-File-Name")
 			v.(*v1.UploadMediaRequest).FilePath = r.Header.Get("X-File-Path")
 			v.(*v1.UploadMediaRequest).Content = &httpbody.HttpBody{
-				ContentType: mimetype.Detect(file).String(),
+				ContentType: contentType,
 				Data:        file,
 			}
 			return nil
