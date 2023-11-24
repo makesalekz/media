@@ -42,7 +42,7 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 			defer r.Body.Close()
 
 			contentType := mimetype.Detect(file).String()
-			if contentType == "application/octet-stream" {
+			if contentType == "application/octet-stream" && r.Header.Get("Content-Type") != "" {
 				contentType = r.Header.Get("Content-Type")
 			}
 
