@@ -26,13 +26,18 @@ type Data struct {
 func NewData(c *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
-	client, err := ent.Open("postgres", c.Db)
+	automigrate := os.Getenv("AUTOMIGRATE")
+	options := []ent.Option{}
+	if automigrate != "" {
+		options = append(options, ent.Debug(), ent.Log(l.Info))
+	}
+
+	client, err := ent.Open("postgres", c.Db, options...)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err
 	}
 
-	automigrate := os.Getenv("AUTOMIGRATE")
 	if automigrate != "" {
 		if err := client.Schema.Create(context.Background()); err != nil {
 			l.Errorf("failed creating schema resources: %v", err)

@@ -143,21 +143,45 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath stri
 		return nil, media_v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err)
 	}
 
-	if ok, err := regexp.Match("^video\\/.*", []byte(contentType)); ok {
-		if err != nil {
-			return nil, err
-		}
-		go uc.processVideo(file, userId, media)
-	}
-
-	if ok, err := regexp.Match("^image\\/.*", []byte(contentType)); ok {
-		if err != nil {
-			return nil, err
-		}
-		go uc.processImage(file, userId, media)
-	}
+	go uc.appendMedia(ctx, userId, media, file)
 
 	return media, nil
+}
+
+func (uc *MediaUsecase) appendMedia(ctx context.Context, userId int64, media *ent.Media, file *httpbody.HttpBody) error {
+	contentType := file.GetContentType()
+	re, err := regexp.Compile("^(.*)\\/.*")
+	if err != nil {
+		uc.log.Error(err)
+
+		return err
+	}
+	format := re.FindStringSubmatch(contentType)
+
+	if format == nil || len(format) == 0 {
+		uc.log.Error(media_v1.ErrorInvalidContentType("invalid content type: %s", contentType))
+
+		return err
+	}
+
+	switch format[0] {
+	case "video":
+		err = uc.processVideo(file, userId, media)
+		if err != nil {
+			uc.log.Error(err)
+
+			return err
+		}
+	case "image":
+		err = uc.processImage(file, userId, media)
+		if err != nil {
+			uc.log.Error(err)
+
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, media *ent.Media) error {
@@ -166,31 +190,16 @@ func (uc *MediaUsecase) processVideo(file *httpbody.HttpBody, userId int64, medi
 
 	meta, thumbnail, err := uc.extractVideoInfo(file)
 	if err != nil {
-		uc.mediaRepo.DeleteMedia(ctx, media.ID)
-		uc.s3.Delete(ctx, media.Path)
-
-		uc.log.Error(err)
-
 		return err
 	}
 
-	err = uc.uploadThumbnail(ctx, userId, thumbnail, media, meta)
+	err = uc.setVideoParams(ctx, userId, media, thumbnail, meta)
 	if err != nil {
-		uc.mediaRepo.DeleteMedia(ctx, media.ID)
-		uc.s3.Delete(ctx, media.Path)
-
-		uc.log.Error(err)
-
 		return err
 	}
 
 	err = uc.setMediaDims(ctx, media, thumbnail)
 	if err != nil {
-		uc.mediaRepo.DeleteMedia(ctx, media.ID)
-		uc.s3.Delete(ctx, media.Path)
-
-		uc.log.Error(err)
-
 		return err
 	}
 
@@ -231,36 +240,33 @@ func (uc *MediaUsecase) extractVideoInfo(file *httpbody.HttpBody) (string, *data
 	if err != nil {
 		return "", nil, err
 	}
-	err = vp.Start()
+
+	tg, err := vp.GetThumbnailGenerator(file.GetData())
+	if err != nil {
+		err = media_v1.ErrorInternal("vp.ProcessVideo: write video error: %v", err)
+
+		return "", nil, err
+	}
+	defer tg.Close()
+
+	err = tg.Start()
 	if err != nil {
 		return "", nil, err
 	}
 
 	var meta string
 	var thumbnail *data.Image
-
 	go func() {
-		err = vp.ProcessVideo(file.GetData())
-		if err != nil {
-			err = media_v1.ErrorInternal("vp.ProcessVideo: write video error: %v", err)
-		}
+		meta, err = tg.GetMetadata()
+		err = media_v1.ErrorInternal("tg.GetThumbnail: GetMetadata error: %v", err)
 	}()
 
 	go func() {
-		meta, err = vp.GetMetadata()
-		if err != nil {
-			err = media_v1.ErrorInternal("vp.GetMetadata: extractInfo error: %v", err)
-		}
+		thumbnail, err = tg.GetThumbnail()
+		err = media_v1.ErrorInternal("tg.GetThumbnail: GetThumbnail error: %v", err)
 	}()
 
-	go func() {
-		thumbnail, err = vp.GetThumbnail()
-		if err != nil {
-			err = media_v1.ErrorInternal("vp.GetThumbnail: extractThumbnail error: %v", err)
-		}
-	}()
-
-	err = vp.Wait()
+	err = tg.Wait()
 	if err != nil {
 		return "", nil, err
 	}
@@ -268,7 +274,7 @@ func (uc *MediaUsecase) extractVideoInfo(file *httpbody.HttpBody) (string, *data
 	return meta, thumbnail, nil
 }
 
-func (uc *MediaUsecase) uploadThumbnail(ctx context.Context, userId int64, thumbnail *data.Image, media *ent.Media, meta string) error {
+func (uc *MediaUsecase) setVideoParams(ctx context.Context, userId int64, media *ent.Media, thumbnail *data.Image, meta string) error {
 	var path string
 	var location string
 	var err error
