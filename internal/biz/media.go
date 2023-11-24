@@ -164,7 +164,7 @@ func (uc *MediaUsecase) appendMedia(ctx context.Context, userId int64, media *en
 		return err
 	}
 
-	switch format[0] {
+	switch format[1] {
 	case "video":
 		err = uc.processVideo(file, userId, media)
 		if err != nil {
