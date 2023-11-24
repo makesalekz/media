@@ -24,7 +24,7 @@ type SetVideoParamsDto struct {
 	ThumbnailPath string
 }
 
-type SetDimensionslDto struct {
+type SetDimensionsDto struct {
 	Width  int32
 	Height int32
 }
@@ -41,7 +41,7 @@ type MediaRepo interface {
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaId int64) (*ent.Media, error)
 	SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error)
-	SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionslDto) (*ent.Media, error)
+	SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionsDto) (*ent.Media, error)
 	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
 }
 
@@ -86,7 +86,7 @@ func (r *mediaRepo) SetVideoParameters(ctx context.Context, video *ent.Media, dt
 		Save(ctx)
 }
 
-func (r *mediaRepo) SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionslDto) (*ent.Media, error) {
+func (r *mediaRepo) SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionsDto) (*ent.Media, error) {
 	return media.Update().
 		SetHeight(dto.Height).
 		SetWidth(dto.Width).

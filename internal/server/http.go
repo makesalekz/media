@@ -2,10 +2,8 @@ package server
 
 import (
 	"io"
-	"net"
 	"net/http"
 
-	"github.com/cloudflare/cfssl/whitelist"
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
@@ -15,7 +13,6 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	jwtv4 "github.com/golang-jwt/jwt/v4"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/internal/conf"
 	"gitlab.calendaria.team/services/media/internal/data"
@@ -76,24 +73,13 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 	return srv
 }
 
-var wl = whitelist.NewBasic()
-
 func registerTechRoutes(s *khttp.Server, logger log.Logger) {
 	r := s.Route("/")
-	wl.Add(net.IP{127, 0, 0, 1})
 	r.GET("/metrics", func(ctx khttp.Context) error {
 		r := ctx.Request()
 		w := ctx.Response()
 
-		addr := r.FormValue("ip")
-
-		ip := net.ParseIP(addr)
-		if !wl.Permitted(ip) {
-			return media_v1.ErrorUnauthorized("not allowed")
-		}
-
 		promhttp.Handler().ServeHTTP(w, r)
-
 		return nil
 	})
 }
