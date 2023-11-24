@@ -3,8 +3,10 @@ package biz
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
+	"sync"
 	"time"
 
 	consul "github.com/go-kratos/consul/registry"
@@ -188,7 +190,7 @@ func (uc *MediaUsecase) appendVideo(file *httpbody.HttpBody, userId int64, media
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
-	meta, thumbnail, err := uc.extractVideoInfo(file)
+	meta, thumbnail, err := uc.extractVideoInfo(ctx, file)
 	if err != nil {
 		return err
 	}
@@ -232,8 +234,8 @@ func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, userId int64, media
 	return nil
 }
 
-func (uc *MediaUsecase) extractVideoInfo(file *httpbody.HttpBody) (string, *data.Image, error) {
-	vp, err := data.NewVideoProcessor()
+func (uc *MediaUsecase) extractVideoInfo(ctx context.Context, file *httpbody.HttpBody) (string, *data.Image, error) {
+	vp, err := data.NewVideoProcessor(ctx)
 	if err != nil {
 		return "", nil, err
 	}
@@ -253,19 +255,36 @@ func (uc *MediaUsecase) extractVideoInfo(file *httpbody.HttpBody) (string, *data
 
 	var meta string
 	var thumbnail *data.Image
+	var errs error
+	mx := sync.Mutex{}
+
 	go func() {
 		meta, err = tg.GetMetadata()
-		err = media_v1.ErrorInternal("tg.GetThumbnail: GetMetadata error: %v", err)
+		if err != nil {
+			mx.Lock()
+			errs = errors.Join(errs, fmt.Errorf("tg.GetMetadata error: %v", err))
+			mx.Unlock()
+		}
 	}()
 
 	go func() {
 		thumbnail, err = tg.GetThumbnail()
-		err = media_v1.ErrorInternal("tg.GetThumbnail: GetThumbnail error: %v", err)
+		if err != nil {
+			mx.Lock()
+			errs = errors.Join(errs, fmt.Errorf("tg.GetThumbnail error: %v", err))
+			mx.Unlock()
+		}
 	}()
 
 	err = tg.Wait()
 	if err != nil {
-		return "", nil, err
+		mx.Lock()
+		errs = errors.Join(errs, fmt.Errorf("tg.Wait error: %v", err))
+		mx.Unlock()
+	}
+
+	if errs != nil {
+		return "", nil, media_v1.ErrorInternal("uc.extractVideoInfo error: %v", errs)
 	}
 
 	return meta, thumbnail, nil
@@ -317,10 +336,10 @@ func (uc *MediaUsecase) setMediaDims(ctx context.Context, media *ent.Media, img 
 		return err
 	}
 
-	media, err = uc.mediaRepo.SetDims(
+	media, err = uc.mediaRepo.SetDimensions(
 		ctx,
 		media,
-		data.SetDimslDto{
+		data.SetDimensionslDto{
 			Width:  width,
 			Height: height,
 		})

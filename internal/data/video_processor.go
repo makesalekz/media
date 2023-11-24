@@ -2,6 +2,7 @@ package data
 
 import (
 	"bufio"
+	"context"
 	"fmt"
 	"io"
 	"os"
@@ -24,8 +25,8 @@ type VideoProcessor struct {
 	stdErr io.ReadCloser
 }
 
-func NewVideoProcessor() (*VideoProcessor, error) {
-	cmd := exec.Command("ffmpeg")
+func NewVideoProcessor(ctx context.Context) (*VideoProcessor, error) {
+	cmd := exec.CommandContext(ctx, "ffmpeg")
 
 	stdErr, err := cmd.StderrPipe()
 	if err != nil {
@@ -45,16 +46,15 @@ func NewVideoProcessor() (*VideoProcessor, error) {
 }
 
 func (vp *VideoProcessor) GetThumbnailGenerator(data []byte) (*ThumbnailGenerator, error) {
-	tg := &ThumbnailGenerator{
-		vp: vp,
-	}
-
 	tmp, err := os.CreateTemp(os.Getenv("TMP_VOLUME"), uuid.NewString())
 	if err != nil {
 		return nil, err
 	}
 
-	tg.tmp = tmp
+	tg := &ThumbnailGenerator{
+		vp:  vp,
+		tmp: tmp,
+	}
 
 	_, err = tmp.Write(data)
 	if err != nil {
@@ -88,7 +88,7 @@ func (tg *ThumbnailGenerator) GetThumbnail() (*Image, error) {
 		Data:      thumnailImageData,
 		Extension: DefaultImageExtension,
 		MimeType:  DefaultImageMIMEType,
-	}, err
+	}, nil
 }
 
 func (tg *ThumbnailGenerator) GetMetadata() (string, error) {

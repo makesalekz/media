@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package media.v1;
+
+import "google/api/annotations.proto";
+import "errors/errors.proto";
+
+option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
+option java_multiple_files = true;
+option java_package = "media.v1";
+
+enum ErrorReason {
+    // Set default error code.
+    option (errors.default_code) = 500;
+  
+    // Set the error code separately for an enumeration.
+    INTERNAL = 0;
+    GRPC_CONNECTION = 1;
+    SERVICE_FAILED = 2;
+    DATABASE_QUERY = 3;
+  
+    UNAUTHORIZED = 10 [(errors.code) = 401];
+    INVALID_CONTENT_TYPE = 11 [(errors.code) = 400];
+  
+    S3UPLOAD_FAILED = 20;
+    NOT_FOUND = 21 [(errors.code) = 404];
+}

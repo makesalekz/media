@@ -34,8 +34,6 @@ docker-build:
     - export VAULT_ROLE_ID=$(docker exec vault vault read -field=role_id auth/approle/role/app-${CI_PROJECT_NAME}/role-id)
     - export VAULT_SECRET_ID=$(docker exec vault vault write -field=secret_id -f auth/approle/role/app-${CI_PROJECT_NAME}/secret-id)
     - docker compose --profile=${ENVIRONMENT_CODE} down
-    # tmp up
-    - docker volume create ${CI_PROJECT_NAME}_tmp || true
     # database up
     - docker volume create ${CI_PROJECT_NAME}_db || true
     - docker compose up -d
