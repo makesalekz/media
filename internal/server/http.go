@@ -98,12 +98,5 @@ func NewHTTPServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 func registerTechRoutes(s *khttp.Server, logger log.Logger) {
 	prometheus.MustRegister(_metricSeconds, _metricRequests)
 
-	r := s.Route("/")
-	r.GET("/metrics", func(ctx khttp.Context) error {
-		r := ctx.Request()
-		w := ctx.Response()
-
-		promhttp.Handler().ServeHTTP(w, r)
-		return nil
-	})
+	s.Handle("/metrics", promhttp.Handler())
 }
