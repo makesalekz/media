@@ -11,6 +11,11 @@ import (
 	"gitlab.calendaria.team/services/media/internal/conf"
 	"gitlab.calendaria.team/services/media/internal/data"
 	"gitlab.calendaria.team/services/media/internal/service"
+	ggrpc "google.golang.org/grpc"
+)
+
+const (
+	maxRecvMsgSize = 100 * 10e6 // 100 MB
 )
 
 // NewGRPCServer new a gRPC server.
@@ -23,6 +28,7 @@ func NewGRPCServer(c *conf.Bootstrap, logger log.Logger, jwtp *data.JwtProcessor
 				return jwtp.GetSecret(), nil
 			}, jwt.WithSigningMethod(jwtv4.SigningMethodHS256), jwt.WithClaims(func() jwtv4.Claims { return &jwtv4.RegisteredClaims{} })),
 		),
+		grpc.Options(ggrpc.MaxRecvMsgSize(maxRecvMsgSize)),
 	}
 	if c.Server.Grpc.Network != "" {
 		opts = append(opts, grpc.Network(c.Server.Grpc.Network))
