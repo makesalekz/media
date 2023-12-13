@@ -11,6 +11,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"gitlab.calendaria.team/services/utils/v1/config"
 )
 
 type S3Uploader struct {
@@ -19,7 +20,7 @@ type S3Uploader struct {
 }
 
 // NewS3Uploader .
-func NewS3Uploader(c *Config) (*S3Uploader, error) {
+func NewS3Uploader(c *config.Config) (*S3Uploader, error) {
 	uploader := &S3Uploader{}
 
 	if os.Getenv("DEBUG") == "" {

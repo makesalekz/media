@@ -14,6 +14,9 @@ import (
 	"gitlab.calendaria.team/services/media/internal/data"
 	"gitlab.calendaria.team/services/media/internal/server"
 	"gitlab.calendaria.team/services/media/internal/service"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v1/nats"
 )
 
 import (
@@ -24,11 +27,11 @@ import (
 
 // wireApp init kratos application.
 func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(), error) {
-	config, err := data.NewConfig(bootstrap)
+	configConfig, err := config.NewConfig()
 	if err != nil {
 		return nil, nil, err
 	}
-	jwtProcessor, err := data.NewJwtProcessor(config)
+	jwtProcessor, err := jwt.NewJwtProcessor(configConfig)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -37,27 +40,27 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	mediaRepo := data.NewMediaRepo(dataData)
-	s3Uploader, err := data.NewS3Uploader(config)
+	s3Uploader, err := data.NewS3Uploader(configConfig)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	natsClient, cleanup2, err := data.NewNatsClient(config)
+	encodedConn, cleanup2, err := data.NewNatsClient(bootstrap)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	queueManager := biz.NewQueueManager(config, natsClient, logger)
-	mediaUsecase, err := biz.NewMediaUsecase(logger, config, jwtProcessor, mediaRepo, s3Uploader, queueManager)
+	queueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
+	mediaUsecase, err := biz.NewMediaUsecase(logger, jwtProcessor, mediaRepo, s3Uploader, queueManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	mediaService := service.NewMediaService(logger, mediaUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, logger, jwtProcessor, mediaService)
-	httpServer := server.NewHTTPServer(bootstrap, logger, jwtProcessor, mediaService)
-	app := newApp(logger, config, grpcServer, httpServer)
+	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, mediaService)
+	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor)
+	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()
 		cleanup()

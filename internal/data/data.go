@@ -8,13 +8,22 @@ import (
 	"github.com/google/wire"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/conf"
+	"gitlab.calendaria.team/services/utils/v1/config"
+	jwtp "gitlab.calendaria.team/services/utils/v1/jwt"
 
 	_ "github.com/lib/pq"
 	_ "gitlab.calendaria.team/services/media/ent/runtime"
 )
 
 // ProviderSet is data providers.
-var ProviderSet = wire.NewSet(NewData, NewConfig, NewJwtProcessor, NewNatsClient, NewS3Uploader, NewMediaRepo)
+var ProviderSet = wire.NewSet(
+	NewData,
+	config.NewConfig,
+	jwtp.NewJwtProcessor,
+	NewNatsClient,
+	NewS3Uploader,
+	NewMediaRepo,
+)
 
 // Data .
 type Data struct {
