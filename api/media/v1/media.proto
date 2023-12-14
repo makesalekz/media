@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package media.v1;
 
-import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
 import "api/media/v1/models.proto";
 
@@ -11,12 +10,7 @@ option java_multiple_files = true;
 option java_package = "media.v1";
 
 service MediaService {
-  rpc UploadMedia (UploadMediaRequest) returns (MediaReply){
-    option (google.api.http) = {
-      post: "/v1/media"
-      body: "*"
-    };
-  };
+  rpc UploadMedia (UploadMediaRequest) returns (MediaReply);
   rpc GetMedia (GetMediaRequest) returns (MediaReply);
   rpc GetMediaList (GetMediaListRequest) returns (MediaListReply);
 }

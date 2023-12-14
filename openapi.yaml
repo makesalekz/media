@@ -3,69 +3,8 @@
 
 openapi: 3.0.3
 info:
-    title: MediaService API
+    title: ""
     version: 0.0.1
-paths:
-    /v1/media:
-        post:
-            tags:
-                - MediaService
-            operationId: MediaService_UploadMedia
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: '#/components/schemas/media.v1.UploadMediaRequest'
-                required: true
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/media.v1.MediaReply'
+paths: {}
 components:
-    schemas:
-        media.v1.Media:
-            type: object
-            properties:
-                id:
-                    type: string
-                ownerId:
-                    type: string
-                url:
-                    type: string
-                fileName:
-                    type: string
-                extension:
-                    type: string
-                createdAt:
-                    type: string
-                size:
-                    type: integer
-                    format: int32
-                width:
-                    type: integer
-                    format: int32
-                height:
-                    type: integer
-                    format: int32
-                duration:
-                    type: number
-                    format: float
-        media.v1.MediaReply:
-            type: object
-            properties:
-                media:
-                    $ref: '#/components/schemas/media.v1.Media'
-        media.v1.UploadMediaRequest:
-            type: object
-            properties:
-                content:
-                    type: string
-                fileName:
-                    type: string
-                filePath:
-                    type: string
-tags:
-    - name: MediaService
+    schemas: {}

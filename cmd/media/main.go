@@ -5,14 +5,14 @@ import (
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/config"
+	kconfig "github.com/go-kratos/kratos/v2/config"
 	"github.com/go-kratos/kratos/v2/config/file"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware/tracing"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"gitlab.calendaria.team/services/media/internal/conf"
-	"gitlab.calendaria.team/services/media/internal/data"
+	"gitlab.calendaria.team/services/utils/v1/config"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -33,7 +33,7 @@ func init() {
 	flag.StringVar(&flagconf, "conf", "../../configs/config.local.yaml", "config path, eg: -conf config.yaml")
 }
 
-func newApp(logger log.Logger, c *data.Config, gs *grpc.Server, hs *http.Server) *kratos.App {
+func newApp(logger log.Logger, c *config.Config, gs *grpc.Server, hs *http.Server) *kratos.App {
 	return kratos.New(
 		kratos.ID(id),
 		kratos.Name(c.GetAppName()),
@@ -60,8 +60,8 @@ func main() {
 		"trace.id", tracing.TraceID(),
 		"span.id", tracing.SpanID(),
 	)
-	c := config.New(
-		config.WithSource(
+	c := kconfig.New(
+		kconfig.WithSource(
 			file.NewSource(flagconf),
 		),
 	)

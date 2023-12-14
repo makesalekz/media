@@ -2,6 +2,7 @@ package biz
 
 import (
 	"github.com/google/wire"
+	"gitlab.calendaria.team/services/utils/v1/nats"
 )
 
 const (
@@ -30,4 +31,4 @@ var (
 )
 
 // ProviderSet is biz providers.
-var ProviderSet = wire.NewSet(NewQueueManager, NewMediaUsecase)
+var ProviderSet = wire.NewSet(nats.NewQueueManager, NewMediaUsecase)

@@ -2,15 +2,12 @@ package data
 
 import (
 	"github.com/nats-io/nats.go"
+	"gitlab.calendaria.team/services/media/internal/conf"
 )
 
-type NatsClient struct {
-	*nats.EncodedConn
-}
-
 // NewNatsClient .
-func NewNatsClient(c *Config) (*NatsClient, func(), error) {
-	nc, err := nats.Connect(c.Bootstrap.Nats)
+func NewNatsClient(conf *conf.Bootstrap) (*nats.EncodedConn, func(), error) {
+	nc, err := nats.Connect(conf.Nats)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -26,7 +23,5 @@ func NewNatsClient(c *Config) (*NatsClient, func(), error) {
 		nc.Close()
 	}
 
-	return &NatsClient{
-		EncodedConn: ec,
-	}, cleanup, nil
+	return ec, cleanup, nil
 }
