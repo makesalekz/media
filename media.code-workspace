@@ -6,8 +6,15 @@
   ],
   "settings": {
     "protoc": {
-      "path": "./third_party/",
       "options": ["--proto_path=./third_party/"]
-    }
+  },
+  "clang-format.style": "google",
+  "editor.defaultFormatter": "xaver.clang-format",
+  "editor.formatOnSave": true,
+  "[go]": {
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "golang.go"
+  }
   }
 }

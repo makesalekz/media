@@ -10,15 +10,15 @@ option java_multiple_files = true;
 option java_package = "media.v1";
 
 service MediaService {
-  rpc UploadMedia (UploadMediaRequest) returns (MediaReply);
-  rpc GetMedia (GetMediaRequest) returns (MediaReply);
-  rpc GetMediaList (GetMediaListRequest) returns (MediaListReply);
+  rpc UploadMedia(UploadMediaRequest) returns (MediaReply);
+  rpc GetMedia(GetMediaRequest) returns (MediaReply);
+  rpc GetMediaList(GetMediaListRequest) returns (MediaListReply);
 }
 
 message UploadMediaRequest {
   google.api.HttpBody content = 1;
-  string fileName = 2; // header: X-File-Name
-  string filePath = 3; // header: X-File-Path
+  string fileName = 2;  // header: X-File-Name
+  string filePath = 3;  // header: X-File-Path
 }
 
 message MediaReply {
