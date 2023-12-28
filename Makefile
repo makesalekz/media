@@ -75,6 +75,12 @@ migrations:
 		--to "ent://ent/schema" \
 		--dev-url "docker://postgres/15/test?search_path=public"
 
+.PHONY: proto
+# proto
+proto:
+	go mod vendor;
+	find vendor/gitlab.calendaria.team -name 'models.proto' -exec sh -c 'f="{}"; d="third_party/api/$$(dirname "$$f" | awk -F/ "{print \$$(NF-1)\"/\"\$$NF}")"; mkdir -p "$$d"; rsync -a "$$f" "$$d"' \;
+
 .PHONY: api
 # generate api proto
 api:
