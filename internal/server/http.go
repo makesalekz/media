@@ -25,7 +25,7 @@ var _metricSeconds = prometheus.NewHistogramVec(prometheus.HistogramOpts{
 	Subsystem: "requests",
 	Name:      "duration_sec",
 	Help:      "server requests duratio(sec).",
-	Buckets:   []float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.250, 0.5, 1},
+	Buckets:   []float64{0.250, 0.5, 1, 5, 10, 30, 60},
 }, []string{"kind", "operation"})
 
 var _metricRequests = prometheus.NewCounterVec(prometheus.CounterOpts{
