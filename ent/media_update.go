@@ -75,6 +75,14 @@ func (mu *MediaUpdate) SetSize(i int32) *MediaUpdate {
 	return mu
 }
 
+// SetNillableSize sets the "size" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableSize(i *int32) *MediaUpdate {
+	if i != nil {
+		mu.SetSize(*i)
+	}
+	return mu
+}
+
 // AddSize adds i to the "size" field.
 func (mu *MediaUpdate) AddSize(i int32) *MediaUpdate {
 	mu.mutation.AddSize(i)
@@ -407,6 +415,14 @@ func (muo *MediaUpdateOne) ClearURL() *MediaUpdateOne {
 func (muo *MediaUpdateOne) SetSize(i int32) *MediaUpdateOne {
 	muo.mutation.ResetSize()
 	muo.mutation.SetSize(i)
+	return muo
+}
+
+// SetNillableSize sets the "size" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableSize(i *int32) *MediaUpdateOne {
+	if i != nil {
+		muo.SetSize(*i)
+	}
 	return muo
 }
 
