@@ -1,46 +1,12 @@
-stages:
-  - build
-  - deploy
-
 include:
-  - project: 'deploy/common-cicd'
-    file: '/common-project.yml'
-    ref: 'main'
+  - project: "qcloudy/ci-cd/calendaria-pipelines"
+    file: "golang-pipeline.yaml"
+  
+build:
+  extends: .build
 
-docker-build:
-  tags:
-    - ${RUNNER_TAG}
-  stage: build
-  variables:
-    SERVICE_NAME: ${CI_PROJECT_NAME}
-    DB_PORT: 54404
-    DB_NAME: api
-    DB_USER: me
-    DB_PASS: password
-    DB_VOLUME: dbvol
-    TMP_VOLUME: tmpvol
-    NETWORK: ${ENVIRONMENT_CODE}
-    REGISTRY_IMAGE: ${CI_REGISTRY_IMAGE}:${ENVIRONMENT_CODE}
-  script:
-    # build and push to registry
-    - docker build --ssh default=~/.ssh/id_gitlab -t ${CI_REGISTRY_IMAGE}:${CI_COMMIT_SHA} .
-    - tag_sha_latest_and_push
-    # set environment
-    - docker exec vault vault write auth/approle/role/app-${CI_PROJECT_NAME} policies="app_${CI_PROJECT_NAME}"
-    - export AWS_ACCESS_KEY_ID=$(docker exec vault vault kv get -mount=secret -field=access_key_id app/media/awscredentials)
-    - export AWS_SECRET_ACCESS_KEY=$(docker exec vault vault kv get -mount=secret -field=secret_access_key app/media/awscredentials)
-    - export CONSUL_ADDRESS=http://consul:8500
-    - export VAULT_ADDRESS=http://vault:8200
-    - export VAULT_ROLE_ID=$(docker exec vault vault read -field=role_id auth/approle/role/app-${CI_PROJECT_NAME}/role-id)
-    - export VAULT_SECRET_ID=$(docker exec vault vault write -field=secret_id -f auth/approle/role/app-${CI_PROJECT_NAME}/secret-id)
-    - docker compose --profile=${ENVIRONMENT_CODE} down
-    # database up
-    - docker volume create ${CI_PROJECT_NAME}_db || true
-    - docker compose up -d
-    # migrations up
-    - docker pull arigaio/atlas
-    - docker run --rm -v $(pwd)/ent/migrate/migrations:/migrations --network ${NETWORK} arigaio/atlas migrate apply --url "postgres://me:password@${CI_PROJECT_NAME}_db:5432/api?search_path=public&sslmode=disable"
-    # service up
-    - docker compose --profile=${ENVIRONMENT_CODE} up -d
-  after_script:
-    - echo ${ENVIRONMENT_CODE} http://${CI_PROJECT_NAME}-${ENVIRONMENT_CODE}
+helm-lint:
+  extends: .helm-lint
+
+deploy:
+  extends: .deploy
