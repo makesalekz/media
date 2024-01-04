@@ -78,7 +78,7 @@ server:
 
 
   ingress:
-    enabled: true
+    enabled: false
     ingressClassName: nginx
     annotations:
       nginx.ingress.kubernetes.io/proxy-body-size: 512m
