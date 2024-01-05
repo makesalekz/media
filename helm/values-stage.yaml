@@ -27,35 +27,6 @@ server:
   podSecurityContext: {}
   securityContext: {}
   serviceAccount:
-  
-  # livenessProbe:
-  #   failureThreshold: 2
-  #   initialDelaySeconds: 120
-  #   periodSeconds: 60
-  #   successThreshold: 1
-  #   tcpSocket:
-  #     port: 8000
-  #   timeoutSeconds: 10
-
-  # readinessProbe:
-  #   failureThreshold: 2
-  #   httpGet:
-  #     path: /health-check/
-  #     port: http
-  #     scheme: HTTP
-  #   initialDelaySeconds: 120
-  #   periodSeconds: 10
-  #   successThreshold: 1
-  #   timeoutSeconds: 10
-
-  # startupProbe:
-  #   failureThreshold: 2
-  #   periodSeconds: 10
-  #   successThreshold: 1
-  #   initialDelaySeconds: 120
-  #   tcpSocket:
-  #     port: 8000
-  #   timeoutSeconds: 10
 
   resources:
     limits:
@@ -70,13 +41,6 @@ server:
     port: 80
     targetPort: 8000
     
-  env: { }
-  envSecrets: { }
-  vaultSecret:
-    enabled: false
-    project: stage-calendaria
-
-
   ingress:
     enabled: false
     ingressClassName: nginx
