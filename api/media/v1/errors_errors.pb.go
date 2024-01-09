@@ -85,6 +85,18 @@ func ErrorInvalidContentType(format string, args ...interface{}) *errors.Error {
 	return errors.New(400, ErrorReason_INVALID_CONTENT_TYPE.String(), fmt.Sprintf(format, args...))
 }
 
+func IsInvalidRequest(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_INVALID_REQUEST.String() && e.Code == 400
+}
+
+func ErrorInvalidRequest(format string, args ...interface{}) *errors.Error {
+	return errors.New(400, ErrorReason_INVALID_REQUEST.String(), fmt.Sprintf(format, args...))
+}
+
 func IsS3uploadFailed(err error) bool {
 	if err == nil {
 		return false
