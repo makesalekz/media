@@ -2,7 +2,6 @@ syntax = "proto3";
 
 package media.v1;
 
-import "google/api/annotations.proto";
 import "errors/errors.proto";
 
 option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
@@ -21,6 +20,7 @@ enum ErrorReason {
 
   UNAUTHORIZED = 10 [(errors.code) = 401];
   INVALID_CONTENT_TYPE = 11 [(errors.code) = 400];
+  INVALID_REQUEST = 22 [(errors.code) = 400];
 
   S3UPLOAD_FAILED = 20;
   NOT_FOUND = 21 [(errors.code) = 404];

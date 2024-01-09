@@ -4,9 +4,9 @@ go 1.21.3
 
 require (
 	entgo.io/ent v0.12.5
-	github.com/aws/aws-sdk-go v1.49.11
+	github.com/aws/aws-sdk-go v1.49.17
 	github.com/gabriel-vasile/mimetype v1.4.3
-	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20231219111544-85740b179b09
+	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240105030612-34d9666e0e1b
 	github.com/go-kratos/kratos/v2 v2.7.2
 	github.com/google/uuid v1.5.0
 	github.com/google/wire v0.5.0
@@ -15,8 +15,8 @@ require (
 	github.com/prometheus/client_golang v1.18.0
 	gitlab.calendaria.team/services/utils v0.0.8
 	go.uber.org/automaxprocs v1.5.3
-	golang.org/x/image v0.14.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20231212172506-995d672761c0
+	golang.org/x/image v0.15.0
+	google.golang.org/genproto/googleapis/api v0.0.0-20240108191215-35c7eff3a6b1
 	google.golang.org/grpc v1.60.1
 	google.golang.org/protobuf v1.32.0
 )
@@ -90,7 +90,7 @@ require (
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
 	golang.org/x/tools v0.12.1-0.20230815132531-74c255bcf846 // indirect
-	google.golang.org/genproto v0.0.0-20231211222908-989df2bf70f3 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231211222908-989df2bf70f3 // indirect
+	google.golang.org/genproto v0.0.0-20240102182953-50ed04b92917 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240102182953-50ed04b92917 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

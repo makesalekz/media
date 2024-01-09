@@ -96,9 +96,7 @@ func getExtension(contentType string) (string, bool) {
 	return "", false
 }
 
-func (uc *MediaUsecase) UploadMedia(ctx context.Context, fileName, filePath string, file *httpbody.HttpBody) (*ent.Media, error) {
-	userId := uc.jwt.GetUserIdFromContext(ctx)
-
+func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName, filePath string, file *httpbody.HttpBody) (*ent.Media, error) {
 	contentType := file.GetContentType()
 	extension, ok := getExtension(contentType)
 	if !ok {
@@ -363,9 +361,7 @@ func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaId int64) (*ent.Media
 	return media, nil
 }
 
-func (uc *MediaUsecase) GetMediaList(ctx context.Context, ownOnly bool, mediaIds []int64) ([]*ent.Media, error) {
-	userId := uc.jwt.GetUserIdFromContext(ctx)
-
+func (uc *MediaUsecase) GetMediaList(ctx context.Context, userId int64, ownOnly bool, mediaIds []int64) ([]*ent.Media, error) {
 	filter := data.FilterMediaDto{
 		MediaIds: mediaIds,
 	}
