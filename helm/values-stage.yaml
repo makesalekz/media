@@ -17,9 +17,6 @@ configmap:
     AUTOMIGRATE: "true"
     CONSUL_ADDRESS: "http://10.2.5.6:8500"
     VAULT_ADDRESS: "http://10.2.4.5:8200"
-    VAULT_ROLE_ID: "a32a7739-0e4b-f68b-e61e-5832feac3257"
-    VAULT_SECRET_ID: "66fd885b-8ed1-90ed-8253-4f739914ea1e"
-
 
 server:
   replicaCount: 1
@@ -40,6 +37,10 @@ server:
     type: ClusterIP
     port: 80
     targetPort: 8000
+
+  vaultSecret:
+    enabled: true
+    project: stage-calendaria
     
   ingress:
     enabled: false
@@ -58,4 +59,8 @@ server:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+migrateJob:
+  enabled: false
+  command: ["/atlas", "migrate", "apply", "--url", "postgres://calendaria:test@10.2.8.175:5432/calendaria?search_path=public", "--allow-dirty"]
 
