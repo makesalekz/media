@@ -57,7 +57,8 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	mediaService := service.NewMediaService(logger, mediaUsecase)
+	serviceHelper := service.NewServiceHelper(jwtProcessor)
+	mediaService := service.NewMediaService(logger, mediaUsecase, serviceHelper)
 	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, mediaService)
 	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor)
 	app := newApp(logger, configConfig, grpcServer, httpServer)
