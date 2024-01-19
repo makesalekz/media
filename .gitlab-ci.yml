@@ -10,6 +10,7 @@ deploy dev:
   extends: .deploy-dev
   variables:
     DB_PORT: 54404
+    TMP_VOLUME: tmpvol
   
 build:
   extends: .build
