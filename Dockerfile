@@ -2,6 +2,7 @@ FROM golang:latest AS builder
 
 COPY . /src
 WORKDIR /src
+ARG TOKEN 
 
 RUN mkdir -p -m 0700 ~/.ssh && \
     ssh-keyscan gitlab.calendaria.team >> ~/.ssh/known_hosts && \
