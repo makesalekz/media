@@ -2,7 +2,6 @@ FROM golang:latest AS builder
 
 COPY . /src
 WORKDIR /src
-ARG TOKEN 
 
 RUN mkdir -p -m 0700 ~/.ssh && \
     ssh-keyscan gitlab.calendaria.team >> ~/.ssh/known_hosts && \
@@ -15,6 +14,7 @@ FROM debian:stable-slim
 RUN apt-get update && apt-get install -y --no-install-recommends \
 		ca-certificates  \
         netbase \
+        ffmpeg \
         && rm -rf /var/lib/apt/lists/ \
         && apt-get autoremove -y && apt-get autoclean -y
 
