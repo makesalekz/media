@@ -1,5 +1,4 @@
 image:
-  # image config
   repository: 
   tag: 
   pullPolicy: IfNotPresent
@@ -14,13 +13,12 @@ configmap:
   data:
     DEBUG: "1"
     SERVICE_NAME: "media"
-    AUTOMIGRATE: "true"
     CONSUL_ADDRESS: "http://10.2.5.6:8500"
     VAULT_ADDRESS: "http://10.2.4.5:8200"
 
 server:
   replicaCount: 1
-  command: ["./media", "-conf", "./config.yaml"]
+  command: ["./media", "-conf", "./config.stage.yaml"]
   podSecurityContext: {}
   securityContext: {}
   serviceAccount:
@@ -41,26 +39,7 @@ server:
   vaultSecret:
     enabled: true
     project: stage-calendaria
-    
-  ingress:
-    enabled: false
-    ingressClassName: nginx
-    annotations:
-      nginx.ingress.kubernetes.io/proxy-body-size: 512m
-      nginx.ingress.kubernetes.io/rewrite-target: /$1
-    path: /media/?(.*)
-    hosts:
-      - stage.calendaria.net
-    tls:
-    - secretName: calendaria-tls
-      hosts:
-        - stage.calendaria.net
 
   nodeSelector: {}
   tolerations: []
   affinity: {}
-
-migrateJob:
-  enabled: false
-  command: ["/atlas", "migrate", "apply", "--url", "postgres://calendaria:test@10.2.8.175:5432/calendaria?search_path=public", "--allow-dirty"]
-
