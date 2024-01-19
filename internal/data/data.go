@@ -32,17 +32,34 @@ type Data struct {
 }
 
 // NewData .
-func NewData(c *conf.Bootstrap, logger log.Logger) (*Data, func(), error) {
+func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, func(), error) {
 	l := log.NewHelper(logger)
 
-	client, err := ent.Open("postgres", c.Db)
+	dbDsn := bc.Db // read from local config
+	if dbDsn == "" {
+		// read from vault
+		secret, err := c.ReadSecretsFor(context.Background(), "db-dsn")
+		if err != nil {
+			l.Fatalf("db dsn not found: %v", err)
+			return nil, nil, err
+		}
+		dbDsn = secret["data"].(string)
+	}
+
+	autoMigrate := os.Getenv("AUTOMIGRATE")
+	entLogging := os.Getenv("ENT_LOGGING")
+	var options []ent.Option
+	if entLogging == "true" {
+		options = append(options, ent.Debug(), ent.Log(l.Info))
+	}
+
+	client, err := ent.Open("postgres", dbDsn, options...)
 	if err != nil {
 		l.Fatalf("failed opening connection to postgres: %v", err)
 		return nil, nil, err
 	}
 
-	automigrate := os.Getenv("AUTOMIGRATE")
-	if automigrate != "" {
+	if autoMigrate != "" {
 		if err := client.Schema.Create(context.Background()); err != nil {
 			l.Errorf("failed creating schema resources: %v", err)
 			return nil, nil, err
