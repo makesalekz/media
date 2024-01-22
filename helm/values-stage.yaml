@@ -43,3 +43,7 @@ server:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+
+migrateJob:
+  enabled: true
+  command: ["/atlas", "migrate", "apply", "--url", "$(DB_URL)", "--allow-dirty"]
