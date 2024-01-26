@@ -50,7 +50,7 @@ func NewData(bc *conf.Bootstrap, c *config.Config, logger log.Logger) (*Data, fu
 	entLogging := os.Getenv("ENT_LOGGING")
 	var options []ent.Option
 	if entLogging == "true" {
-		options = append(options, ent.Debug(), ent.Log(l.Info))
+		options = append(options, ent.Debug(), ent.Log(l.Debug))
 	}
 
 	client, err := ent.Open("postgres", dbDsn, options...)
