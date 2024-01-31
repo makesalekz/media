@@ -5,6 +5,7 @@ import (
 
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
 type ServiceHelper struct {
@@ -20,8 +21,13 @@ func NewServiceHelper(
 }
 
 func (s *ServiceHelper) GetActorId(ctx context.Context, reqActorId int64) (int64, error) {
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId != 0 {
+		return actorId, nil
+	}
+
 	// TODO: remove getting from context
-	actorId := s.jwt.GetUserIdFromContext(ctx)
+	actorId = s.jwt.GetUserIdFromContext(ctx)
 	if actorId != 0 {
 		return actorId, nil
 	}
