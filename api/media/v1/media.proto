@@ -16,7 +16,6 @@ service MediaService {
 }
 
 message UploadMediaRequest {
-  int64 actorId = 1;
   google.api.HttpBody content = 2;
   string fileName = 3;  // header: X-File-Name
   string filePath = 4;  // header: X-File-Path
@@ -31,7 +30,6 @@ message GetMediaRequest {
 }
 
 message GetMediaListRequest {
-  int64 actorId = 1;
   repeated int64 mediaIds = 2;
   bool ownOnly = 3;
 }
