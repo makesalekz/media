@@ -4,29 +4,23 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/biz"
+	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
 type MediaService struct {
 	v1.UnimplementedMediaServiceServer
 
-	log *log.Helper
-	sh  *ServiceHelper
-	uc  *biz.MediaUsecase
+	uc *biz.MediaUsecase
 }
 
 func NewMediaService(
-	logger log.Logger,
 	uc *biz.MediaUsecase,
-	sh *ServiceHelper,
 ) *MediaService {
 	return &MediaService{
-		log: log.NewHelper(logger),
-		sh:  sh,
-		uc:  uc,
+		uc: uc,
 	}
 }
 
@@ -49,9 +43,9 @@ func replyMedia(media *ent.Media) *v1.Media {
 }
 
 func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaRequest) (*v1.MediaReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	media, err := s.uc.UploadMedia(ctx, actorId, req.FileName, req.FilePath, req.Content)
@@ -72,9 +66,9 @@ func (s *MediaService) GetMedia(ctx context.Context, req *v1.GetMediaRequest) (*
 }
 
 func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListRequest) (*v1.MediaListReply, error) {
-	actorId, err := s.sh.GetActorId(ctx, req.ActorId)
-	if err != nil {
-		return nil, err
+	actorId := auth.GetActorIdFromContext(ctx)
+	if actorId == 0 {
+		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
 	mediaList, err := s.uc.GetMediaList(ctx, actorId, req.OwnOnly, req.MediaIds)
