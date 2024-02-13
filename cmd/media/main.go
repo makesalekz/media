@@ -13,6 +13,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"gitlab.calendaria.team/services/media/internal/conf"
 	"gitlab.calendaria.team/services/utils/v1/config"
+	u_log "gitlab.calendaria.team/services/utils/v1/log"
 
 	_ "go.uber.org/automaxprocs"
 )
@@ -22,7 +23,7 @@ var (
 	// Name is the name of the compiled software.
 	Name string = "media"
 	// Version is the version of the compiled software.
-	Version string = "1.1.0"
+	Version string = "1.1.1"
 	// flagconf is the config flag.
 	flagconf string
 
@@ -51,7 +52,7 @@ func newApp(logger log.Logger, c *config.Config, gs *grpc.Server, hs *http.Serve
 
 func main() {
 	flag.Parse()
-	logger := log.With(log.NewStdLogger(os.Stdout),
+	logger := log.With(u_log.NewStdLogger(),
 		"ts", log.DefaultTimestamp,
 		"caller", log.DefaultCaller,
 		"service.id", id,
