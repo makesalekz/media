@@ -11,7 +11,6 @@ configmap:
   private:
     enabled: false
   data:
-    DEBUG: "1"
     SERVICE_NAME: "media"
     CONSUL_ADDRESS: "http://10.2.5.6:8500"
     VAULT_ADDRESS: "http://10.2.4.5:8200"
