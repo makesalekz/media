@@ -1,7 +1,10 @@
 include:
   - project: 'deploy/dev'
-    file: '/go-microservice.yml'
+    file: '/go-app.yml'
     ref: 'main'
+  
+lint dev:
+  extends: .lint-dev
   
 build dev:
   extends: .build-dev

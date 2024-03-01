@@ -40,4 +40,4 @@ bin/
 # Local env
 .env
 .docker
-*.local.yaml
+configs/config.yaml
