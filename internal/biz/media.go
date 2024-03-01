@@ -125,7 +125,7 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName,
 
 	location, err := uc.s3.Upload(ctx, media.Path, file.GetData(), file.GetContentType())
 	if err != nil {
-		uc.mediaRepo.DeleteMedia(ctx, media.ID)
+		_ = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 
 		return nil, v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 	}
@@ -135,19 +135,21 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName,
 		return nil, v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err)
 	}
 
-	go uc.appendMedia(ctx, userId, media, file)
+	go func() {
+		_ = uc.appendMedia(ctx, userId, media, file)
+	}()
 
 	return media, nil
 }
 
 func (uc *MediaUsecase) appendMedia(
-	ctx context.Context,
+	_ context.Context,
 	userId int64,
 	media *ent.Media,
 	file *httpbody.HttpBody,
 ) error {
 	contentType := file.GetContentType()
-	re, err := regexp.Compile("^(.*)\\/.*")
+	re, err := regexp.Compile(`^(.*)\/.*`)
 	if err != nil {
 		uc.log.Error(err)
 
@@ -155,7 +157,7 @@ func (uc *MediaUsecase) appendMedia(
 	}
 
 	format := re.FindStringSubmatch(contentType)
-	if format == nil || len(format) == 0 {
+	if len(format) == 0 {
 		uc.log.Error(v1.ErrorInvalidContentType("invalid content type: %s", contentType))
 
 		return err
@@ -170,7 +172,7 @@ func (uc *MediaUsecase) appendMedia(
 			return err
 		}
 	case "image":
-		err = uc.appendImage(file, userId, media)
+		err = uc.appendImage(file, media)
 		if err != nil {
 			uc.log.Error(err)
 
@@ -203,7 +205,7 @@ func (uc *MediaUsecase) appendVideo(file *httpbody.HttpBody, userId int64, media
 	return nil
 }
 
-func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, userId int64, media *ent.Media) error {
+func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, media *ent.Media) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
 	defer cancel()
 
@@ -297,7 +299,7 @@ func (uc *MediaUsecase) setVideoParams(
 
 	location, err := uc.s3.Upload(ctx, path, thumbnail.Data, thumbnail.MimeType)
 	if err != nil {
-		uc.s3.Delete(ctx, path)
+		_ = uc.s3.Delete(ctx, path)
 		err = v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 
 		return err
@@ -305,22 +307,23 @@ func (uc *MediaUsecase) setVideoParams(
 
 	duration, err := data.ExtractDurationFromMetadata(meta)
 	if err != nil {
-		uc.s3.Delete(ctx, path)
+		_ = uc.s3.Delete(ctx, path)
 		err := v1.ErrorInternal("uc.uploadThumbnail: ExtractDurationFromMetadata error: %v", err)
 
 		return err
 	}
 
-	media, err = uc.mediaRepo.SetVideoParameters(
+	_, err = uc.mediaRepo.SetVideoParameters(
 		ctx,
 		media,
 		data.SetVideoParamsDto{
 			Duration:      duration,
 			ThumbnailUrl:  location,
 			ThumbnailPath: path,
-		})
+		},
+	)
 	if err != nil {
-		uc.s3.Delete(ctx, path)
+		_ = uc.s3.Delete(ctx, path)
 		err = v1.ErrorDatabaseQuery("uc.uploadThumbnail: SetVideoParameters error: %s", err)
 
 		return err
@@ -339,7 +342,7 @@ func (uc *MediaUsecase) setMediaDimensions(ctx context.Context, media *ent.Media
 
 	setDimensionsDto := data.SetDimensionsDto{Width: width, Height: height}
 
-	media, err = uc.mediaRepo.SetDimensions(ctx, media, setDimensionsDto)
+	_, err = uc.mediaRepo.SetDimensions(ctx, media, setDimensionsDto)
 	if err != nil {
 		err = v1.ErrorDatabaseQuery("uc.setMediaDimensions: SetDimensions error: %s", err)
 
