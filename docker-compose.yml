@@ -22,13 +22,10 @@ services:
     networks:
       - backend
     volumes:
-      - ./configs:/data/conf
       - ${TMP_VOLUME}:/data/tmp
     restart: unless-stopped
     depends_on:
       - db
-    profiles:
-      - stage
     environment:
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=${CONSUL_ADDRESS}
@@ -39,10 +36,14 @@ services:
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     secrets:
       - vault_secret_id
+    command: ["./app"]
   dev-service:
     build:
       context: ./
       dockerfile: Dockerfile
+      args:
+        - TOKEN=${TOKEN}
+        - ENV=dev
     container_name: ${SERVICE_NAME}_service
     ports:
       - '${HTTP_PORT}:8000'
@@ -50,11 +51,8 @@ services:
     networks:
       - backend
     volumes:
-      - ./configs:/data/conf
       - ${TMP_VOLUME}:/data/tmp
     restart: unless-stopped
-    profiles:
-      - dev
     environment:
       - DEBUG=true
       - AUTOMIGRATE=true
@@ -64,6 +62,7 @@ services:
       - VAULT_TOKEN=myroot
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    command: ["./app"]
 
 volumes:
   dbvol:
