@@ -17,7 +17,7 @@ configmap:
 
 server:
   replicaCount: 1
-  command: ["./media", "-conf", "./config.stage.yaml"]
+  command: ["./app"]
   podSecurityContext: {}
   securityContext: {}
   serviceAccount:
