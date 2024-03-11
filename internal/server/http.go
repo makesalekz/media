@@ -4,6 +4,12 @@ import (
 	"io"
 	"net/http"
 
+	v1 "gitlab.calendaria.team/services/media/api/media/v1"
+	"gitlab.calendaria.team/services/media/internal/conf"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v1/middlewares/metrics"
+	"gitlab.calendaria.team/services/utils/v2/middlewares/auth"
+
 	"github.com/gabriel-vasile/mimetype"
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/errors"
@@ -12,11 +18,6 @@ import (
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/internal/conf"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
-	auth "gitlab.calendaria.team/services/utils/v1/middlewares/auth"
-	metrics "gitlab.calendaria.team/services/utils/v1/middlewares/metrics"
 	"google.golang.org/genproto/googleapis/api/httpbody"
 )
 

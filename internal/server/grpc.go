@@ -1,16 +1,17 @@
 package server
 
 import (
+	v1 "gitlab.calendaria.team/services/media/api/media/v1"
+	"gitlab.calendaria.team/services/media/internal/conf"
+	"gitlab.calendaria.team/services/media/internal/service"
+	"gitlab.calendaria.team/services/utils/v1/jwt"
+	"gitlab.calendaria.team/services/utils/v1/middlewares/metrics"
+	"gitlab.calendaria.team/services/utils/v2/middlewares/auth"
+
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/transport/grpc"
-	media_v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/internal/conf"
-	"gitlab.calendaria.team/services/media/internal/service"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
-	auth "gitlab.calendaria.team/services/utils/v1/middlewares/auth"
-	metrics "gitlab.calendaria.team/services/utils/v1/middlewares/metrics"
 	ggrpc "google.golang.org/grpc"
 )
 
@@ -44,7 +45,7 @@ func NewGRPCServer(c *conf.Bootstrap, jwtp *jwt.JwtProcessor, srvc *service.Medi
 	}
 	srv := grpc.NewServer(opts...)
 
-	media_v1.RegisterMediaServiceServer(srv, srvc)
+	v1.RegisterMediaServiceServer(srv, srvc)
 
 	return srv
 }
