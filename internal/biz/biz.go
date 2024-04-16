@@ -18,15 +18,38 @@ var (
 		"image/bmp":          "bmp",
 		"image/vnd.wap.wbmp": "wbmp",
 
-		"video/x-msvideo": "avi",
-		"video/mp4":       "mp4",
-		"video/webm":      "webm",
-		"video/3gpp":      "3gp",
-		"video/3gpp2":     "3g2",
-		"video/quicktime": "mov",
+		"text/plain":    "txt",
+		"text/yaml":     "yaml",
+		"text/markdown": "md",
+		"text/html":     "html",
+
+		"application/rtf":               "rtf",
+		"application/msword":            "doc",
+		"application/pdf":               "pdf",
+		"application/vnd.ms-powerpoint": "ppt",
+		"application/json":              "json",
+		"application/xml":               "xml",
+		"application/xhtml+xml":         "xhtml",
+		"application/csv":               "csv",
+		"application/vnd.ms-excel":      "xls",
+
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document":   "docx",
+		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":         "xlsx",
+		"application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
+
+		"audio/mpeg": "mp3",
+		"audio/wav":  "wav",
+		"audio/ogg":  "ogg",
+
+		"video/mp4":        "mp4",
+		"video/x-msvideo":  "avi",
+		"video/quicktime":  "mov",
+		"video/webm":       "webm",
+		"video/3gpp":       "3gp",
+		"video/3gpp2":      "3g2",
+		"video/x-matroska": "mkv",
 
 		"application/zip": "zip",
-		"application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
 	}
 )
 

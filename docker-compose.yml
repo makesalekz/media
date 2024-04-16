@@ -37,7 +37,7 @@ services:
     secrets:
       - vault_secret_id
     command: ["./app"]
-  dev-service:
+  local-service:
     build:
       context: ./
       dockerfile: Dockerfile
@@ -54,7 +54,7 @@ services:
       - ${TMP_VOLUME}:/data/tmp
     restart: unless-stopped
     environment:
-      - DEBUG=true
+      - DEBUG=${DEBUG}
       - AUTOMIGRATE=true
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=http://consul:8500
