@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"net/url"
 	"time"
 
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
@@ -48,7 +49,12 @@ func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaReque
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	media, err := s.uc.UploadMedia(ctx, actorId, req.FileName, req.FilePath, req.Content)
+	fileName, err := url.QueryUnescape(req.FileName)
+	if err != nil {
+		return nil, v1.ErrorInvalidRequest("invalid file name: %s", req.FileName)
+	}
+
+	media, err := s.uc.UploadMedia(ctx, actorId, fileName, req.FilePath, req.Content)
 	if err != nil {
 		return nil, err
 	}
