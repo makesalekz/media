@@ -37,9 +37,10 @@ var (
 		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":         "xlsx",
 		"application/vnd.openxmlformats-officedocument.presentationml.presentation": "pptx",
 
-		"audio/mpeg": "mp3",
-		"audio/wav":  "wav",
-		"audio/ogg":  "ogg",
+		"audio/mpeg":  "mp3",
+		"audio/wav":   "wav",
+		"audio/ogg":   "ogg",
+		"audio/x-m4a": "m4a",
 
 		"video/mp4":        "mp4",
 		"video/x-msvideo":  "avi",
