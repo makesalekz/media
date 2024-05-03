@@ -31,6 +31,12 @@ init:
 	go install github.com/golang/mock/mockgen@v1.6.0
 	npm install widdershins -g
 
+.PHONY: doc
+doc:
+	go run -mod=mod entgo.io/ent/cmd/ent describe ./ent/schema > ./doc/schema.md
+	doc/sed.sh doc/schema.md
+	widdershins openapi.yaml -o ./doc/openapi.md --l --code --omitHeader --summary --resolve
+
 .PHONY: run
 # run locally
 run:	
