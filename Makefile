@@ -121,10 +121,17 @@ all:
 	make config;
 	make generate;
 
+.PHONY: hooks
+# install hooks
+hooks:
+	git config --local core.hooksPath ./cmd/scripts
+
 .PHONY: lint
 # run linter
 lint:
-	golangci-lint run -v
+	git fetch
+	chmod +x ./cmd/scripts/lint.sh
+	./cmd/scripts/lint.sh
 
 .PHONY: test
 # run tests
