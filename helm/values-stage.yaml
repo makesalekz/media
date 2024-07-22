@@ -1,3 +1,4 @@
+useRollout: true
 image:
   repository: 
   tag: 
