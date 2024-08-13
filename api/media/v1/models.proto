@@ -17,4 +17,5 @@ message Media {
   optional int32 width = 8;      // in pixels
   optional int32 height = 9;     // in pixels
   optional float duration = 10;  // in seconds
+  optional string thumbnailUrl = 11;
 }

@@ -11,6 +11,7 @@ option java_package = "media.v1";
 
 service MediaService {
   rpc UploadMedia(UploadMediaRequest) returns (MediaReply);
+  rpc GetPrivateMedia(GetMediaRequest) returns (MediaReply);
   rpc GetMedia(GetMediaRequest) returns (MediaReply);
   rpc GetMediaList(GetMediaListRequest) returns (MediaListReply);
 }
@@ -19,6 +20,7 @@ message UploadMediaRequest {
   google.api.HttpBody content = 2;
   string fileName = 3;  // header: X-File-Name
   string filePath = 4;  // header: X-File-Path
+  bool isPrivate = 5; // header: X-File-Private
 }
 
 message MediaReply {

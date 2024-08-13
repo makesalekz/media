@@ -15,6 +15,11 @@ import (
 	_ "gitlab.calendaria.team/services/media/ent/runtime"
 )
 
+const (
+	Calendaria = "calendaria"
+	Pms        = "pms"
+)
+
 // ProviderSet is data providers.
 var ProviderSet = wire.NewSet(
 	NewData,

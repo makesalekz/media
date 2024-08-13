@@ -46,7 +46,9 @@ type Media struct {
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UploadedAt holds the value of the "uploaded_at" field.
-	UploadedAt   *time.Time `json:"uploaded_at,omitempty"`
+	UploadedAt *time.Time `json:"uploaded_at,omitempty"`
+	// IsPrivate holds the value of the "is_private" field.
+	IsPrivate    bool `json:"is_private,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -55,7 +57,7 @@ func (*Media) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case media.FieldIsActivated:
+		case media.FieldIsActivated, media.FieldIsPrivate:
 			values[i] = new(sql.NullBool)
 		case media.FieldDuration:
 			values[i] = new(sql.NullFloat64)
@@ -184,6 +186,12 @@ func (m *Media) assignValues(columns []string, values []any) error {
 				m.UploadedAt = new(time.Time)
 				*m.UploadedAt = value.Time
 			}
+		case media.FieldIsPrivate:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_private", values[i])
+			} else if value.Valid {
+				m.IsPrivate = value.Bool
+			}
 		default:
 			m.selectValues.Set(columns[i], values[i])
 		}
@@ -280,6 +288,9 @@ func (m *Media) String() string {
 		builder.WriteString("uploaded_at=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("is_private=")
+	builder.WriteString(fmt.Sprintf("%v", m.IsPrivate))
 	builder.WriteByte(')')
 	return builder.String()
 }

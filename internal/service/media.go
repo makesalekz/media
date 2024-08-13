@@ -40,6 +40,11 @@ func replyMedia(media *ent.Media) *v1.Media {
 	if media.URL != nil {
 		result.Url = *media.URL
 	}
+
+	if media.ThumbnailURL != nil {
+		result.ThumbnailUrl = media.ThumbnailURL
+	}
+
 	return result
 }
 
@@ -48,13 +53,17 @@ func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaReque
 	if actorId == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
+	appID := auth.GetAppIdFromContext(ctx)
+	if appID == "" {
+		return nil, v1.ErrorEmptyActorId("empty app id")
+	}
 
 	fileName, err := url.QueryUnescape(req.FileName)
 	if err != nil {
 		return nil, v1.ErrorInvalidRequest("invalid file name: %s", req.FileName)
 	}
 
-	media, err := s.uc.UploadMedia(ctx, actorId, fileName, req.FilePath, req.Content)
+	media, err := s.uc.UploadMedia(ctx, actorId, fileName, req.FilePath, req.Content, req.GetIsPrivate())
 	if err != nil {
 		return nil, err
 	}

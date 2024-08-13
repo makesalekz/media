@@ -129,6 +129,11 @@ func UploadedAt(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldUploadedAt, v))
 }
 
+// IsPrivate applies equality check predicate on the "is_private" field. It's identical to IsPrivateEQ.
+func IsPrivate(v bool) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldIsPrivate, v))
+}
+
 // DeletedAtEQ applies the EQ predicate on the "deleted_at" field.
 func DeletedAtEQ(v time.Time) predicate.Media {
 	return predicate.Media(sql.FieldEQ(FieldDeletedAt, v))
@@ -927,6 +932,26 @@ func UploadedAtIsNil() predicate.Media {
 // UploadedAtNotNil applies the NotNil predicate on the "uploaded_at" field.
 func UploadedAtNotNil() predicate.Media {
 	return predicate.Media(sql.FieldNotNull(FieldUploadedAt))
+}
+
+// IsPrivateEQ applies the EQ predicate on the "is_private" field.
+func IsPrivateEQ(v bool) predicate.Media {
+	return predicate.Media(sql.FieldEQ(FieldIsPrivate, v))
+}
+
+// IsPrivateNEQ applies the NEQ predicate on the "is_private" field.
+func IsPrivateNEQ(v bool) predicate.Media {
+	return predicate.Media(sql.FieldNEQ(FieldIsPrivate, v))
+}
+
+// IsPrivateIsNil applies the IsNil predicate on the "is_private" field.
+func IsPrivateIsNil() predicate.Media {
+	return predicate.Media(sql.FieldIsNull(FieldIsPrivate))
+}
+
+// IsPrivateNotNil applies the NotNil predicate on the "is_private" field.
+func IsPrivateNotNil() predicate.Media {
+	return predicate.Media(sql.FieldNotNull(FieldIsPrivate))
 }
 
 // And groups predicates with the AND operator between them.

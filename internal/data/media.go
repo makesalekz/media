@@ -16,6 +16,7 @@ type CreateMediaDto struct {
 	Path      string
 	Extension string
 	Size      int32
+	IsPrivate bool
 }
 
 type SetVideoParamsDto struct {
@@ -63,6 +64,7 @@ func (r *mediaRepo) CreateMedia(ctx context.Context, dto CreateMediaDto) (*ent.M
 		SetPath(dto.Path).
 		SetExtension(dto.Extension).
 		SetSize(dto.Size).
+		SetIsPrivate(dto.IsPrivate).
 		Save(ctx)
 }
 
@@ -78,7 +80,9 @@ func (r *mediaRepo) SetMediaLocation(ctx context.Context, media *ent.Media, URL 
 		Save(ctx)
 }
 
-func (r *mediaRepo) SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error) {
+func (r *mediaRepo) SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (
+	*ent.Media, error,
+) {
 	return video.Update().
 		SetThumbnailURL(dto.ThumbnailUrl).
 		SetThumbnailPath(dto.ThumbnailPath).
