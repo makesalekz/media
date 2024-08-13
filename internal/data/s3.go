@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"fmt"
 	"os"
-	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -27,11 +26,11 @@ func NewS3Uploader(c *config.Config) (*S3Uploader, error) {
 	if os.Getenv("DEBUG") == "" {
 		region, err := c.Value("AWS_REGION").String()
 		if err != nil {
-			return nil, fmt.Errorf("failed to get AWS_REGION: %v", err)
+			return nil, fmt.Errorf("failed to get AWS_REGION: %s", err.Error())
 		}
 		bucket, err := c.Value("AWS_BUCKET").String()
 		if err != nil {
-			return nil, fmt.Errorf("failed to get AWS_BUCKET: %v", err)
+			return nil, fmt.Errorf("failed to get AWS_BUCKET: %s", err.Error())
 		}
 
 		sess, err := session.NewSession(
@@ -40,7 +39,7 @@ func NewS3Uploader(c *config.Config) (*S3Uploader, error) {
 			},
 		)
 		if err != nil {
-			return nil, fmt.Errorf("AWS Session error: %v", err)
+			return nil, fmt.Errorf("AWS Session error: %s", err.Error())
 		}
 
 		uploader = &S3Uploader{
@@ -93,7 +92,7 @@ func (u *S3Uploader) GetPresignedURL(ctx context.Context, path string) (string, 
 		},
 	)
 
-	url, err := req.Presign(15 * time.Minute)
+	url, err := req.Presign(DefaultTimeout)
 	if err != nil {
 		return "", err
 	}

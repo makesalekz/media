@@ -10,6 +10,7 @@ const (
 )
 
 var (
+	//nolint:gochecknoglobals // global dict for content types
 	allowedContentTypesConst = map[string]string{
 		"image/jpeg":         "jpg",
 		"image/png":          "png",
@@ -55,4 +56,9 @@ var (
 )
 
 // ProviderSet is biz providers.
-var ProviderSet = wire.NewSet(nats.NewQueueManager, NewMediaUsecase)
+//
+//nolint:gochecknoglobals // global variable, used in wire
+var ProviderSet = wire.NewSet(
+	nats.NewQueueManager,
+	NewMediaUsecase,
+)
