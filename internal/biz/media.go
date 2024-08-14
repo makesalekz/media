@@ -145,6 +145,26 @@ func (uc *MediaUsecase) UploadMedia(
 		_ = uc.appendMedia(ctx, userID, media, file, isPrivate)
 	}()
 
+	var url string
+
+	if media.IsPrivate && media.URL != nil {
+		url, err = uc.s3.GetPresignedURL(ctx, media.Path)
+		if err != nil {
+			return nil, v1.ErrorS3Failed("S3 GetPresignedURL error: %s", err.Error())
+		}
+
+		media.URL = &url
+	}
+
+	if media.IsPrivate && media.ThumbnailURL != nil {
+		url, err = uc.s3.GetPresignedURL(ctx, *media.ThumbnailPath)
+		if err != nil {
+			return nil, v1.ErrorS3Failed("S3 GetPresignedURL error: %s", err.Error())
+		}
+
+		media.ThumbnailPath = &url
+	}
+
 	return media, nil
 }
 
