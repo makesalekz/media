@@ -123,14 +123,14 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName,
 		return nil, v1.ErrorDatabaseQuery("CreateMedia error: %s", err)
 	}
 
-	location, err := uc.s3.Upload(ctx, media.Path, file.GetData(), file.GetContentType())
+	url, err := uc.s3.Upload(ctx, media.Path, file.GetData(), file.GetContentType())
 	if err != nil {
 		_ = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 
 		return nil, v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 	}
 
-	media, err = uc.mediaRepo.SetMediaLocation(ctx, media, location)
+	media, err = uc.mediaRepo.SetMediaLocation(ctx, media, url)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err)
 	}
@@ -379,4 +379,29 @@ func (uc *MediaUsecase) GetMediaList(ctx context.Context, userId int64, ownOnly 
 	}
 
 	return mediaList, nil
+}
+
+func (uc *MediaUsecase) DeleteAvatar(ctx context.Context, urls []string) error {
+	mediaList, err := uc.mediaRepo.GetAvatarsMediaList(ctx, urls)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("GetAvatarsMediaList error: %s", err)
+	}
+
+	mediaIDs := make([]int64, len(mediaList))
+	for i, media := range mediaList {
+		mediaIDs[i] = media.ID
+
+		// delete avatar from aws s3
+		err2 := uc.s3.Delete(ctx, media.Path)
+		if err2 != nil {
+			uc.log.Errorf("error on deleting avatar in aws: %s", err2)
+		}
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("DeleteMediaList error: %s", err)
+	}
+
+	return nil
 }
