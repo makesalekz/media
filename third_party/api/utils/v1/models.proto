@@ -9,16 +9,27 @@ option java_package = "utils.v1";
 message EmptyRequest {}
 message EmptyReply {}
 
+message SortRequest {
+	string field = 1; // field – to sort by field name
+	bool descending = 2; // descending – to sort in reverse order
+}
+
+message ActorRequest{
+	int64 actorId = 1;
+	int64 tenantId = 2;
+}
+
 message PaginateRequest {
 	int32 limit = 1;
-	int64 fromId = 2;
+	int64 fromId = 2; // fromId, toId, aroundId – to paginate by ID
 	int64 toId = 3;
 	int64 aroundId = 4;
-	string fromDate = 5;
+	string fromDate = 5; // fromDate, toDate, aroundDate – to paginate by date
 	string toDate = 6;
 	string aroundDate = 7;
-	string fromLabel = 8;
-	bool descending = 9;
+	string fromLabel = 8; // fromLabel – to paginate by string
+	bool descending = 9; // descending – to paginate in reverse order
+	int32 page = 10; // page – to paginate by page number
 }
 
 message PaginateReply {

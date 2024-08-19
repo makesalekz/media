@@ -32,6 +32,13 @@ var (
 		Name:       "media",
 		Columns:    MediaColumns,
 		PrimaryKey: []*schema.Column{MediaColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "media_url",
+				Unique:  false,
+				Columns: []*schema.Column{MediaColumns[6]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
