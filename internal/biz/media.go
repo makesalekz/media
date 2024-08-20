@@ -123,14 +123,14 @@ func (uc *MediaUsecase) UploadMedia(ctx context.Context, userId int64, fileName,
 		return nil, v1.ErrorDatabaseQuery("CreateMedia error: %s", err)
 	}
 
-	url, err := uc.s3.Upload(ctx, media.Path, file.GetData(), file.GetContentType())
+	location, err := uc.s3.Upload(ctx, media.Path, file.GetData(), file.GetContentType())
 	if err != nil {
 		_ = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 
 		return nil, v1.ErrorS3uploadFailed("S3 Upload error: %s", err)
 	}
 
-	media, err = uc.mediaRepo.SetMediaLocation(ctx, media, url)
+	media, err = uc.mediaRepo.SetMediaLocation(ctx, media, location)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err)
 	}
