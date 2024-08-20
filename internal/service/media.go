@@ -101,7 +101,7 @@ func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListReq
 }
 
 func (s *MediaService) DeleteAvatar(ctx context.Context, req *v1.DeleteAvatarRequest) (*utils_v1.EmptyReply, error) {
-	err := s.uc.DeleteAvatar(ctx, req.Urls)
+	err := s.uc.DeleteAvatar(ctx, req.GetUrls())
 	if err != nil {
 		return nil, err
 	}

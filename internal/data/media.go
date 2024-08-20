@@ -2,8 +2,9 @@ package data
 
 import (
 	"context"
-	"gitlab.calendaria.team/services/media/ent/mixins"
 	"time"
+
+	"gitlab.calendaria.team/services/media/ent/mixins"
 
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/ent/media"
