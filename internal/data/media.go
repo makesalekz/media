@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"gitlab.calendaria.team/services/media/ent/mixins"
 	"time"
 
 	"gitlab.calendaria.team/services/media/ent"
@@ -44,6 +45,8 @@ type MediaRepo interface {
 	SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error)
 	SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionsDto) (*ent.Media, error)
 	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
+	GetAvatarsMediaList(ctx context.Context, urls []string) ([]*ent.Media, error)
+	DeleteMediaList(ctx context.Context, ids []int64) (int, error)
 }
 
 type mediaRepo struct {
@@ -109,4 +112,12 @@ func (r *mediaRepo) GetMediaList(ctx context.Context, filter FilterMediaDto) ([]
 	}
 
 	return query.All(ctx)
+}
+
+func (r *mediaRepo) GetAvatarsMediaList(ctx context.Context, urls []string) ([]*ent.Media, error) {
+	return r.db.Media.Query().Where(media.URLIn(urls...)).All(ctx)
+}
+
+func (r *mediaRepo) DeleteMediaList(ctx context.Context, ids []int64) (int, error) {
+	return r.db.Media.Delete().Where(media.IDIn(ids...)).Exec(mixins.SkipSoftDelete(ctx))
 }

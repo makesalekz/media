@@ -427,3 +427,28 @@ func (uc *MediaUsecase) GetMediaList(ctx context.Context, userID int64, ownOnly 
 
 	return mediaList, nil
 }
+
+func (uc *MediaUsecase) DeleteAvatar(ctx context.Context, urls []string) error {
+	mediaList, err := uc.mediaRepo.GetAvatarsMediaList(ctx, urls)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("GetAvatarsMediaList error: %s", err)
+	}
+
+	mediaIDs := make([]int64, len(mediaList))
+	for i, media := range mediaList {
+		mediaIDs[i] = media.ID
+
+		// delete avatar from aws s3
+		err2 := uc.s3.Delete(ctx, media.Path)
+		if err2 != nil {
+			uc.log.Errorf("error on deleting avatar in aws: %s", err2)
+		}
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("DeleteMediaList error: %s", err)
+	}
+
+	return nil
+}
