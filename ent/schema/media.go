@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 )
 
 // Media holds the schema definition for the Media entity.
@@ -37,6 +38,12 @@ func (Media) Fields() []ent.Field {
 // Edges of the Media.
 func (Media) Edges() []ent.Edge {
 	return nil
+}
+
+func (Media) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("url"),
+	}
 }
 
 func (Media) Mixin() []ent.Mixin {

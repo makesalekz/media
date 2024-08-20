@@ -134,7 +134,7 @@ func file_api_media_v1_errors_proto_rawDescGZIP() []byte {
 }
 
 var file_api_media_v1_errors_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_api_media_v1_errors_proto_goTypes = []interface{}{
+var file_api_media_v1_errors_proto_goTypes = []any{
 	(ErrorReason)(0), // 0: media.v1.ErrorReason
 }
 var file_api_media_v1_errors_proto_depIdxs = []int32{

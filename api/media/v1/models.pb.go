@@ -184,7 +184,7 @@ func file_api_media_v1_models_proto_rawDescGZIP() []byte {
 }
 
 var file_api_media_v1_models_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_api_media_v1_models_proto_goTypes = []interface{}{
+var file_api_media_v1_models_proto_goTypes = []any{
 	(*Media)(nil), // 0: media.v1.Media
 }
 var file_api_media_v1_models_proto_depIdxs = []int32{
@@ -201,7 +201,7 @@ func file_api_media_v1_models_proto_init() {
 		return
 	}
 	if !protoimpl.UnsafeEnabled {
-		file_api_media_v1_models_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
+		file_api_media_v1_models_proto_msgTypes[0].Exporter = func(v any, i int) any {
 			switch v := v.(*Media); i {
 			case 0:
 				return &v.state
@@ -214,7 +214,7 @@ func file_api_media_v1_models_proto_init() {
 			}
 		}
 	}
-	file_api_media_v1_models_proto_msgTypes[0].OneofWrappers = []interface{}{}
+	file_api_media_v1_models_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

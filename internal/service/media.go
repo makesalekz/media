@@ -8,6 +8,7 @@ import (
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/biz"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
@@ -88,4 +89,13 @@ func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListReq
 	}
 
 	return &v1.MediaListReply{Media: resultList}, nil
+}
+
+func (s *MediaService) DeleteAvatar(ctx context.Context, req *v1.DeleteAvatarRequest) (*utils_v1.EmptyReply, error) {
+	err := s.uc.DeleteAvatar(ctx, req.Urls)
+	if err != nil {
+		return nil, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
 }
