@@ -44,6 +44,8 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUploadedAt holds the string denoting the uploaded_at field in the database.
 	FieldUploadedAt = "uploaded_at"
+	// FieldIsPrivate holds the string denoting the is_private field in the database.
+	FieldIsPrivate = "is_private"
 	// Table holds the table name of the media in the database.
 	Table = "media"
 )
@@ -66,6 +68,7 @@ var Columns = []string{
 	FieldIsActivated,
 	FieldCreatedAt,
 	FieldUploadedAt,
+	FieldIsPrivate,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -92,6 +95,8 @@ var (
 	DefaultIsActivated bool
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
+	// DefaultIsPrivate holds the default value on creation for the "is_private" field.
+	DefaultIsPrivate bool
 )
 
 // OrderOption defines the ordering options for the Media queries.
@@ -175,4 +180,9 @@ func ByCreatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByUploadedAt orders the results by the uploaded_at field.
 func ByUploadedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUploadedAt, opts...).ToFunc()
+}
+
+// ByIsPrivate orders the results by the is_private field.
+func ByIsPrivate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsPrivate, opts...).ToFunc()
 }

@@ -18,6 +18,7 @@ enum ErrorReason {
   SERVICE_FAILED = 2;
   DATABASE_QUERY = 3;
   EMPTY_ACTOR_ID = 5;
+  EMPTY_APP_ID = 6;
 
   UNAUTHORIZED = 10 [(errors.code) = 401];
   INVALID_CONTENT_TYPE = 11 [(errors.code) = 400];
@@ -25,4 +26,5 @@ enum ErrorReason {
 
   S3UPLOAD_FAILED = 20;
   NOT_FOUND = 21 [(errors.code) = 404];
+  S3_FAILED = 23;
 }

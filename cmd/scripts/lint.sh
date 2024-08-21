@@ -1,7 +1,7 @@
 #!/bin/bash
 
-UPDATED_FILES=$(git diff --name-only origin/dev . | grep "internal/.*\.go$")
-UPDATED_DIRS=$(git diff --dirstat=files,0 origin/dev . | grep internal | sed -En "s/^[ 0-9.]+\% //p")
+UPDATED_FILES=$(git diff --name-only origin/main . | grep "internal/.*\.go$")
+UPDATED_DIRS=$(git diff --dirstat=files,0 origin/main . | grep internal | sed -En "s/^[ 0-9.]+\% //p")
 
 for dir in $UPDATED_DIRS
 do

@@ -190,6 +190,20 @@ func (mc *MediaCreate) SetNillableUploadedAt(t *time.Time) *MediaCreate {
 	return mc
 }
 
+// SetIsPrivate sets the "is_private" field.
+func (mc *MediaCreate) SetIsPrivate(b bool) *MediaCreate {
+	mc.mutation.SetIsPrivate(b)
+	return mc
+}
+
+// SetNillableIsPrivate sets the "is_private" field if the given value is not nil.
+func (mc *MediaCreate) SetNillableIsPrivate(b *bool) *MediaCreate {
+	if b != nil {
+		mc.SetIsPrivate(*b)
+	}
+	return mc
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mc *MediaCreate) Mutation() *MediaMutation {
 	return mc.mutation
@@ -237,6 +251,10 @@ func (mc *MediaCreate) defaults() error {
 		}
 		v := media.DefaultCreatedAt()
 		mc.mutation.SetCreatedAt(v)
+	}
+	if _, ok := mc.mutation.IsPrivate(); !ok {
+		v := media.DefaultIsPrivate
+		mc.mutation.SetIsPrivate(v)
 	}
 	return nil
 }
@@ -354,6 +372,10 @@ func (mc *MediaCreate) createSpec() (*Media, *sqlgraph.CreateSpec) {
 	if value, ok := mc.mutation.UploadedAt(); ok {
 		_spec.SetField(media.FieldUploadedAt, field.TypeTime, value)
 		_node.UploadedAt = &value
+	}
+	if value, ok := mc.mutation.IsPrivate(); ok {
+		_spec.SetField(media.FieldIsPrivate, field.TypeBool, value)
+		_node.IsPrivate = value
 	}
 	return _node, _spec
 }

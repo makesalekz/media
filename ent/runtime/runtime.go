@@ -46,9 +46,13 @@ func init() {
 	mediaDescCreatedAt := mediaFields[12].Descriptor()
 	// media.DefaultCreatedAt holds the default value on creation for the created_at field.
 	media.DefaultCreatedAt = mediaDescCreatedAt.Default.(func() time.Time)
+	// mediaDescIsPrivate is the schema descriptor for is_private field.
+	mediaDescIsPrivate := mediaFields[14].Descriptor()
+	// media.DefaultIsPrivate holds the default value on creation for the is_private field.
+	media.DefaultIsPrivate = mediaDescIsPrivate.Default.(bool)
 }
 
 const (
-	Version = "v0.12.5"                                         // Version of ent codegen.
-	Sum     = "h1:KREM5E4CSoej4zeGa88Ou/gfturAnpUv0mzAjch1sj4=" // Sum of ent codegen.
+	Version = "v0.14.0"                                         // Version of ent codegen.
+	Sum     = "h1:EO3Z9aZ5bXJatJeGqu/EVdnNr6K4mRq3rWe5owt0MC4=" // Sum of ent codegen.
 )

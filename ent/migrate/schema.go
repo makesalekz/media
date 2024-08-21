@@ -26,6 +26,7 @@ var (
 		{Name: "is_activated", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "uploaded_at", Type: field.TypeTime, Nullable: true},
+		{Name: "is_private", Type: field.TypeBool, Nullable: true, Default: false},
 	}
 	// MediaTable holds the schema information for the "media" table.
 	MediaTable = &schema.Table{

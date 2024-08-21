@@ -53,6 +53,7 @@ type MediaMutation struct {
 	is_activated   *bool
 	created_at     *time.Time
 	uploaded_at    *time.Time
+	is_private     *bool
 	clearedFields  map[string]struct{}
 	done           bool
 	oldValue       func(context.Context) (*Media, error)
@@ -904,6 +905,55 @@ func (m *MediaMutation) ResetUploadedAt() {
 	delete(m.clearedFields, media.FieldUploadedAt)
 }
 
+// SetIsPrivate sets the "is_private" field.
+func (m *MediaMutation) SetIsPrivate(b bool) {
+	m.is_private = &b
+}
+
+// IsPrivate returns the value of the "is_private" field in the mutation.
+func (m *MediaMutation) IsPrivate() (r bool, exists bool) {
+	v := m.is_private
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPrivate returns the old "is_private" field's value of the Media entity.
+// If the Media object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *MediaMutation) OldIsPrivate(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsPrivate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsPrivate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPrivate: %w", err)
+	}
+	return oldValue.IsPrivate, nil
+}
+
+// ClearIsPrivate clears the value of the "is_private" field.
+func (m *MediaMutation) ClearIsPrivate() {
+	m.is_private = nil
+	m.clearedFields[media.FieldIsPrivate] = struct{}{}
+}
+
+// IsPrivateCleared returns if the "is_private" field was cleared in this mutation.
+func (m *MediaMutation) IsPrivateCleared() bool {
+	_, ok := m.clearedFields[media.FieldIsPrivate]
+	return ok
+}
+
+// ResetIsPrivate resets all changes to the "is_private" field.
+func (m *MediaMutation) ResetIsPrivate() {
+	m.is_private = nil
+	delete(m.clearedFields, media.FieldIsPrivate)
+}
+
 // Where appends a list predicates to the MediaMutation builder.
 func (m *MediaMutation) Where(ps ...predicate.Media) {
 	m.predicates = append(m.predicates, ps...)
@@ -938,7 +988,7 @@ func (m *MediaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MediaMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 16)
 	if m.deleted_at != nil {
 		fields = append(fields, media.FieldDeletedAt)
 	}
@@ -984,6 +1034,9 @@ func (m *MediaMutation) Fields() []string {
 	if m.uploaded_at != nil {
 		fields = append(fields, media.FieldUploadedAt)
 	}
+	if m.is_private != nil {
+		fields = append(fields, media.FieldIsPrivate)
+	}
 	return fields
 }
 
@@ -1022,6 +1075,8 @@ func (m *MediaMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case media.FieldUploadedAt:
 		return m.UploadedAt()
+	case media.FieldIsPrivate:
+		return m.IsPrivate()
 	}
 	return nil, false
 }
@@ -1061,6 +1116,8 @@ func (m *MediaMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreatedAt(ctx)
 	case media.FieldUploadedAt:
 		return m.OldUploadedAt(ctx)
+	case media.FieldIsPrivate:
+		return m.OldIsPrivate(ctx)
 	}
 	return nil, fmt.Errorf("unknown Media field %s", name)
 }
@@ -1174,6 +1231,13 @@ func (m *MediaMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUploadedAt(v)
+		return nil
+	case media.FieldIsPrivate:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPrivate(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Media field %s", name)
@@ -1292,6 +1356,9 @@ func (m *MediaMutation) ClearedFields() []string {
 	if m.FieldCleared(media.FieldUploadedAt) {
 		fields = append(fields, media.FieldUploadedAt)
 	}
+	if m.FieldCleared(media.FieldIsPrivate) {
+		fields = append(fields, media.FieldIsPrivate)
+	}
 	return fields
 }
 
@@ -1329,6 +1396,9 @@ func (m *MediaMutation) ClearField(name string) error {
 		return nil
 	case media.FieldUploadedAt:
 		m.ClearUploadedAt()
+		return nil
+	case media.FieldIsPrivate:
+		m.ClearIsPrivate()
 		return nil
 	}
 	return fmt.Errorf("unknown Media nullable field %s", name)
@@ -1382,6 +1452,9 @@ func (m *MediaMutation) ResetField(name string) error {
 		return nil
 	case media.FieldUploadedAt:
 		m.ResetUploadedAt()
+		return nil
+	case media.FieldIsPrivate:
+		m.ResetIsPrivate()
 		return nil
 	}
 	return fmt.Errorf("unknown Media field %s", name)

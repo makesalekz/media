@@ -32,6 +32,7 @@ func (Media) Fields() []ent.Field {
 		field.Bool("is_activated").Default(false),
 		field.Time("created_at").Default(time.Now).Immutable(),
 		field.Time("uploaded_at").Nillable().Optional(),
+		field.Bool("is_private").Optional().Default(false),
 	}
 }
 

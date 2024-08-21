@@ -73,6 +73,18 @@ func ErrorEmptyActorId(format string, args ...interface{}) *errors.Error {
 	return errors.New(500, ErrorReason_EMPTY_ACTOR_ID.String(), fmt.Sprintf(format, args...))
 }
 
+func IsEmptyAppId(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_EMPTY_APP_ID.String() && e.Code == 500
+}
+
+func ErrorEmptyAppId(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ErrorReason_EMPTY_APP_ID.String(), fmt.Sprintf(format, args...))
+}
+
 func IsUnauthorized(err error) bool {
 	if err == nil {
 		return false
@@ -131,4 +143,16 @@ func IsNotFound(err error) bool {
 
 func ErrorNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, ErrorReason_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
+func IsS3Failed(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == ErrorReason_S3_FAILED.String() && e.Code == 500
+}
+
+func ErrorS3Failed(format string, args ...interface{}) *errors.Error {
+	return errors.New(500, ErrorReason_S3_FAILED.String(), fmt.Sprintf(format, args...))
 }
