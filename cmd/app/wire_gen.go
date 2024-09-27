@@ -15,8 +15,8 @@ import (
 	"gitlab.calendaria.team/services/media/internal/server"
 	"gitlab.calendaria.team/services/media/internal/service"
 	"gitlab.calendaria.team/services/utils/v1/config"
-	"gitlab.calendaria.team/services/utils/v1/jwt"
 	"gitlab.calendaria.team/services/utils/v1/nats"
+	"gitlab.calendaria.team/services/utils/v2/jwt"
 )
 
 import (
@@ -31,7 +31,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 	if err != nil {
 		return nil, nil, err
 	}
-	jwtProcessor, err := jwt.NewJwtProcessor(configConfig)
+	iJwtProcessor, err := jwt.NewJwtProcessor(configConfig)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -50,16 +50,16 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	queueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
-	mediaUsecase, err := biz.NewMediaUsecase(logger, jwtProcessor, mediaRepo, s3Uploader, queueManager)
+	iQueueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
+	mediaUsecase, err := biz.NewMediaUsecase(logger, iJwtProcessor, mediaRepo, s3Uploader, iQueueManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
 		return nil, nil, err
 	}
 	mediaService := service.NewMediaService(mediaUsecase)
-	grpcServer := server.NewGRPCServer(bootstrap, jwtProcessor, mediaService)
-	httpServer := server.NewHTTPServer(bootstrap, jwtProcessor)
+	grpcServer := server.NewGRPCServer(bootstrap, iJwtProcessor, mediaService)
+	httpServer := server.NewHTTPServer(bootstrap, iJwtProcessor)
 	app := newApp(logger, configConfig, grpcServer, httpServer)
 	return app, func() {
 		cleanup2()

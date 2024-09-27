@@ -5,4 +5,9 @@ import (
 )
 
 // ProviderSet is server providers.
-var ProviderSet = wire.NewSet(NewGRPCServer, NewHTTPServer)
+//
+//nolint:gochecknoglobals // global variable, used in wire
+var ProviderSet = wire.NewSet(
+	NewGRPCServer,
+	NewHTTPServer,
+)

@@ -26,12 +26,20 @@ var (
 		{Name: "is_activated", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "uploaded_at", Type: field.TypeTime, Nullable: true},
+		{Name: "is_private", Type: field.TypeBool, Nullable: true, Default: false},
 	}
 	// MediaTable holds the schema information for the "media" table.
 	MediaTable = &schema.Table{
 		Name:       "media",
 		Columns:    MediaColumns,
 		PrimaryKey: []*schema.Column{MediaColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "media_url",
+				Unique:  false,
+				Columns: []*schema.Column{MediaColumns[6]},
+			},
+		},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{

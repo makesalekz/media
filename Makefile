@@ -50,7 +50,7 @@ db:
 .PHONY: start
 # start docker container locally
 start:
-	docker compose build local-service && \
+	docker compose build --ssh rsa=$(HOME)/.ssh/id_rsa  local-service && \
 	docker compose up -d local-service
 
 .PHONY: stop

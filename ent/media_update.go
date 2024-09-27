@@ -244,6 +244,26 @@ func (mu *MediaUpdate) ClearUploadedAt() *MediaUpdate {
 	return mu
 }
 
+// SetIsPrivate sets the "is_private" field.
+func (mu *MediaUpdate) SetIsPrivate(b bool) *MediaUpdate {
+	mu.mutation.SetIsPrivate(b)
+	return mu
+}
+
+// SetNillableIsPrivate sets the "is_private" field if the given value is not nil.
+func (mu *MediaUpdate) SetNillableIsPrivate(b *bool) *MediaUpdate {
+	if b != nil {
+		mu.SetIsPrivate(*b)
+	}
+	return mu
+}
+
+// ClearIsPrivate clears the value of the "is_private" field.
+func (mu *MediaUpdate) ClearIsPrivate() *MediaUpdate {
+	mu.mutation.ClearIsPrivate()
+	return mu
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (mu *MediaUpdate) Mutation() *MediaMutation {
 	return mu.mutation
@@ -350,6 +370,12 @@ func (mu *MediaUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if mu.mutation.UploadedAtCleared() {
 		_spec.ClearField(media.FieldUploadedAt, field.TypeTime)
+	}
+	if value, ok := mu.mutation.IsPrivate(); ok {
+		_spec.SetField(media.FieldIsPrivate, field.TypeBool, value)
+	}
+	if mu.mutation.IsPrivateCleared() {
+		_spec.ClearField(media.FieldIsPrivate, field.TypeBool)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, mu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -587,6 +613,26 @@ func (muo *MediaUpdateOne) ClearUploadedAt() *MediaUpdateOne {
 	return muo
 }
 
+// SetIsPrivate sets the "is_private" field.
+func (muo *MediaUpdateOne) SetIsPrivate(b bool) *MediaUpdateOne {
+	muo.mutation.SetIsPrivate(b)
+	return muo
+}
+
+// SetNillableIsPrivate sets the "is_private" field if the given value is not nil.
+func (muo *MediaUpdateOne) SetNillableIsPrivate(b *bool) *MediaUpdateOne {
+	if b != nil {
+		muo.SetIsPrivate(*b)
+	}
+	return muo
+}
+
+// ClearIsPrivate clears the value of the "is_private" field.
+func (muo *MediaUpdateOne) ClearIsPrivate() *MediaUpdateOne {
+	muo.mutation.ClearIsPrivate()
+	return muo
+}
+
 // Mutation returns the MediaMutation object of the builder.
 func (muo *MediaUpdateOne) Mutation() *MediaMutation {
 	return muo.mutation
@@ -723,6 +769,12 @@ func (muo *MediaUpdateOne) sqlSave(ctx context.Context) (_node *Media, err error
 	}
 	if muo.mutation.UploadedAtCleared() {
 		_spec.ClearField(media.FieldUploadedAt, field.TypeTime)
+	}
+	if value, ok := muo.mutation.IsPrivate(); ok {
+		_spec.SetField(media.FieldIsPrivate, field.TypeBool, value)
+	}
+	if muo.mutation.IsPrivateCleared() {
+		_spec.ClearField(media.FieldIsPrivate, field.TypeBool)
 	}
 	_node = &Media{config: muo.config}
 	_spec.Assign = _node.assignValues

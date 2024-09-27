@@ -12,14 +12,8 @@ build dev:
 deploy dev:
   extends: .deploy-dev
   variables:
-    SERVICE_NAME: $CI_PROJECT_NAME
-    DB_NAME: api
-    DB_USER: me
-    DB_PASS: password
     DB_PORT: 54404
-    DB_VOLUME: dbvol
     TMP_VOLUME: tmpvol
-    NETWORK: stage
   script:
     # set environment
     - docker exec vault vault write auth/approle/role/app-${SERVICE_NAME} policies="app_${SERVICE_NAME}"

@@ -3,6 +3,7 @@ syntax = "proto3";
 package media.v1;
 
 import "google/api/httpbody.proto";
+import "api/utils/v1/models.proto";
 import "api/media/v1/models.proto";
 
 option go_package = "gitlab.calendaria.team/services/media/api/media/v1;media_v1";
@@ -11,14 +12,17 @@ option java_package = "media.v1";
 
 service MediaService {
   rpc UploadMedia(UploadMediaRequest) returns (MediaReply);
+  rpc GetPrivateMedia(GetMediaRequest) returns (MediaReply);
   rpc GetMedia(GetMediaRequest) returns (MediaReply);
   rpc GetMediaList(GetMediaListRequest) returns (MediaListReply);
+  rpc DeleteAvatar(DeleteAvatarRequest) returns (utils.v1.EmptyReply);
 }
 
 message UploadMediaRequest {
   google.api.HttpBody content = 2;
   string fileName = 3;  // header: X-File-Name
   string filePath = 4;  // header: X-File-Path
+  bool isPrivate = 5; // header: X-File-Private
 }
 
 message MediaReply {
@@ -36,4 +40,8 @@ message GetMediaListRequest {
 
 message MediaListReply {
   repeated Media media = 1;
+}
+
+message DeleteAvatarRequest {
+  repeated string urls = 1;
 }

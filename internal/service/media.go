@@ -8,6 +8,7 @@ import (
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/biz"
+	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
 
@@ -40,21 +41,30 @@ func replyMedia(media *ent.Media) *v1.Media {
 	if media.URL != nil {
 		result.Url = *media.URL
 	}
+
+	if media.ThumbnailURL != nil {
+		result.ThumbnailUrl = media.ThumbnailURL
+	}
+
 	return result
 }
 
 func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaRequest) (*v1.MediaReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
-
-	fileName, err := url.QueryUnescape(req.FileName)
-	if err != nil {
-		return nil, v1.ErrorInvalidRequest("invalid file name: %s", req.FileName)
+	appID := auth.GetAppIdFromContext(ctx)
+	if appID == "" {
+		return nil, v1.ErrorEmptyActorId("empty app id")
 	}
 
-	media, err := s.uc.UploadMedia(ctx, actorId, fileName, req.FilePath, req.Content)
+	fileName, err := url.QueryUnescape(req.GetFileName())
+	if err != nil {
+		return nil, v1.ErrorInvalidRequest("invalid file name: %s", req.GetFileName())
+	}
+
+	media, err := s.uc.UploadMedia(ctx, actorID, fileName, req.GetFilePath(), req.GetContent(), req.GetIsPrivate())
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +73,7 @@ func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaReque
 }
 
 func (s *MediaService) GetMedia(ctx context.Context, req *v1.GetMediaRequest) (*v1.MediaReply, error) {
-	media, err := s.uc.GetMedia(ctx, req.MediaId)
+	media, err := s.uc.GetMedia(ctx, req.GetMediaId())
 	if err != nil {
 		return nil, err
 	}
@@ -72,12 +82,12 @@ func (s *MediaService) GetMedia(ctx context.Context, req *v1.GetMediaRequest) (*
 }
 
 func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListRequest) (*v1.MediaListReply, error) {
-	actorId := auth.GetActorIdFromContext(ctx)
-	if actorId == 0 {
+	actorID := auth.GetActorIdFromContext(ctx)
+	if actorID == 0 {
 		return nil, v1.ErrorEmptyActorId("empty actor id")
 	}
 
-	mediaList, err := s.uc.GetMediaList(ctx, actorId, req.OwnOnly, req.MediaIds)
+	mediaList, err := s.uc.GetMediaList(ctx, actorID, req.GetOwnOnly(), req.GetMediaIds())
 	if err != nil {
 		return nil, err
 	}
@@ -88,4 +98,13 @@ func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListReq
 	}
 
 	return &v1.MediaListReply{Media: resultList}, nil
+}
+
+func (s *MediaService) DeleteAvatar(ctx context.Context, req *v1.DeleteAvatarRequest) (*utils_v1.EmptyReply, error) {
+	err := s.uc.DeleteAvatar(ctx, req.GetUrls())
+	if err != nil {
+		return nil, err
+	}
+
+	return &utils_v1.EmptyReply{}, nil
 }

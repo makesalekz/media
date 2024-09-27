@@ -5,6 +5,8 @@ import (
 )
 
 // ProviderSet is service providers.
+//
+//nolint:gochecknoglobals // global variable, used in wire
 var ProviderSet = wire.NewSet(
 	NewMediaService,
 )
