@@ -43,8 +43,8 @@ release:
 merge:
   extends: .merge
 
-build:
-  extends: .build
+build-shell:
+  extends: .build-shell
 
 migration-build:
   extends: .migration-build
