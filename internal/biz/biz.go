@@ -6,8 +6,9 @@ import (
 )
 
 const (
-	QueueDeleteMedia     = "delete"
-	QueueDeleteMediaList = "delete_list"
+	QueueDeleteMedia       = "delete"
+	QueueDeleteMediaList   = "delete_list"
+	QueueDeleteMediaRecord = "delete_record"
 )
 
 var (

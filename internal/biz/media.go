@@ -49,6 +49,7 @@ func NewMediaUsecase(
 
 	qm.AddConsumer(QueueDeleteMedia, uc.deleteMediaConsumer)
 	qm.AddConsumer(QueueDeleteMediaList, uc.deleteMediaBulkConsumer)
+	qm.AddConsumer(QueueDeleteMediaRecord, uc.deleteMediaRecordConsumer)
 
 	return uc, nil
 }
@@ -90,6 +91,9 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 
 	err = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 	if err != nil {
+		// if there is an error on deleting media record in db, we need to requeue it
+		uc.qm.GetLocal(QueueDeleteMediaRecord).Pub([]int64{mediaID})
+
 		uc.log.Errorf("deleteMediaConsumer: mediaRepo.DeleteMedia: %s", err.Error())
 		return true
 	}
@@ -142,8 +146,28 @@ func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg
 
 	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
 	if err != nil {
+		// if there is an error on deleting media record in db, we need to requeue it
+		uc.qm.GetLocal(QueueDeleteMediaRecord).Pub(mediaIDs)
+
 		uc.log.Errorf("deleteMediaBulkConsumer: mediaRepo.DeleteMediaList: %s", err.Error())
 		return true
+	}
+
+	return true
+}
+
+func (uc *MediaUsecase) deleteMediaRecordConsumer(ctx context.Context, m *nats.Msg) bool {
+	var mediaIDs []int64
+	err := json.Unmarshal(m.Data, &mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
+		return true
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaBulkConsumer: mediaRepo.DeleteMediaList: %s", err.Error())
+		return false
 	}
 
 	return true
