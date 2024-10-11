@@ -1,3 +1,4 @@
+// nolint: gosec // converttation to int32 is safe
 package biz
 
 import (
@@ -47,6 +48,7 @@ func NewMediaUsecase(
 	}
 
 	qm.AddConsumer(QueueDeleteMedia, uc.deleteMediaConsumer)
+	qm.AddConsumer(QueueDeleteMediaList, uc.deleteMediaBulkConsumer)
 
 	return uc, nil
 }
@@ -83,6 +85,53 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 	}
 
 	err = uc.mediaRepo.DeleteMedia(ctx, media.ID)
+	if err != nil {
+		return true
+	}
+
+	return true
+}
+
+func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg) bool {
+	var mediaIDs []int64
+	err := json.Unmarshal(m.Data, &mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
+		return true
+	}
+
+	mediaList, err := uc.mediaRepo.ListMedia(ctx, mediaIDs)
+	if err != nil {
+		return false
+	}
+
+	if uc.s3.Session == nil {
+		return true
+	}
+
+	paths := make([]string, len(mediaList))
+	thumbnailPaths := make([]string, 0, len(mediaList))
+	for i, media := range mediaList {
+		paths[i] = media.Path
+
+		if media.ThumbnailPath != nil {
+			thumbnailPaths = append(thumbnailPaths, *media.ThumbnailPath)
+		}
+	}
+
+	err = uc.s3.DeleteBulk(ctx, paths)
+	if err != nil {
+		return false
+	}
+
+	if len(thumbnailPaths) > 0 {
+		err = uc.s3.DeleteBulk(ctx, thumbnailPaths)
+		if err != nil {
+			return false
+		}
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
 	if err != nil {
 		return true
 	}
