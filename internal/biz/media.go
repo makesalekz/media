@@ -63,15 +63,18 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 
 	media, err := uc.mediaRepo.GetMedia(ctx, mediaID)
 	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: GetMedia: %s", err.Error())
 		return false
 	}
 
 	if uc.s3.Session == nil {
+		uc.log.Error("deleteMediaConsumer: S3 session is nil")
 		return true
 	}
 
 	err = uc.s3.Delete(ctx, media.Path)
 	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: Delete (path): %s", err.Error())
 		return false
 	}
 
@@ -79,6 +82,7 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 		if *media.ThumbnailPath != "" {
 			err = uc.s3.Delete(ctx, *media.ThumbnailPath)
 			if err != nil {
+				uc.log.Errorf("deleteMediaConsumer: Delete (thumbnailPath): %s", err.Error())
 				return false
 			}
 		}
@@ -86,6 +90,7 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 
 	err = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: mediaRepo.DeleteMedia: %s", err.Error())
 		return true
 	}
 
@@ -102,10 +107,12 @@ func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg
 
 	mediaList, err := uc.mediaRepo.ListMedia(ctx, mediaIDs)
 	if err != nil {
+		uc.log.Errorf("deleteMediaBulkConsumer: ListMedia: %s", err.Error())
 		return false
 	}
 
 	if uc.s3.Session == nil {
+		uc.log.Error("deleteMediaBulkConsumer: S3 session is nil")
 		return true
 	}
 
@@ -121,18 +128,21 @@ func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg
 
 	err = uc.s3.DeleteBulk(ctx, paths)
 	if err != nil {
+		uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (paths): %s", err.Error())
 		return false
 	}
 
 	if len(thumbnailPaths) > 0 {
 		err = uc.s3.DeleteBulk(ctx, thumbnailPaths)
 		if err != nil {
+			uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (thumbnailPaths): %s", err.Error())
 			return false
 		}
 	}
 
 	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
 	if err != nil {
+		uc.log.Errorf("deleteMediaBulkConsumer: mediaRepo.DeleteMediaList: %s", err.Error())
 		return true
 	}
 
