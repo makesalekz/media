@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"sync"
 	"time"
@@ -68,23 +69,25 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 		return false
 	}
 
-	if uc.s3.Session == nil {
-		uc.log.Error("deleteMediaConsumer: S3 session is nil")
-		return true
-	}
+	if os.Getenv("DEBUG") == "" {
+		if uc.s3.Session == nil {
+			uc.log.Error("deleteMediaConsumer: S3 session is nil")
+			return true
+		}
 
-	err = uc.s3.Delete(ctx, media.Path)
-	if err != nil {
-		uc.log.Errorf("deleteMediaConsumer: Delete (path): %s", err.Error())
-		return false
-	}
+		err = uc.s3.Delete(ctx, media.Path)
+		if err != nil {
+			uc.log.Errorf("deleteMediaConsumer: Delete (path): %s", err.Error())
+			return false
+		}
 
-	if media.ThumbnailPath != nil {
-		if *media.ThumbnailPath != "" {
-			err = uc.s3.Delete(ctx, *media.ThumbnailPath)
-			if err != nil {
-				uc.log.Errorf("deleteMediaConsumer: Delete (thumbnailPath): %s", err.Error())
-				return false
+		if media.ThumbnailPath != nil {
+			if *media.ThumbnailPath != "" {
+				err = uc.s3.Delete(ctx, *media.ThumbnailPath)
+				if err != nil {
+					uc.log.Errorf("deleteMediaConsumer: Delete (thumbnailPath): %s", err.Error())
+					return false
+				}
 			}
 		}
 	}
@@ -115,32 +118,34 @@ func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg
 		return false
 	}
 
-	if uc.s3.Session == nil {
-		uc.log.Error("deleteMediaBulkConsumer: S3 session is nil")
-		return true
-	}
-
-	paths := make([]string, len(mediaList))
-	thumbnailPaths := make([]string, 0, len(mediaList))
-	for i, media := range mediaList {
-		paths[i] = media.Path
-
-		if media.ThumbnailPath != nil {
-			thumbnailPaths = append(thumbnailPaths, *media.ThumbnailPath)
+	if os.Getenv("DEBUG") == "" {
+		if uc.s3.Session == nil {
+			uc.log.Error("deleteMediaBulkConsumer: S3 session is nil")
+			return true
 		}
-	}
 
-	err = uc.s3.DeleteBulk(ctx, paths)
-	if err != nil {
-		uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (paths): %s", err.Error())
-		return false
-	}
+		paths := make([]string, len(mediaList))
+		thumbnailPaths := make([]string, 0, len(mediaList))
+		for i, media := range mediaList {
+			paths[i] = media.Path
 
-	if len(thumbnailPaths) > 0 {
-		err = uc.s3.DeleteBulk(ctx, thumbnailPaths)
+			if media.ThumbnailPath != nil {
+				thumbnailPaths = append(thumbnailPaths, *media.ThumbnailPath)
+			}
+		}
+
+		err = uc.s3.DeleteBulk(ctx, paths)
 		if err != nil {
-			uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (thumbnailPaths): %s", err.Error())
+			uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (paths): %s", err.Error())
 			return false
+		}
+
+		if len(thumbnailPaths) > 0 {
+			err = uc.s3.DeleteBulk(ctx, thumbnailPaths)
+			if err != nil {
+				uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (thumbnailPaths): %s", err.Error())
+				return false
+			}
 		}
 	}
 
