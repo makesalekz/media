@@ -1,3 +1,4 @@
+// nolint: gosec // converttation to int32 is safe
 package biz
 
 import (
@@ -5,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 	"regexp"
 	"sync"
 	"time"
@@ -47,6 +49,8 @@ func NewMediaUsecase(
 	}
 
 	qm.AddConsumer(QueueDeleteMedia, uc.deleteMediaConsumer)
+	qm.AddConsumer(QueueDeleteMediaList, uc.deleteMediaBulkConsumer)
+	qm.AddConsumer(QueueDeleteMediaRecord, uc.deleteMediaRecordConsumer)
 
 	return uc, nil
 }
@@ -61,30 +65,114 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 
 	media, err := uc.mediaRepo.GetMedia(ctx, mediaID)
 	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: GetMedia: %s", err.Error())
 		return false
 	}
 
-	if uc.s3.Session == nil {
-		return true
-	}
+	if os.Getenv("DEBUG") == "" {
+		if uc.s3.Session == nil {
+			uc.log.Error("deleteMediaConsumer: S3 session is nil")
+			return true
+		}
 
-	err = uc.s3.Delete(ctx, media.Path)
-	if err != nil {
-		return false
-	}
+		err = uc.s3.Delete(ctx, media.Path)
+		if err != nil {
+			uc.log.Errorf("deleteMediaConsumer: Delete (path): %s", err.Error())
+			return false
+		}
 
-	if media.ThumbnailPath != nil {
-		if *media.ThumbnailPath != "" {
-			err = uc.s3.Delete(ctx, *media.ThumbnailPath)
-			if err != nil {
-				return false
+		if media.ThumbnailPath != nil {
+			if *media.ThumbnailPath != "" {
+				err = uc.s3.Delete(ctx, *media.ThumbnailPath)
+				if err != nil {
+					uc.log.Errorf("deleteMediaConsumer: Delete (thumbnailPath): %s", err.Error())
+					return false
+				}
 			}
 		}
 	}
 
 	err = uc.mediaRepo.DeleteMedia(ctx, media.ID)
 	if err != nil {
+		// if there is an error on deleting media record in db, we need to requeue it
+		uc.qm.GetLocal(QueueDeleteMediaRecord).Pub([]int64{mediaID})
+
+		uc.log.Errorf("deleteMediaConsumer: mediaRepo.DeleteMedia: %s", err.Error())
 		return true
+	}
+
+	return true
+}
+
+func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg) bool {
+	var mediaIDs []int64
+	err := json.Unmarshal(m.Data, &mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
+		return true
+	}
+
+	mediaList, err := uc.mediaRepo.ListMedia(ctx, mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaBulkConsumer: ListMedia: %s", err.Error())
+		return false
+	}
+
+	if os.Getenv("DEBUG") == "" {
+		if uc.s3.Session == nil {
+			uc.log.Error("deleteMediaBulkConsumer: S3 session is nil")
+			return true
+		}
+
+		paths := make([]string, len(mediaList))
+		thumbnailPaths := make([]string, 0, len(mediaList))
+		for i, media := range mediaList {
+			paths[i] = media.Path
+
+			if media.ThumbnailPath != nil {
+				thumbnailPaths = append(thumbnailPaths, *media.ThumbnailPath)
+			}
+		}
+
+		err = uc.s3.DeleteBulk(ctx, paths)
+		if err != nil {
+			uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (paths): %s", err.Error())
+			return false
+		}
+
+		if len(thumbnailPaths) > 0 {
+			err = uc.s3.DeleteBulk(ctx, thumbnailPaths)
+			if err != nil {
+				uc.log.Errorf("deleteMediaBulkConsumer: DeleteBulk (thumbnailPaths): %s", err.Error())
+				return false
+			}
+		}
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
+	if err != nil {
+		// if there is an error on deleting media record in db, we need to requeue it
+		uc.qm.GetLocal(QueueDeleteMediaRecord).Pub(mediaIDs)
+
+		uc.log.Errorf("deleteMediaBulkConsumer: mediaRepo.DeleteMediaList: %s", err.Error())
+		return true
+	}
+
+	return true
+}
+
+func (uc *MediaUsecase) deleteMediaRecordConsumer(ctx context.Context, m *nats.Msg) bool {
+	var mediaIDs []int64
+	err := json.Unmarshal(m.Data, &mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
+		return true
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
+	if err != nil {
+		uc.log.Errorf("deleteMediaBulkConsumer: mediaRepo.DeleteMediaList: %s", err.Error())
+		return false
 	}
 
 	return true

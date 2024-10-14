@@ -119,3 +119,27 @@ func (u *S3Uploader) Delete(ctx context.Context, path string) error {
 		},
 	)
 }
+
+func (u *S3Uploader) DeleteBulk(ctx context.Context, paths []string) error {
+	if os.Getenv("DEBUG") != "" {
+		return nil
+	}
+
+	objects := make([]s3manager.BatchDeleteObject, 0, len(paths))
+	for _, path := range paths {
+		objects = append(objects, s3manager.BatchDeleteObject{
+			Object: &s3.DeleteObjectInput{
+				Key:    aws.String(path),
+				Bucket: aws.String(u.Bucket),
+			},
+		})
+	}
+
+	batcher := s3manager.NewBatchDelete(u.Session)
+	return batcher.Delete(
+		aws.BackgroundContext(),
+		&s3manager.DeleteObjectsIterator{
+			Objects: objects,
+		},
+	)
+}
