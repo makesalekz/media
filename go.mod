@@ -13,7 +13,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.36.0
 	github.com/prometheus/client_golang v1.18.0
-	gitlab.calendaria.team/services/utils v0.3.12
+	gitlab.calendaria.team/services/utils v0.3.14
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/image v0.19.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157

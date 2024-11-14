@@ -1,8 +1,9 @@
+//nolint:gochecknoglobals // global variables used in wire and dict for content types
 package biz
 
 import (
 	"github.com/google/wire"
-	"gitlab.calendaria.team/services/utils/v1/nats"
+	"gitlab.calendaria.team/services/utils/v2/nats"
 )
 
 const (
@@ -12,7 +13,6 @@ const (
 )
 
 var (
-	//nolint:gochecknoglobals // global dict for content types
 	allowedContentTypesConst = map[string]string{
 		"image/jpeg":         "jpg",
 		"image/png":          "png",
@@ -58,8 +58,6 @@ var (
 )
 
 // ProviderSet is biz providers.
-//
-//nolint:gochecknoglobals // global variable, used in wire
 var ProviderSet = wire.NewSet(
 	nats.NewQueueManager,
 	NewMediaUsecase,

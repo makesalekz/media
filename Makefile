@@ -120,6 +120,7 @@ all:
 	make api;
 	make config;
 	make generate;
+	go mod tidy;
 
 .PHONY: hooks
 # install hooks
