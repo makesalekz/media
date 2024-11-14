@@ -1,4 +1,4 @@
-// nolint: gosec // converttation to int32 is safe
+//nolint:nestif // TODO: refactor code
 package biz
 
 import (
@@ -11,16 +11,16 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
-	"github.com/google/uuid"
-	"github.com/nats-io/nats.go"
-	"google.golang.org/genproto/googleapis/api/httpbody"
-
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/data"
-	u_nats "gitlab.calendaria.team/services/utils/v1/nats"
 	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
+	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
+
+	"github.com/go-kratos/kratos/v2/log"
+	"github.com/google/uuid"
+	"github.com/nats-io/nats.go/jetstream"
+	"google.golang.org/genproto/googleapis/api/httpbody"
 )
 
 // MediaUsecase is a Greeter usecase.
@@ -55,9 +55,9 @@ func NewMediaUsecase(
 	return uc, nil
 }
 
-func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bool {
+func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m jetstream.Msg) bool {
 	var mediaID int64
-	err := json.Unmarshal(m.Data, &mediaID)
+	err := json.Unmarshal(m.Data(), &mediaID)
 	if err != nil {
 		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
 		return true
@@ -104,9 +104,9 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m *nats.Msg) bo
 	return true
 }
 
-func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg) bool {
+func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m jetstream.Msg) bool {
 	var mediaIDs []int64
-	err := json.Unmarshal(m.Data, &mediaIDs)
+	err := json.Unmarshal(m.Data(), &mediaIDs)
 	if err != nil {
 		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
 		return true
@@ -161,9 +161,9 @@ func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m *nats.Msg
 	return true
 }
 
-func (uc *MediaUsecase) deleteMediaRecordConsumer(ctx context.Context, m *nats.Msg) bool {
+func (uc *MediaUsecase) deleteMediaRecordConsumer(ctx context.Context, m jetstream.Msg) bool {
 	var mediaIDs []int64
-	err := json.Unmarshal(m.Data, &mediaIDs)
+	err := json.Unmarshal(m.Data(), &mediaIDs)
 	if err != nil {
 		uc.log.Errorf("deleteMediaConsumer: json.Unmarshal: %s", err.Error())
 		return true
