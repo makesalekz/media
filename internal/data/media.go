@@ -43,6 +43,7 @@ type MediaRepo interface {
 	DeleteMedia(ctx context.Context, mediaID int64) error
 	SetMediaLocation(ctx context.Context, media *ent.Media, location string) (*ent.Media, error)
 	GetMedia(ctx context.Context, mediaID int64) (*ent.Media, error)
+	ListMedia(ctx context.Context, mediaIDs []int64) ([]*ent.Media, error)
 	SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error)
 	SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionsDto) (*ent.Media, error)
 	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
@@ -103,6 +104,10 @@ func (r *mediaRepo) SetDimensions(ctx context.Context, media *ent.Media, dto Set
 
 func (r *mediaRepo) GetMedia(ctx context.Context, mediaID int64) (*ent.Media, error) {
 	return r.db.Media.Get(ctx, mediaID)
+}
+
+func (r *mediaRepo) ListMedia(ctx context.Context, mediaIDs []int64) ([]*ent.Media, error) {
+	return r.db.Media.Query().Where(media.IDIn(mediaIDs...)).All(ctx)
 }
 
 func (r *mediaRepo) GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error) {
