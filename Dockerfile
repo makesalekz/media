@@ -28,5 +28,4 @@ COPY --from=builder /src/configs/config.${ENV}.yaml /app/config.yaml
 
 WORKDIR /app
 
-EXPOSE 8000
 EXPOSE 9000
