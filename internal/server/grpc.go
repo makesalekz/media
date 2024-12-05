@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	maxRecvMsgSize = 100 * 10e6 // 100 MB
+	maxRecvMsgSize = 2 * 10e9 // 2 GB
 )
 
 // NewGRPCServer new a gRPC server.
