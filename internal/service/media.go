@@ -8,6 +8,7 @@ import (
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/biz"
+	"gitlab.calendaria.team/services/media/internal/data"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
@@ -82,12 +83,20 @@ func (s *MediaService) GetMedia(ctx context.Context, req *v1.GetMediaRequest) (*
 }
 
 func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListRequest) (*v1.MediaListReply, error) {
-	actorID := auth.GetActorIdFromContext(ctx)
-	if actorID == 0 {
-		return nil, v1.ErrorEmptyActorId("empty actor id")
+	filter := data.FilterMediaDto{
+		MediaIDs: req.GetMediaIds(),
 	}
 
-	mediaList, err := s.uc.GetMediaList(ctx, actorID, req.GetOwnOnly(), req.GetMediaIds())
+	if req.GetOwnOnly() {
+		actorID := auth.GetActorIdFromContext(ctx)
+		if actorID == 0 {
+			return nil, v1.ErrorEmptyActorId("empty actor id")
+		}
+
+		filter.OwnerID = &actorID
+	}
+
+	mediaList, err := s.uc.GetMediaList(ctx, filter)
 	if err != nil {
 		return nil, err
 	}

@@ -497,17 +497,9 @@ func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaID int64) (*ent.Media
 	return media, nil
 }
 
-func (uc *MediaUsecase) GetMediaList(ctx context.Context, userID int64, ownOnly bool, mediaIDs []int64) (
+func (uc *MediaUsecase) GetMediaList(ctx context.Context, filter data.FilterMediaDto) (
 	[]*ent.Media, error,
 ) {
-	filter := data.FilterMediaDto{
-		MediaIDs: mediaIDs,
-	}
-
-	if ownOnly {
-		filter.OwnerID = &userID
-	}
-
 	mediaList, err := uc.mediaRepo.GetMediaList(ctx, filter)
 	if err != nil {
 		return nil, v1.ErrorDatabaseQuery("GetMediaList error: %s", err.Error())
