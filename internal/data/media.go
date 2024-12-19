@@ -46,6 +46,7 @@ type MediaRepo interface {
 	ListMedia(ctx context.Context, mediaIDs []int64) ([]*ent.Media, error)
 	SetVideoParameters(ctx context.Context, video *ent.Media, dto SetVideoParamsDto) (*ent.Media, error)
 	SetDimensions(ctx context.Context, media *ent.Media, dto SetDimensionsDto) (*ent.Media, error)
+	SetDuration(ctx context.Context, media *ent.Media, duration float32) (*ent.Media, error)
 	GetMediaList(ctx context.Context, filter FilterMediaDto) ([]*ent.Media, error)
 	GetAvatarsMediaList(ctx context.Context, urls []string) ([]*ent.Media, error)
 	DeleteMediaList(ctx context.Context, ids []int64) (int, error)
@@ -126,4 +127,10 @@ func (r *mediaRepo) GetAvatarsMediaList(ctx context.Context, urls []string) ([]*
 
 func (r *mediaRepo) DeleteMediaList(ctx context.Context, ids []int64) (int, error) {
 	return r.db.Media.Delete().Where(media.IDIn(ids...)).Exec(mixins.SkipSoftDelete(ctx))
+}
+
+func (r *mediaRepo) SetDuration(ctx context.Context, media *ent.Media, duration float32) (*ent.Media, error) {
+	return r.db.Media.UpdateOne(media).
+		SetDuration(duration).
+		Save(ctx)
 }
