@@ -6,22 +6,15 @@ import (
 )
 
 // NewNatsClient .
-func NewNatsClient(conf *conf.Bootstrap) (*nats.EncodedConn, func(), error) {
-	nc, err := nats.Connect(conf.Nats)
+func NewNatsClient(conf *conf.Bootstrap) (*nats.Conn, func(), error) {
+	nc, err := nats.Connect(conf.GetNats())
 	if err != nil {
-		return nil, nil, err
-	}
-
-	ec, err := nats.NewEncodedConn(nc, nats.JSON_ENCODER)
-	if err != nil {
-		nc.Close()
 		return nil, nil, err
 	}
 
 	cleanup := func() {
-		ec.Close()
 		nc.Close()
 	}
 
-	return ec, cleanup, nil
+	return nc, cleanup, nil
 }

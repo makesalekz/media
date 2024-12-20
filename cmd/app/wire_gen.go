@@ -15,8 +15,8 @@ import (
 	"gitlab.calendaria.team/services/media/internal/server"
 	"gitlab.calendaria.team/services/media/internal/service"
 	"gitlab.calendaria.team/services/utils/v1/config"
-	"gitlab.calendaria.team/services/utils/v1/nats"
 	"gitlab.calendaria.team/services/utils/v2/jwt"
+	"gitlab.calendaria.team/services/utils/v2/nats"
 )
 
 import (
@@ -45,12 +45,12 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		cleanup()
 		return nil, nil, err
 	}
-	encodedConn, cleanup2, err := data.NewNatsClient(bootstrap)
+	conn, cleanup2, err := data.NewNatsClient(bootstrap)
 	if err != nil {
 		cleanup()
 		return nil, nil, err
 	}
-	iQueueManager := nats.NewQueueManager(configConfig, encodedConn, logger)
+	iQueueManager := nats.NewQueueManager(configConfig, conn, logger)
 	mediaUsecase, err := biz.NewMediaUsecase(logger, iJwtProcessor, mediaRepo, s3Uploader, iQueueManager)
 	if err != nil {
 		cleanup2()
