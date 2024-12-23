@@ -290,6 +290,13 @@ func (uc *MediaUsecase) appendMedia(
 
 			return err
 		}
+	case "audio":
+		err = uc.appendAudio(file, media)
+		if err != nil {
+			uc.log.Error(err)
+
+			return err
+		}
 	}
 
 	return nil
@@ -463,6 +470,67 @@ func (uc *MediaUsecase) setMediaDimensions(ctx context.Context, media *ent.Media
 	}
 
 	return nil
+}
+
+func (uc *MediaUsecase) appendAudio(file *httpbody.HttpBody, media *ent.Media) error {
+	ctx, cancel := context.WithTimeout(context.Background(), data.DefaultTimeout)
+	defer cancel()
+
+	duration, err := uc.extractAudioDuration(ctx, file)
+	if err != nil {
+		return err
+	}
+
+	_, err = uc.mediaRepo.SetDuration(ctx, media, duration)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("uc.setAudioParams: SetAudioParameters error: %s", err.Error())
+	}
+
+	return nil
+}
+
+func (uc *MediaUsecase) extractAudioDuration(ctx context.Context, file *httpbody.HttpBody) (float32, error) {
+	ap, err := data.NewAudioProcessor(ctx, file.GetData())
+	if err != nil {
+		return 0, err
+	}
+	defer ap.Close()
+
+	err = ap.Start()
+	if err != nil {
+		return 0, err
+	}
+
+	var meta string
+	var errs error
+	mx := sync.Mutex{}
+
+	go func() {
+		meta, err = ap.GetMetadata()
+		if err != nil {
+			mx.Lock()
+			errs = errors.Join(errs, fmt.Errorf("ap.GetMetadata error: %s", err.Error()))
+			mx.Unlock()
+		}
+	}()
+
+	err = ap.Wait()
+	if err != nil {
+		mx.Lock()
+		errs = errors.Join(errs, fmt.Errorf("ap.Wait error: %s", err.Error()))
+		mx.Unlock()
+	}
+
+	if errs != nil {
+		return 0, v1.ErrorInternal("uc.extractAudioDuration error: %s", errs.Error())
+	}
+
+	duration, err := data.ExtractDurationFromMetadata(meta)
+	if err != nil {
+		return 0, err
+	}
+
+	return duration, nil
 }
 
 func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaID int64) (*ent.Media, error) {
