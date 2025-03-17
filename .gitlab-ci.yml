@@ -16,13 +16,13 @@ deploy dev:
     TMP_VOLUME: tmpvol
   script:
     # set environment
-    - docker exec vault vault write auth/approle/role/app-${SERVICE_NAME} policies="app_${SERVICE_NAME}"
+    - docker exec vault vault write auth/approle/role/app-${VAULT_APP} policies="app_${VAULT_APP}"
     - export AWS_ACCESS_KEY_ID=$(docker exec vault vault kv get -mount=secret -field=access_key_id app/media/awscredentials)
     - export AWS_SECRET_ACCESS_KEY=$(docker exec vault vault kv get -mount=secret -field=secret_access_key app/media/awscredentials)
     - export CONSUL_ADDRESS=http://consul:8500
     - export VAULT_ADDRESS=http://vault:8200
-    - export VAULT_ROLE_ID=$(docker exec vault vault read -field=role_id auth/approle/role/app-${SERVICE_NAME}/role-id)
-    - export VAULT_SECRET_ID=$(docker exec vault vault write -field=secret_id -f auth/approle/role/app-${SERVICE_NAME}/secret-id)
+    - export VAULT_ROLE_ID=$(docker exec vault vault read -field=role_id auth/approle/role/app-${VAULT_APP}/role-id)
+    - export VAULT_SECRET_ID=$(docker exec vault vault write -field=secret_id -f auth/approle/role/app-${VAULT_APP}/secret-id)
     - docker compose down
     # database up
     - docker volume create ${SERVICE_NAME}_db || true
