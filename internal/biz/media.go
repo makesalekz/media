@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 	"sync"
 	"time"
 
@@ -164,20 +163,11 @@ func (uc *MediaUsecase) deleteMediaRecordConsumer(ctx context.Context, m jetstre
 	return true
 }
 
-func getExtension(contentType string) (string, bool) {
-	extension, ok := allowedContentTypesConst[contentType]
-	if ok {
-		return extension, true
-	}
-
-	return "", false
-}
-
 func (uc *MediaUsecase) UploadMedia(
 	ctx context.Context, userID int64, fileName, filePath string, file *httpbody.HttpBody, isPrivate bool,
 ) (*ent.Media, error) {
 	contentType := file.GetContentType()
-	extension, ok := getExtension(contentType)
+	extension, ok := GetExtension(contentType)
 	if !ok {
 		return nil, v1.ErrorInvalidContentType("Invalid content type: %s", contentType)
 	}
@@ -215,13 +205,31 @@ func (uc *MediaUsecase) UploadMedia(
 		return nil, v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err.Error())
 	}
 
+	// Создаем копию объекта media для безопасного использования в горутине
+	mediaCopy := *media
 	go func() {
-		_ = uc.appendMedia(ctx, userID, media, file, isPrivate)
+		_ = uc.appendMedia(ctx, userID, &mediaCopy, file, isPrivate)
 	}()
 
-	var url string
+	// Обработка приватных медиа
+	media, err = uc.handlePrivateMedia(ctx, media)
+	if err != nil {
+		return nil, err
+	}
 
-	if media.IsPrivate && media.URL != nil {
+	return media, nil
+}
+
+// handlePrivateMedia обрабатывает приватные медиа, создавая presigned URL
+func (uc *MediaUsecase) handlePrivateMedia(ctx context.Context, media *ent.Media) (*ent.Media, error) {
+	if !media.IsPrivate {
+		return media, nil
+	}
+
+	var url string
+	var err error
+
+	if media.URL != nil {
 		url, err = uc.s3.GetPreSignedURL(ctx, media.Path)
 		if err != nil {
 			return nil, v1.ErrorS3Failed("S3 GetPreSignedURL error: %s", err.Error())
@@ -230,62 +238,43 @@ func (uc *MediaUsecase) UploadMedia(
 		media.URL = &url
 	}
 
-	if media.IsPrivate && media.ThumbnailURL != nil {
+	if media.ThumbnailPath != nil {
 		url, err = uc.s3.GetPreSignedURL(ctx, *media.ThumbnailPath)
 		if err != nil {
 			return nil, v1.ErrorS3Failed("S3 GetPreSignedURL error: %s", err.Error())
 		}
 
-		media.ThumbnailPath = &url
+		media.ThumbnailURL = &url
 	}
 
 	return media, nil
 }
 
 func (uc *MediaUsecase) appendMedia(
-	_ context.Context,
+	ctx context.Context,
 	userID int64,
 	media *ent.Media,
 	file *httpbody.HttpBody,
 	isPrivate bool,
 ) error {
-	var err error
-
 	contentType := file.GetContentType()
-	re := regexp.MustCompile(`^(.*)\/.*`)
-
-	format := re.FindStringSubmatch(contentType)
-	if len(format) == 0 {
+	baseType, ok := ParseContentType(contentType)
+	if !ok {
 		uc.log.Error(v1.ErrorInvalidContentType("invalid content type: %s", contentType))
-
-		return err
+		return fmt.Errorf("invalid content type: %s", contentType)
 	}
 
-	switch format[1] {
+	switch baseType {
 	case "video":
-		err = uc.appendVideo(file, userID, media, isPrivate)
-		if err != nil {
-			uc.log.Error(err)
-
-			return err
-		}
+		return uc.appendVideo(file, userID, media, isPrivate)
 	case "image":
-		err = uc.appendImage(file, media)
-		if err != nil {
-			uc.log.Error(err)
-
-			return err
-		}
+		return uc.appendImage(file, media)
 	case "audio":
-		err = uc.appendAudio(file, media)
-		if err != nil {
-			uc.log.Error(err)
-
-			return err
-		}
+		return uc.appendAudio(file, media)
+	default:
+		// Для других типов контента ничего не делаем
+		return nil
 	}
-
-	return nil
 }
 
 func (uc *MediaUsecase) appendVideo(file *httpbody.HttpBody, userID int64, media *ent.Media, isPrivate bool) error {
@@ -315,17 +304,9 @@ func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, media *ent.Media) e
 	defer cancel()
 
 	contentType := file.GetContentType()
-	extension, ok := getExtension(contentType)
+	img, ok := CreateImage(file.GetData(), contentType)
 	if !ok {
-		err := v1.ErrorInvalidContentType("incorect type: %s", file.GetContentType())
-
-		return err
-	}
-
-	img := &data.Image{
-		Data:      file.GetData(),
-		Extension: extension,
-		MimeType:  contentType,
+		return v1.ErrorInvalidContentType("incorrect type: %s", file.GetContentType())
 	}
 
 	err := uc.setMediaDimensions(ctx, media, img)
@@ -528,24 +509,10 @@ func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaID int64) (*ent.Media
 		return nil, v1.ErrorDatabaseQuery("GetMedia error: %s", err.Error())
 	}
 
-	var url string
-
-	if media.IsPrivate && media.URL != nil {
-		url, err = uc.s3.GetPreSignedURL(ctx, media.Path)
-		if err != nil {
-			return nil, v1.ErrorS3Failed("S3 GetPreSignedURL error: %s", err.Error())
-		}
-
-		media.URL = &url
-	}
-
-	if media.IsPrivate && media.ThumbnailURL != nil {
-		url, err = uc.s3.GetPreSignedURL(ctx, *media.ThumbnailPath)
-		if err != nil {
-			return nil, v1.ErrorS3Failed("S3 GetPreSignedURL error: %s", err.Error())
-		}
-
-		media.ThumbnailPath = &url
+	// Обработка приватных медиа
+	media, err = uc.handlePrivateMedia(ctx, media)
+	if err != nil {
+		return nil, err
 	}
 
 	return media, nil
