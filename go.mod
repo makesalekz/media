@@ -6,13 +6,16 @@ require (
 	entgo.io/ent v0.14.0
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/gabriel-vasile/mimetype v1.4.5
+	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20240105030612-34d9666e0e1b
 	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240322155018-41971ffa647a
 	github.com/go-kratos/kratos/v2 v2.7.3
+	github.com/golang/mock v1.6.0
 	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.6.0
 	github.com/lib/pq v1.10.9
 	github.com/nats-io/nats.go v1.36.0
 	github.com/prometheus/client_golang v1.18.0
+	github.com/stretchr/testify v1.8.4
 	gitlab.calendaria.team/services/utils v0.3.14
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/image v0.19.0
@@ -29,13 +32,13 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/cenkalti/backoff/v3 v3.0.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
+	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/fatih/color v1.14.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/go-jose/go-jose/v3 v3.0.0 // indirect
 	github.com/go-kratos/aegis v0.2.0 // indirect
 	github.com/go-kratos/consul v0.1.5 // indirect
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20231121021043-9adece088b51 // indirect
-	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20240105030612-34d9666e0e1b // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
@@ -70,6 +73,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
 	github.com/nats-io/nkeys v0.4.7 // indirect
 	github.com/nats-io/nuid v1.0.1 // indirect
+	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_model v0.5.0 // indirect
 	github.com/prometheus/common v0.46.0 // indirect
 	github.com/prometheus/procfs v0.12.0 // indirect

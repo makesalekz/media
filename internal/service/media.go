@@ -3,12 +3,11 @@ package service
 import (
 	"context"
 	"net/url"
-	"time"
 
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/biz"
-	"gitlab.calendaria.team/services/media/internal/data"
+	"gitlab.calendaria.team/services/media/internal/biz/reply"
+	"gitlab.calendaria.team/services/media/internal/data/dto"
 	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
 	"gitlab.calendaria.team/services/utils/v2/auth"
 )
@@ -25,29 +24,6 @@ func NewMediaService(
 	return &MediaService{
 		uc: uc,
 	}
-}
-
-func replyMedia(media *ent.Media) *v1.Media {
-	result := &v1.Media{
-		Id:        media.ID,
-		OwnerId:   media.OwnerID,
-		FileName:  media.FileName,
-		Extension: media.Extension,
-		Size:      media.Size,
-		Width:     media.Width,
-		Height:    media.Height,
-		Duration:  media.Duration,
-		CreatedAt: media.CreatedAt.Format(time.RFC3339),
-	}
-	if media.URL != nil {
-		result.Url = *media.URL
-	}
-
-	if media.ThumbnailURL != nil {
-		result.ThumbnailUrl = media.ThumbnailURL
-	}
-
-	return result
 }
 
 func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaRequest) (*v1.MediaReply, error) {
@@ -70,7 +46,7 @@ func (s *MediaService) UploadMedia(ctx context.Context, req *v1.UploadMediaReque
 		return nil, err
 	}
 
-	return &v1.MediaReply{Media: replyMedia(media)}, nil
+	return &v1.MediaReply{Media: reply.MapMedia(media)}, nil
 }
 
 func (s *MediaService) GetMedia(ctx context.Context, req *v1.GetMediaRequest) (*v1.MediaReply, error) {
@@ -79,11 +55,11 @@ func (s *MediaService) GetMedia(ctx context.Context, req *v1.GetMediaRequest) (*
 		return nil, err
 	}
 
-	return &v1.MediaReply{Media: replyMedia(media)}, nil
+	return &v1.MediaReply{Media: reply.MapMedia(media)}, nil
 }
 
 func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListRequest) (*v1.MediaListReply, error) {
-	filter := data.FilterMediaDto{
+	filter := dto.FilterMediaDto{
 		MediaIDs: req.GetMediaIds(),
 	}
 
@@ -103,7 +79,7 @@ func (s *MediaService) GetMediaList(ctx context.Context, req *v1.GetMediaListReq
 
 	resultList := make([]*v1.Media, len(mediaList))
 	for i, media := range mediaList {
-		resultList[i] = replyMedia(media)
+		resultList[i] = reply.MapMedia(media)
 	}
 
 	return &v1.MediaListReply{Media: resultList}, nil

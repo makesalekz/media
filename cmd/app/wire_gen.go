@@ -51,7 +51,7 @@ func wireApp(bootstrap *conf.Bootstrap, logger log.Logger) (*kratos.App, func(),
 		return nil, nil, err
 	}
 	iQueueManager := nats.NewQueueManager(configConfig, conn, logger)
-	mediaUsecase, err := biz.NewMediaUsecase(logger, iJwtProcessor, mediaRepo, s3Uploader, iQueueManager)
+	mediaUsecase, err := biz.NewMediaUsecase(logger, mediaRepo, s3Uploader, iQueueManager)
 	if err != nil {
 		cleanup2()
 		cleanup()
