@@ -218,7 +218,6 @@ func (uc *MediaUsecase) UploadMedia(
 	return media, nil
 }
 
-// handlePrivateMedia обрабатывает приватные медиа, создавая presigned URL
 func (uc *MediaUsecase) handlePrivateMedia(ctx context.Context, media *ent.Media) (*ent.Media, error) {
 	if !media.IsPrivate {
 		return media, nil
@@ -257,7 +256,6 @@ func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaID int64) (*ent.Media
 		return nil, v1.ErrorDatabaseQuery("GetMedia error: %s", err.Error())
 	}
 
-	// Обработка приватных медиа
 	media, err = uc.handlePrivateMedia(ctx, media)
 	if err != nil {
 		return nil, err

@@ -91,7 +91,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
 			isPrivate:   false,
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				expectedMedia := &ent.Media{
 					ID:        1,
 					OwnerID:   1001,
@@ -123,7 +125,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			fileName:    "test.jpg",
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 			},
 			expectedError: true,
 			errorContains: "empty actor id",
@@ -135,7 +139,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			fileName:    "test.jpg",
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 			},
 			expectedError: true,
 			errorContains: "empty app id",
@@ -147,7 +153,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			fileName:    "%нек%%орректное%имя%",
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 			},
 			expectedError: true,
 			errorContains: "invalid file name",
@@ -159,7 +167,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			fileName:    "test.jpg",
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				mockMediaRepo.EXPECT().
 					CreateMedia(gomock.Any(), gomock.Any()).
 					Return(nil, errors.New("database error"))
@@ -174,7 +184,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			fileName:    "test.jpg",
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				expectedMedia := &ent.Media{
 					ID:        1,
 					OwnerID:   1001,
@@ -206,7 +218,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			fileName:    "test.jpg",
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				expectedMedia := &ent.Media{
 					ID:        1,
 					OwnerID:   1001,
@@ -239,7 +253,9 @@ func TestMediaService_UploadMedia(t *testing.T) {
 			contentType: "image/jpeg",
 			data:        []byte("test image data"),
 			isPrivate:   true,
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				url := "https://example.com/media/test.jpg"
 				expectedMedia := &ent.Media{
 					ID:        1,
@@ -274,41 +290,39 @@ func TestMediaService_UploadMedia(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			svc, ctrl, mockMediaRepo, mockS3 := setupTestService(t)
-			defer ctrl.Finish()
+		t.Run(
+			tt.name, func(t *testing.T) {
+				svc, ctrl, mockMediaRepo, mockS3 := setupTestService(t)
+				defer ctrl.Finish()
 
-			// Настраиваем моки для текущего теста
-			tt.setupMocks(ctrl, mockMediaRepo, mockS3)
+				tt.setupMocks(ctrl, mockMediaRepo, mockS3)
 
-			// Создаем контекст и запрос
-			ctx := appendTestContext(tt.appID, tt.actorID, 0)
-			req := &v1.UploadMediaRequest{
-				FileName: tt.fileName,
-				FilePath: tt.filePath,
-				Content: &httpbody.HttpBody{
-					ContentType: tt.contentType,
-					Data:        tt.data,
-				},
-				IsPrivate: tt.isPrivate,
-			}
-
-			// Вызываем метод
-			resp, err := svc.UploadMedia(ctx, req)
-
-			// Проверяем результаты
-			if tt.expectedError {
-				require.Error(t, err)
-				if tt.errorContains != "" {
-					assert.Contains(t, err.Error(), tt.errorContains)
+				ctx := appendTestContext(tt.appID, tt.actorID, 0)
+				req := &v1.UploadMediaRequest{
+					FileName: tt.fileName,
+					FilePath: tt.filePath,
+					Content: &httpbody.HttpBody{
+						ContentType: tt.contentType,
+						Data:        tt.data,
+					},
+					IsPrivate: tt.isPrivate,
 				}
-				assert.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				assert.Equal(t, tt.expectedMediaID, resp.Media.Id)
-			}
-		})
+
+				resp, err := svc.UploadMedia(ctx, req)
+
+				if tt.expectedError {
+					require.Error(t, err)
+					if tt.errorContains != "" {
+						assert.Contains(t, err.Error(), tt.errorContains)
+					}
+					assert.Nil(t, resp)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, resp)
+					assert.Equal(t, tt.expectedMediaID, resp.Media.Id)
+				}
+			},
+		)
 	}
 }
 
@@ -360,35 +374,33 @@ func TestMediaService_GetMedia(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			svc, ctrl, mockMediaRepo, _ := setupTestService(t)
-			defer ctrl.Finish()
+		t.Run(
+			tt.name, func(t *testing.T) {
+				svc, ctrl, mockMediaRepo, _ := setupTestService(t)
+				defer ctrl.Finish()
 
-			// Настраиваем моки для текущего теста
-			tt.setupMocks(ctrl, mockMediaRepo)
+				tt.setupMocks(ctrl, mockMediaRepo)
 
-			// Создаем запрос
-			req := &v1.GetMediaRequest{
-				MediaId: tt.mediaID,
-			}
-
-			// Вызываем метод
-			resp, err := svc.GetMedia(context.Background(), req)
-
-			// Проверяем результаты
-			if tt.expectedError {
-				require.Error(t, err)
-				if tt.errorContains != "" {
-					assert.Contains(t, err.Error(), tt.errorContains)
+				req := &v1.GetMediaRequest{
+					MediaId: tt.mediaID,
 				}
-				assert.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				if tt.checkResponse != nil {
-					tt.checkResponse(t, resp)
+
+				resp, err := svc.GetMedia(context.Background(), req)
+
+				if tt.expectedError {
+					require.Error(t, err)
+					if tt.errorContains != "" {
+						assert.Contains(t, err.Error(), tt.errorContains)
+					}
+					assert.Nil(t, resp)
+				} else {
+					require.NoError(t, err)
+					if tt.checkResponse != nil {
+						tt.checkResponse(t, resp)
+					}
 				}
-			}
-		})
+			},
+		)
 	}
 }
 
@@ -505,36 +517,34 @@ func TestMediaService_GetMediaList(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			svc, ctrl, mockMediaRepo, _ := setupTestService(t)
-			defer ctrl.Finish()
+		t.Run(
+			tt.name, func(t *testing.T) {
+				svc, ctrl, mockMediaRepo, _ := setupTestService(t)
+				defer ctrl.Finish()
 
-			// Настраиваем моки для текущего теста
-			tt.setupMocks(ctrl, mockMediaRepo)
+				tt.setupMocks(ctrl, mockMediaRepo)
 
-			// Создаем запрос
-			req := &v1.GetMediaListRequest{
-				MediaIds: tt.mediaIDs,
-				OwnOnly:  tt.ownOnly,
-			}
-
-			// Вызываем метод
-			resp, err := svc.GetMediaList(tt.ctx, req)
-
-			// Проверяем результаты
-			if tt.expectedError {
-				require.Error(t, err)
-				if tt.errorContains != "" {
-					assert.Contains(t, err.Error(), tt.errorContains)
+				req := &v1.GetMediaListRequest{
+					MediaIds: tt.mediaIDs,
+					OwnOnly:  tt.ownOnly,
 				}
-				assert.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				if tt.checkResponse != nil {
-					tt.checkResponse(t, resp)
+
+				resp, err := svc.GetMediaList(tt.ctx, req)
+
+				if tt.expectedError {
+					require.Error(t, err)
+					if tt.errorContains != "" {
+						assert.Contains(t, err.Error(), tt.errorContains)
+					}
+					assert.Nil(t, resp)
+				} else {
+					require.NoError(t, err)
+					if tt.checkResponse != nil {
+						tt.checkResponse(t, resp)
+					}
 				}
-			}
-		})
+			},
+		)
 	}
 }
 
@@ -552,7 +562,9 @@ func TestMediaService_DeleteAvatar(t *testing.T) {
 				"https://example.com/avatar1.jpg",
 				"https://example.com/avatar2.jpg",
 			},
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				expectedAvatars := []*ent.Media{
 					{ID: 1, Path: "avatars/1.jpg"},
 					{ID: 2, Path: "avatars/2.jpg"},
@@ -582,7 +594,9 @@ func TestMediaService_DeleteAvatar(t *testing.T) {
 				"https://example.com/avatar1.jpg",
 				"https://example.com/avatar2.jpg",
 			},
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				mockMediaRepo.EXPECT().
 					GetAvatarsMediaList(gomock.Any(), gomock.Any()).
 					Return(nil, errors.New("database error"))
@@ -596,7 +610,9 @@ func TestMediaService_DeleteAvatar(t *testing.T) {
 				"https://example.com/avatar1.jpg",
 				"https://example.com/avatar2.jpg",
 			},
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				expectedAvatars := []*ent.Media{
 					{ID: 1, Path: "avatars/1.jpg"},
 					{ID: 2, Path: "avatars/2.jpg"},
@@ -626,7 +642,9 @@ func TestMediaService_DeleteAvatar(t *testing.T) {
 				"https://example.com/avatar1.jpg",
 				"https://example.com/avatar2.jpg",
 			},
-			setupMocks: func(ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader) {
+			setupMocks: func(
+				ctrl *gomock.Controller, mockMediaRepo *mock_data.MockMediaRepo, mockS3 *mock_data.MockS3Uploader,
+			) {
 				expectedAvatars := []*ent.Media{
 					{ID: 1, Path: "avatars/1.jpg"},
 					{ID: 2, Path: "avatars/2.jpg"},
@@ -654,33 +672,31 @@ func TestMediaService_DeleteAvatar(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			svc, ctrl, mockMediaRepo, mockS3 := setupTestService(t)
-			defer ctrl.Finish()
+		t.Run(
+			tt.name, func(t *testing.T) {
+				svc, ctrl, mockMediaRepo, mockS3 := setupTestService(t)
+				defer ctrl.Finish()
 
-			// Настраиваем моки для текущего теста
-			tt.setupMocks(ctrl, mockMediaRepo, mockS3)
+				tt.setupMocks(ctrl, mockMediaRepo, mockS3)
 
-			// Создаем запрос
-			req := &v1.DeleteAvatarRequest{
-				Urls: tt.urls,
-			}
-
-			// Вызываем метод
-			resp, err := svc.DeleteAvatar(context.Background(), req)
-
-			// Проверяем результаты
-			if tt.expectedError {
-				require.Error(t, err)
-				if tt.errorContains != "" {
-					assert.Contains(t, err.Error(), tt.errorContains)
+				req := &v1.DeleteAvatarRequest{
+					Urls: tt.urls,
 				}
-				assert.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				assert.IsType(t, &utils_v1.EmptyReply{}, resp)
-			}
-		})
+
+				resp, err := svc.DeleteAvatar(context.Background(), req)
+
+				if tt.expectedError {
+					require.Error(t, err)
+					if tt.errorContains != "" {
+						assert.Contains(t, err.Error(), tt.errorContains)
+					}
+					assert.Nil(t, resp)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, resp)
+					assert.IsType(t, &utils_v1.EmptyReply{}, resp)
+				}
+			},
+		)
 	}
 }
