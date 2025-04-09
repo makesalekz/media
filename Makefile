@@ -153,9 +153,10 @@ cover:
 
 .PHONY: mock
 # generate mock - (example here)
+.PHONY: mock
 mock:
-	mockgen -source internal/data/teams.go -destination internal/data/mock/teams.go -package mock
-
+	mockgen -source internal/data/media.go -destination internal/data/mock/media.go -package mock
+	mockgen -source internal/data/s3.go -destination internal/data/mock/s3.go -package mock
 # show help
 help:
 	@echo ''

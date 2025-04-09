@@ -1,8 +1,9 @@
 package data
 
 import (
-	"github.com/nats-io/nats.go"
 	"gitlab.calendaria.team/services/media/internal/conf"
+
+	"github.com/nats-io/nats.go"
 )
 
 // NewNatsClient .
