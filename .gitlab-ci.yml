@@ -1,6 +1,6 @@
 include:
   - project: 'deploy/dev'
-    file: '/go-app-v2.yml'
+    file: '/go-app-v3.yml'
     ref: 'main'
   
 lint dev:
@@ -11,9 +11,6 @@ build dev:
 
 deploy dev:
   extends: .deploy-dev
-  variables:
-    DB_PORT: 54404
-    TMP_VOLUME: tmpvol
   script:
     # set environment
     - docker exec vault vault write auth/approle/role/app-${VAULT_APP} policies="app_${VAULT_APP}"
@@ -24,14 +21,11 @@ deploy dev:
     - export VAULT_ROLE_ID=$(docker exec vault vault read -field=role_id auth/approle/role/app-${VAULT_APP}/role-id)
     - export VAULT_SECRET_ID=$(docker exec vault vault write -field=secret_id -f auth/approle/role/app-${VAULT_APP}/secret-id)
     - docker compose down
-    # database up
-    - docker volume create ${SERVICE_NAME}_db || true
-    - docker compose up -d db
     # migrations up
     - docker pull arigaio/atlas
-    - docker run --rm -v $(pwd)/ent/migrate/migrations:/migrations --network ${NETWORK} arigaio/atlas migrate apply --url "postgres://me:password@${SERVICE_NAME}_db:5432/api?search_path=public&sslmode=disable"
+    - docker run --rm -v $(pwd)/ent/migrate/migrations:/migrations --network ${NETWORK} arigaio/atlas migrate apply --url "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres_db:5432/${DB_NAME}?search_path=public&sslmode=disable"
     # service up
-    - docker compose up -d service
+    - docker compose up -d
     - echo ${SERVICE_NAME} deployed successfully on dev
 
 cleanup:
