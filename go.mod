@@ -6,7 +6,6 @@ require (
 	entgo.io/ent v0.14.0
 	github.com/aws/aws-sdk-go v1.55.5
 	github.com/gabriel-vasile/mimetype v1.4.5
-	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20240105030612-34d9666e0e1b
 	github.com/go-kratos/kratos/contrib/metrics/prometheus/v2 v2.0.0-20240322155018-41971ffa647a
 	github.com/go-kratos/kratos/v2 v2.7.3
 	github.com/golang/mock v1.6.0
@@ -39,6 +38,7 @@ require (
 	github.com/go-kratos/aegis v0.2.0 // indirect
 	github.com/go-kratos/consul v0.1.5 // indirect
 	github.com/go-kratos/kratos/contrib/config/consul/v2 v2.0.0-20231121021043-9adece088b51 // indirect
+	github.com/go-kratos/kratos/contrib/log/zap/v2 v2.0.0-20240105030612-34d9666e0e1b // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-openapi/inflect v0.19.0 // indirect
