@@ -1,0 +1,35 @@
+services:
+  service:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      args:
+        - TOKEN=${TOKEN}
+        - ENV=dev
+    container_name: ${SERVICE_NAME}_service
+    ports:
+      - '${HTTP_PORT}:8000'
+      - '${GRPC_PORT}:9000'
+    networks:
+      - backend
+    volumes:
+      - ./.docker/data/tmp:/data/tmp
+    restart: unless-stopped
+    environment:
+      - DEBUG=${DEBUG}
+      - AUTOMIGRATE=true
+      - SERVICE_NAME=${SERVICE_NAME}
+      - CONSUL_ADDRESS=http://consul:8500
+      - VAULT_ADDRESS=http://vault:8200
+      - VAULT_TOKEN=myroot
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
+      - AWS_BUCKET=${AWS_BUCKET}
+    command: ["./app"]
+
+networks:
+  backend:
+    name: ${NETWORK}
+    driver: bridge
+    external: true

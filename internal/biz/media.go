@@ -1,4 +1,3 @@
-//nolint:nestif // TODO: refactor code
 package biz
 
 import (
@@ -7,14 +6,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"regexp"
 	"sync"
 	"time"
 
 	v1 "gitlab.calendaria.team/services/media/api/media/v1"
 	"gitlab.calendaria.team/services/media/ent"
 	"gitlab.calendaria.team/services/media/internal/data"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
+	"gitlab.calendaria.team/services/media/internal/data/dto"
 	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -23,26 +21,23 @@ import (
 	"google.golang.org/genproto/googleapis/api/httpbody"
 )
 
-// MediaUsecase is a Greeter usecase.
+// MediaUsecase .
 type MediaUsecase struct {
 	log       *log.Helper
-	jwt       u_jwt.IJwtProcessor
 	mediaRepo data.MediaRepo
-	s3        *data.S3Uploader
+	s3        data.S3Uploader
 	qm        u_nats.IQueueManager
 }
 
-// NewGreeterUsecase new a Greeter usecase.
+// NewMediaUsecase .
 func NewMediaUsecase(
 	logger log.Logger,
-	jwt u_jwt.IJwtProcessor,
 	mediaRepo data.MediaRepo,
-	s3 *data.S3Uploader,
+	s3 data.S3Uploader,
 	qm u_nats.IQueueManager,
 ) (*MediaUsecase, error) {
 	uc := &MediaUsecase{
 		log:       log.NewHelper(logger),
-		jwt:       jwt,
 		mediaRepo: mediaRepo,
 		s3:        s3,
 		qm:        qm,
@@ -70,11 +65,6 @@ func (uc *MediaUsecase) deleteMediaConsumer(ctx context.Context, m jetstream.Msg
 	}
 
 	if os.Getenv("DEBUG") == "" {
-		if uc.s3.Session == nil {
-			uc.log.Error("deleteMediaConsumer: S3 session is nil")
-			return true
-		}
-
 		err = uc.s3.Delete(ctx, media.Path)
 		if err != nil {
 			uc.log.Errorf("deleteMediaConsumer: Delete (path): %s", err.Error())
@@ -119,11 +109,6 @@ func (uc *MediaUsecase) deleteMediaBulkConsumer(ctx context.Context, m jetstream
 	}
 
 	if os.Getenv("DEBUG") == "" {
-		if uc.s3.Session == nil {
-			uc.log.Error("deleteMediaBulkConsumer: S3 session is nil")
-			return true
-		}
-
 		paths := make([]string, len(mediaList))
 		thumbnailPaths := make([]string, 0, len(mediaList))
 		for i, media := range mediaList {
@@ -178,20 +163,11 @@ func (uc *MediaUsecase) deleteMediaRecordConsumer(ctx context.Context, m jetstre
 	return true
 }
 
-func getExtension(contentType string) (string, bool) {
-	extension, ok := allowedContentTypesConst[contentType]
-	if ok {
-		return extension, true
-	}
-
-	return "", false
-}
-
 func (uc *MediaUsecase) UploadMedia(
 	ctx context.Context, userID int64, fileName, filePath string, file *httpbody.HttpBody, isPrivate bool,
 ) (*ent.Media, error) {
 	contentType := file.GetContentType()
-	extension, ok := getExtension(contentType)
+	extension, ok := GetExtension(contentType)
 	if !ok {
 		return nil, v1.ErrorInvalidContentType("Invalid content type: %s", contentType)
 	}
@@ -204,7 +180,7 @@ func (uc *MediaUsecase) UploadMedia(
 		path += fileName
 	}
 
-	createMediaDto := data.CreateMediaDto{
+	createMediaDto := dto.CreateMediaDto{
 		OwnerID:   userID,
 		FileName:  fileName,
 		Path:      path,
@@ -229,77 +205,125 @@ func (uc *MediaUsecase) UploadMedia(
 		return nil, v1.ErrorDatabaseQuery("SetMediaUploadedAt error: %s", err.Error())
 	}
 
+	mediaCopy := *media
 	go func() {
-		_ = uc.appendMedia(ctx, userID, media, file, isPrivate)
+		_ = uc.appendMedia(ctx, userID, &mediaCopy, file, isPrivate)
 	}()
 
-	var url string
-
-	if media.IsPrivate && media.URL != nil {
-		url, err = uc.s3.GetPresignedURL(ctx, media.Path)
-		if err != nil {
-			return nil, v1.ErrorS3Failed("S3 GetPresignedURL error: %s", err.Error())
-		}
-
-		media.URL = &url
-	}
-
-	if media.IsPrivate && media.ThumbnailURL != nil {
-		url, err = uc.s3.GetPresignedURL(ctx, *media.ThumbnailPath)
-		if err != nil {
-			return nil, v1.ErrorS3Failed("S3 GetPresignedURL error: %s", err.Error())
-		}
-
-		media.ThumbnailPath = &url
+	media, err = uc.handlePrivateMedia(ctx, media)
+	if err != nil {
+		return nil, err
 	}
 
 	return media, nil
 }
 
+func (uc *MediaUsecase) handlePrivateMedia(ctx context.Context, media *ent.Media) (*ent.Media, error) {
+	if !media.IsPrivate {
+		return media, nil
+	}
+
+	var url string
+	var err error
+
+	if media.URL != nil {
+		url, err = uc.s3.GetPreSignedURL(ctx, media.Path)
+		if err != nil {
+			return nil, v1.ErrorS3Failed("S3 GetPreSignedURL error: %s", err.Error())
+		}
+
+		media.URL = &url
+	}
+
+	if media.ThumbnailPath != nil {
+		url, err = uc.s3.GetPreSignedURL(ctx, *media.ThumbnailPath)
+		if err != nil {
+			return nil, v1.ErrorS3Failed("S3 GetPreSignedURL error: %s", err.Error())
+		}
+
+		media.ThumbnailURL = &url
+	}
+
+	return media, nil
+}
+
+func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaID int64) (*ent.Media, error) {
+	media, err := uc.mediaRepo.GetMedia(ctx, mediaID)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, v1.ErrorNotFound("Media not found")
+		}
+		return nil, v1.ErrorDatabaseQuery("GetMedia error: %s", err.Error())
+	}
+
+	media, err = uc.handlePrivateMedia(ctx, media)
+	if err != nil {
+		return nil, err
+	}
+
+	return media, nil
+}
+
+func (uc *MediaUsecase) GetMediaList(ctx context.Context, filter dto.FilterMediaDto) (
+	[]*ent.Media, error,
+) {
+	mediaList, err := uc.mediaRepo.GetMediaList(ctx, filter)
+	if err != nil {
+		return nil, v1.ErrorDatabaseQuery("GetMediaList error: %s", err.Error())
+	}
+
+	return mediaList, nil
+}
+
+func (uc *MediaUsecase) DeleteAvatar(ctx context.Context, urls []string) error {
+	mediaList, err := uc.mediaRepo.GetAvatarsMediaList(ctx, urls)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("GetAvatarsMediaList error: %s", err)
+	}
+
+	mediaIDs := make([]int64, len(mediaList))
+	for i, media := range mediaList {
+		mediaIDs[i] = media.ID
+
+		// delete avatar from aws s3
+		err2 := uc.s3.Delete(ctx, media.Path)
+		if err2 != nil {
+			uc.log.Errorf("error on deleting avatar in aws: %s", err2)
+		}
+	}
+
+	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("DeleteMediaList error: %s", err)
+	}
+
+	return nil
+}
+
 func (uc *MediaUsecase) appendMedia(
-	_ context.Context,
+	ctx context.Context,
 	userID int64,
 	media *ent.Media,
 	file *httpbody.HttpBody,
 	isPrivate bool,
 ) error {
-	var err error
-
 	contentType := file.GetContentType()
-	re := regexp.MustCompile(`^(.*)\/.*`)
-
-	format := re.FindStringSubmatch(contentType)
-	if len(format) == 0 {
+	baseType, ok := ParseContentType(contentType)
+	if !ok {
 		uc.log.Error(v1.ErrorInvalidContentType("invalid content type: %s", contentType))
-
-		return err
+		return errors.New("invalid content type")
 	}
 
-	switch format[1] {
+	switch baseType {
 	case "video":
-		err = uc.appendVideo(file, userID, media, isPrivate)
-		if err != nil {
-			uc.log.Error(err)
-
-			return err
-		}
+		return uc.appendVideo(file, userID, media, isPrivate)
 	case "image":
-		err = uc.appendImage(file, media)
-		if err != nil {
-			uc.log.Error(err)
-
-			return err
-		}
+		return uc.appendImage(file, media)
 	case "audio":
-		err = uc.appendAudio(file, media)
-		if err != nil {
-			uc.log.Error(err)
-
-			return err
-		}
+		return uc.appendAudio(file, media)
+	default:
+		return nil
 	}
-
-	return nil
 }
 
 func (uc *MediaUsecase) appendVideo(file *httpbody.HttpBody, userID int64, media *ent.Media, isPrivate bool) error {
@@ -329,22 +353,31 @@ func (uc *MediaUsecase) appendImage(file *httpbody.HttpBody, media *ent.Media) e
 	defer cancel()
 
 	contentType := file.GetContentType()
-	extension, ok := getExtension(contentType)
+	img, ok := CreateImage(file.GetData(), contentType)
 	if !ok {
-		err := v1.ErrorInvalidContentType("incorect type: %s", file.GetContentType())
-
-		return err
-	}
-
-	img := &data.Image{
-		Data:      file.GetData(),
-		Extension: extension,
-		MimeType:  contentType,
+		return v1.ErrorInvalidContentType("incorrect type: %s", file.GetContentType())
 	}
 
 	err := uc.setMediaDimensions(ctx, media, img)
 	if err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (uc *MediaUsecase) appendAudio(file *httpbody.HttpBody, media *ent.Media) error {
+	ctx, cancel := context.WithTimeout(context.Background(), data.DefaultTimeout)
+	defer cancel()
+
+	duration, err := uc.extractAudioDuration(ctx, file)
+	if err != nil {
+		return err
+	}
+
+	_, err = uc.mediaRepo.SetDuration(ctx, media, duration)
+	if err != nil {
+		return v1.ErrorDatabaseQuery("uc.setAudioParams: SetAudioParameters error: %s", err.Error())
 	}
 
 	return nil
@@ -428,7 +461,7 @@ func (uc *MediaUsecase) setVideoParams(
 	duration, err := data.ExtractDurationFromMetadata(meta)
 	if err != nil {
 		_ = uc.s3.Delete(ctx, path)
-		err := v1.ErrorInternal("uc.uploadThumbnail: ExtractDurationFromMetadata error: %s", err.Error())
+		err = v1.ErrorInternal("uc.uploadThumbnail: ExtractDurationFromMetadata error: %s", err.Error())
 
 		return err
 	}
@@ -436,7 +469,7 @@ func (uc *MediaUsecase) setVideoParams(
 	_, err = uc.mediaRepo.SetVideoParameters(
 		ctx,
 		media,
-		data.SetVideoParamsDto{
+		dto.SetVideoParamsDto{
 			Duration:      duration,
 			ThumbnailURL:  location,
 			ThumbnailPath: path,
@@ -460,30 +493,13 @@ func (uc *MediaUsecase) setMediaDimensions(ctx context.Context, media *ent.Media
 		return err
 	}
 
-	setDimensionsDto := data.SetDimensionsDto{Width: width, Height: height}
+	setDimensionsDto := dto.SetDimensionsDto{Width: width, Height: height}
 
 	_, err = uc.mediaRepo.SetDimensions(ctx, media, setDimensionsDto)
 	if err != nil {
 		err = v1.ErrorDatabaseQuery("uc.setMediaDimensions: SetDimensions error: %s", err.Error())
 
 		return err
-	}
-
-	return nil
-}
-
-func (uc *MediaUsecase) appendAudio(file *httpbody.HttpBody, media *ent.Media) error {
-	ctx, cancel := context.WithTimeout(context.Background(), data.DefaultTimeout)
-	defer cancel()
-
-	duration, err := uc.extractAudioDuration(ctx, file)
-	if err != nil {
-		return err
-	}
-
-	_, err = uc.mediaRepo.SetDuration(ctx, media, duration)
-	if err != nil {
-		return v1.ErrorDatabaseQuery("uc.setAudioParams: SetAudioParameters error: %s", err.Error())
 	}
 
 	return nil
@@ -531,72 +547,4 @@ func (uc *MediaUsecase) extractAudioDuration(ctx context.Context, file *httpbody
 	}
 
 	return duration, nil
-}
-
-func (uc *MediaUsecase) GetMedia(ctx context.Context, mediaID int64) (*ent.Media, error) {
-	media, err := uc.mediaRepo.GetMedia(ctx, mediaID)
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, v1.ErrorNotFound("Media not found")
-		}
-		return nil, v1.ErrorDatabaseQuery("GetMedia error: %s", err.Error())
-	}
-
-	var url string
-
-	if media.IsPrivate && media.URL != nil {
-		url, err = uc.s3.GetPresignedURL(ctx, media.Path)
-		if err != nil {
-			return nil, v1.ErrorS3Failed("S3 GetPresignedURL error: %s", err.Error())
-		}
-
-		media.URL = &url
-	}
-
-	if media.IsPrivate && media.ThumbnailURL != nil {
-		url, err = uc.s3.GetPresignedURL(ctx, *media.ThumbnailPath)
-		if err != nil {
-			return nil, v1.ErrorS3Failed("S3 GetPresignedURL error: %s", err.Error())
-		}
-
-		media.ThumbnailPath = &url
-	}
-
-	return media, nil
-}
-
-func (uc *MediaUsecase) GetMediaList(ctx context.Context, filter data.FilterMediaDto) (
-	[]*ent.Media, error,
-) {
-	mediaList, err := uc.mediaRepo.GetMediaList(ctx, filter)
-	if err != nil {
-		return nil, v1.ErrorDatabaseQuery("GetMediaList error: %s", err.Error())
-	}
-
-	return mediaList, nil
-}
-
-func (uc *MediaUsecase) DeleteAvatar(ctx context.Context, urls []string) error {
-	mediaList, err := uc.mediaRepo.GetAvatarsMediaList(ctx, urls)
-	if err != nil {
-		return v1.ErrorDatabaseQuery("GetAvatarsMediaList error: %s", err)
-	}
-
-	mediaIDs := make([]int64, len(mediaList))
-	for i, media := range mediaList {
-		mediaIDs[i] = media.ID
-
-		// delete avatar from aws s3
-		err2 := uc.s3.Delete(ctx, media.Path)
-		if err2 != nil {
-			uc.log.Errorf("error on deleting avatar in aws: %s", err2)
-		}
-	}
-
-	_, err = uc.mediaRepo.DeleteMediaList(ctx, mediaIDs)
-	if err != nil {
-		return v1.ErrorDatabaseQuery("DeleteMediaList error: %s", err)
-	}
-
-	return nil
 }

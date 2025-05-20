@@ -7,21 +7,29 @@ import (
 	"fmt"
 	"os"
 
+	"gitlab.calendaria.team/services/utils/v1/config"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
-	"gitlab.calendaria.team/services/utils/v1/config"
 )
 
-type S3Uploader struct {
+type S3Uploader interface {
+	Upload(ctx context.Context, path string, fileData []byte, mimeType string, isPrivate bool) (string, error)
+	GetPreSignedURL(ctx context.Context, path string) (string, error)
+	Delete(ctx context.Context, path string) error
+	DeleteBulk(ctx context.Context, paths []string) error
+}
+
+type s3Uploader struct {
 	Bucket  string
 	Session *session.Session
 }
 
 // NewS3Uploader .
-func NewS3Uploader(c *config.Config) (*S3Uploader, error) {
-	uploader := &S3Uploader{}
+func NewS3Uploader(c *config.Config) (S3Uploader, error) {
+	uploader := &s3Uploader{}
 
 	if os.Getenv("DEBUG") == "" {
 		region, err := c.Value("AWS_REGION").String()
@@ -42,7 +50,7 @@ func NewS3Uploader(c *config.Config) (*S3Uploader, error) {
 			return nil, fmt.Errorf("AWS Session error: %s", err.Error())
 		}
 
-		uploader = &S3Uploader{
+		uploader = &s3Uploader{
 			Bucket:  bucket,
 			Session: sess,
 		}
@@ -51,7 +59,7 @@ func NewS3Uploader(c *config.Config) (*S3Uploader, error) {
 	return uploader, nil
 }
 
-func (u *S3Uploader) Upload(ctx context.Context, path string, fileData []byte, mimeType string, isPrivate bool) (
+func (u *s3Uploader) Upload(ctx context.Context, path string, fileData []byte, mimeType string, isPrivate bool) (
 	string, error,
 ) {
 	if os.Getenv("DEBUG") != "" {
@@ -78,7 +86,7 @@ func (u *S3Uploader) Upload(ctx context.Context, path string, fileData []byte, m
 	return out.Location, nil
 }
 
-func (u *S3Uploader) GetPresignedURL(ctx context.Context, path string) (string, error) {
+func (u *s3Uploader) GetPreSignedURL(ctx context.Context, path string) (string, error) {
 	if os.Getenv("DEBUG") != "" {
 		return path + "_debug", nil
 	}
@@ -100,7 +108,7 @@ func (u *S3Uploader) GetPresignedURL(ctx context.Context, path string) (string, 
 	return url, nil
 }
 
-func (u *S3Uploader) Delete(ctx context.Context, path string) error {
+func (u *s3Uploader) Delete(ctx context.Context, path string) error {
 	if os.Getenv("DEBUG") != "" {
 		return nil
 	}
@@ -120,19 +128,21 @@ func (u *S3Uploader) Delete(ctx context.Context, path string) error {
 	)
 }
 
-func (u *S3Uploader) DeleteBulk(ctx context.Context, paths []string) error {
+func (u *s3Uploader) DeleteBulk(ctx context.Context, paths []string) error {
 	if os.Getenv("DEBUG") != "" {
 		return nil
 	}
 
 	objects := make([]s3manager.BatchDeleteObject, 0, len(paths))
 	for _, path := range paths {
-		objects = append(objects, s3manager.BatchDeleteObject{
-			Object: &s3.DeleteObjectInput{
-				Key:    aws.String(path),
-				Bucket: aws.String(u.Bucket),
+		objects = append(
+			objects, s3manager.BatchDeleteObject{
+				Object: &s3.DeleteObjectInput{
+					Key:    aws.String(path),
+					Bucket: aws.String(u.Bucket),
+				},
 			},
-		})
+		)
 	}
 
 	batcher := s3manager.NewBatchDelete(u.Session)

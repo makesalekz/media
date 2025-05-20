@@ -18,4 +18,5 @@
 | is_activated   | bool      | false  | false    | false    | true    | false         | false     | json:"is_activated,omitempty"   |          0 |         |
 | created_at     | time.Time | false  | false    | false    | true    | false         | true      | json:"created_at,omitempty"     |          0 |         |
 | uploaded_at    | time.Time | false  | true     | true     | false   | false         | false     | json:"uploaded_at,omitempty"    |          0 |         |
+| is_private     | bool      | false  | true     | false    | true    | false         | false     | json:"is_private,omitempty"     |          0 |         |
 

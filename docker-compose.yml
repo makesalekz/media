@@ -1,31 +1,12 @@
-version: '3.5'
-
 services:
-  db:
-    container_name: ${SERVICE_NAME}_db
-    restart: always
-    image: postgres:15.4
-    volumes:
-      - ${DB_VOLUME}:/var/lib/postgresql/data
-    ports:
-      - '${DB_PORT}:5432'
-    environment:
-      - PGDATA=/var/lib/postgresql/data/pgdata
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-    networks:
-      - backend
   service:
     image: ${REGISTRY_IMAGE}
     container_name: ${SERVICE_NAME}_service
     networks:
       - backend
     volumes:
-      - ${TMP_VOLUME}:/data/tmp
+      - tmpvol:/data/tmp
     restart: unless-stopped
-    depends_on:
-      - db
     environment:
       - SERVICE_NAME=${SERVICE_NAME}
       - CONSUL_ADDRESS=${CONSUL_ADDRESS}
@@ -34,40 +15,11 @@ services:
       - VAULT_SECRET_ID_PATH=/run/secrets/vault_secret_id
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    command: ["./app"]
     secrets:
       - vault_secret_id
-    command: ["./app"]
-  local-service:
-    build:
-      context: ./
-      dockerfile: Dockerfile
-      args:
-        - TOKEN=${TOKEN}
-        - ENV=dev
-    container_name: ${SERVICE_NAME}_service
-    ports:
-      - '${HTTP_PORT}:8000'
-      - '${GRPC_PORT}:9000'
-    networks:
-      - backend
-    volumes:
-      - ${TMP_VOLUME}:/data/tmp
-    restart: unless-stopped
-    environment:
-      - DEBUG=${DEBUG}
-      - AUTOMIGRATE=true
-      - SERVICE_NAME=${SERVICE_NAME}
-      - CONSUL_ADDRESS=http://consul:8500
-      - VAULT_ADDRESS=http://vault:8200
-      - VAULT_TOKEN=myroot
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    command: ["./app"]
 
 volumes:
-  dbvol:
-    name: ${SERVICE_NAME}_db
-    external: true
   tmpvol:
     name: ${SERVICE_NAME}_tmp
     driver_opts:
