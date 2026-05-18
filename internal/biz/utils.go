@@ -3,7 +3,7 @@ package biz
 import (
 	"regexp"
 
-	data_types "gitlab.calendaria.team/services/media/internal/data"
+	data_types "github.com/makesalekz/media/internal/data"
 )
 
 func GetExtension(contentType string) (string, bool) {

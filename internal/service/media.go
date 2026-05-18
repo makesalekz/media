@@ -4,12 +4,12 @@ import (
 	"context"
 	"net/url"
 
-	v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/internal/biz"
-	"gitlab.calendaria.team/services/media/internal/biz/reply"
-	"gitlab.calendaria.team/services/media/internal/data/dto"
-	utils_v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
-	"gitlab.calendaria.team/services/utils/v2/auth"
+	v1 "github.com/makesalekz/media/api/media/v1"
+	"github.com/makesalekz/media/internal/biz"
+	"github.com/makesalekz/media/internal/biz/reply"
+	"github.com/makesalekz/media/internal/data/dto"
+	utils_v1 "github.com/makesalekz/utils/api/utils/v1"
+	"github.com/makesalekz/utils/v2/auth"
 )
 
 type MediaService struct {

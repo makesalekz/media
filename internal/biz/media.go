@@ -9,11 +9,11 @@ import (
 	"sync"
 	"time"
 
-	v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/ent"
-	"gitlab.calendaria.team/services/media/internal/data"
-	"gitlab.calendaria.team/services/media/internal/data/dto"
-	u_nats "gitlab.calendaria.team/services/utils/v2/nats"
+	v1 "github.com/makesalekz/media/api/media/v1"
+	"github.com/makesalekz/media/ent"
+	"github.com/makesalekz/media/internal/data"
+	"github.com/makesalekz/media/internal/data/dto"
+	u_nats "github.com/makesalekz/utils/v2/nats"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"

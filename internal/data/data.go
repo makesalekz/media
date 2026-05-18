@@ -7,13 +7,13 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	"gitlab.calendaria.team/services/media/ent"
-	"gitlab.calendaria.team/services/media/internal/conf"
-	u_config "gitlab.calendaria.team/services/utils/v1/config"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
+	"github.com/makesalekz/media/ent"
+	"github.com/makesalekz/media/internal/conf"
+	u_config "github.com/makesalekz/utils/v1/config"
+	u_jwt "github.com/makesalekz/utils/v2/jwt"
 
 	_ "github.com/lib/pq"
-	_ "gitlab.calendaria.team/services/media/ent/runtime"
+	_ "github.com/makesalekz/media/ent/runtime"
 )
 
 const (

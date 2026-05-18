@@ -3,8 +3,8 @@ package reply
 import (
 	"time"
 
-	v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/ent"
+	v1 "github.com/makesalekz/media/api/media/v1"
+	"github.com/makesalekz/media/ent"
 )
 
 func MapMedia(media *ent.Media) *v1.Media {

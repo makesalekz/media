@@ -4,11 +4,11 @@ import (
 	"context"
 	"time"
 
-	"gitlab.calendaria.team/services/media/ent/mixins"
-	"gitlab.calendaria.team/services/media/internal/data/dto"
+	"github.com/makesalekz/media/ent/mixins"
+	"github.com/makesalekz/media/internal/data/dto"
 
-	"gitlab.calendaria.team/services/media/ent"
-	"gitlab.calendaria.team/services/media/ent/media"
+	"github.com/makesalekz/media/ent"
+	"github.com/makesalekz/media/ent/media"
 
 	_ "github.com/lib/pq"
 )

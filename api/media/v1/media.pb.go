@@ -7,7 +7,7 @@
 package media_v1
 
 import (
-	v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
+	v1 "github.com/makesalekz/utils/api/utils/v1"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"

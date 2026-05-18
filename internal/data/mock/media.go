@@ -9,8 +9,8 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	ent "gitlab.calendaria.team/services/media/ent"
-	dto "gitlab.calendaria.team/services/media/internal/data/dto"
+	ent "github.com/makesalekz/media/ent"
+	dto "github.com/makesalekz/media/internal/data/dto"
 )
 
 // MockMediaRepo is a mock of MediaRepo interface.

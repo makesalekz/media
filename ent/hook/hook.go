@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.calendaria.team/services/media/ent"
+	"github.com/makesalekz/media/ent"
 )
 
 // The MediaFunc type is an adapter to allow the use of ordinary

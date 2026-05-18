@@ -1,7 +1,7 @@
 package data
 
 import (
-	"gitlab.calendaria.team/services/media/internal/conf"
+	"github.com/makesalekz/media/internal/conf"
 
 	"github.com/nats-io/nats.go"
 )

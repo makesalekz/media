@@ -5,8 +5,8 @@ package runtime
 import (
 	"time"
 
-	"gitlab.calendaria.team/services/media/ent/media"
-	"gitlab.calendaria.team/services/media/ent/schema"
+	"github.com/makesalekz/media/ent/media"
+	"github.com/makesalekz/media/ent/schema"
 )
 
 // The init function reads all schema descriptors with runtime code

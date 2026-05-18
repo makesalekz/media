@@ -8,7 +8,7 @@ package media_v1
 
 import (
 	context "context"
-	v1 "gitlab.calendaria.team/services/utils/api/utils/v1"
+	v1 "github.com/makesalekz/utils/api/utils/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

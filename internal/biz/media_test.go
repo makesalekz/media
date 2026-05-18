@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"gitlab.calendaria.team/services/media/ent"
-	"gitlab.calendaria.team/services/media/internal/biz"
-	"gitlab.calendaria.team/services/media/internal/data/dto"
-	mock_data "gitlab.calendaria.team/services/media/internal/data/mock"
-	mock_nats "gitlab.calendaria.team/services/utils/v2/nats/mock"
-	"gitlab.calendaria.team/services/utils/v2/zap"
+	"github.com/makesalekz/media/ent"
+	"github.com/makesalekz/media/internal/biz"
+	"github.com/makesalekz/media/internal/data/dto"
+	mock_data "github.com/makesalekz/media/internal/data/mock"
+	mock_nats "github.com/makesalekz/utils/v2/nats/mock"
+	"github.com/makesalekz/utils/v2/zap"
 
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"

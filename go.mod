@@ -1,4 +1,4 @@
-module gitlab.calendaria.team/services/media
+module github.com/makesalekz/media
 
 go 1.21.3
 
@@ -15,7 +15,7 @@ require (
 	github.com/nats-io/nats.go v1.36.0
 	github.com/prometheus/client_golang v1.18.0
 	github.com/stretchr/testify v1.8.4
-	gitlab.calendaria.team/services/utils v0.3.14
+	github.com/makesalekz/utils v0.3.14
 	go.uber.org/automaxprocs v1.5.3
 	golang.org/x/image v0.19.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
@@ -96,4 +96,4 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
 
-replace gitlab.calendaria.team/services/utils => ../utils
+replace github.com/makesalekz/utils => ../utils

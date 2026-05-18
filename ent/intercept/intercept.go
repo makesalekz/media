@@ -7,9 +7,9 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"gitlab.calendaria.team/services/media/ent"
-	"gitlab.calendaria.team/services/media/ent/media"
-	"gitlab.calendaria.team/services/media/ent/predicate"
+	"github.com/makesalekz/media/ent"
+	"github.com/makesalekz/media/ent/media"
+	"github.com/makesalekz/media/ent/predicate"
 )
 
 // The Query interface represents an operation that queries a graph.

@@ -1,12 +1,12 @@
 package server
 
 import (
-	v1 "gitlab.calendaria.team/services/media/api/media/v1"
-	"gitlab.calendaria.team/services/media/internal/conf"
-	"gitlab.calendaria.team/services/media/internal/service"
-	"gitlab.calendaria.team/services/utils/v1/middlewares/metrics"
-	u_jwt "gitlab.calendaria.team/services/utils/v2/jwt"
-	"gitlab.calendaria.team/services/utils/v2/middlewares/auth"
+	v1 "github.com/makesalekz/media/api/media/v1"
+	"github.com/makesalekz/media/internal/conf"
+	"github.com/makesalekz/media/internal/service"
+	"github.com/makesalekz/utils/v1/middlewares/metrics"
+	u_jwt "github.com/makesalekz/utils/v2/jwt"
+	"github.com/makesalekz/utils/v2/middlewares/auth"
 
 	prom "github.com/go-kratos/kratos/contrib/metrics/prometheus/v2"
 	"github.com/go-kratos/kratos/v2/middleware/metadata"

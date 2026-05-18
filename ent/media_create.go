@@ -10,7 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"gitlab.calendaria.team/services/media/ent/media"
+	"github.com/makesalekz/media/ent/media"
 )
 
 // MediaCreate is the builder for creating a Media entity.

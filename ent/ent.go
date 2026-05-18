@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"gitlab.calendaria.team/services/media/ent/media"
+	"github.com/makesalekz/media/ent/media"
 )
 
 // ent aliases to avoid import conflicts in user's code.
