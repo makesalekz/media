@@ -1,37 +1,16 @@
 services:
-  service:
-    image: ${REGISTRY_IMAGE}
-    container_name: ${SERVICE_NAME}_service
-    networks:
-      - backend
-    volumes:
-      - tmpvol:/data/tmp
+  media:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        ENV: dev
+    container_name: media
     restart: unless-stopped
     environment:
-      - SERVICE_NAME=${SERVICE_NAME}
+      - SERVICE_NAME=media
       - CONSUL_ADDRESS=${CONSUL_ADDRESS}
       - VAULT_ADDRESS=${VAULT_ADDRESS}
-      - VAULT_ROLE_ID=${VAULT_ROLE_ID}
-      - VAULT_SECRET_ID_PATH=/run/secrets/vault_secret_id
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-    command: ["./app"]
-    secrets:
-      - vault_secret_id
-
-volumes:
-  tmpvol:
-    name: ${SERVICE_NAME}_tmp
-    driver_opts:
-      type: tmpfs
-      device: tmpfs
-
-networks:
-  backend:
-    name: ${NETWORK}
-    driver: bridge
-    external: true
-
-secrets:
-  vault_secret_id:
-    environment: 'VAULT_SECRET_ID'
+      - VAULT_DEV_ROOT_TOKEN_ID=${VAULT_DEV_ROOT_TOKEN_ID}
+      - DEBUG=true
+      - AUTOMIGRATE=true
